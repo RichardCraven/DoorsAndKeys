@@ -1,0 +1,16 @@
+.tile{
+    /* height:150px; 
+    width:150px;  */
+    border: 1px solid black; 
+    /* float:left;  */
+    /* display:flex; */
+    /* justify-content:center;  */
+    /* align-items:center;  */
+    /* min-width: 100px;
+    min-height: 100px; */
+    /* flex-grow: 1; */
+    /* display: inline-block; */
+    /* float: left; */
+    /* min-height: 100px; */
+    max-width: 200px;
+}
