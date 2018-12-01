@@ -1,1 +1,65 @@
 /* You can add global styles to this file, and also import other style files */
+/* .tile{
+    height:150px; 
+    width:150px; 
+    border: 1px solid black; 
+    float:left; 
+    display:flex;
+    justify-content:center; 
+    align-items:center; 
+} */
+tile{
+    /* border: 1px solid black; */
+    flex-grow: 1;
+    /* max-height: 300px;
+    max-width: 300px;
+    min-width: 100px;
+    min-height: 100px; */
+    /* max-height: 200px; */
+    /* max-width: 200px; */
+    /* min-height: 200px;
+    min-width: 200px; */
+    min-height: 10vh;
+    min-width: 10vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+tile:hover{
+    background-color: azure;
+}
+.darkness{
+    background-color: black;
+}
+.disguise{
+    background-image: url('assets/icons/disuise.png');
+}
+.crown{
+    background-image: url('assets/icons/crown.png');
+}
+.skull{
+    background-image: url('assets/icons/skull.png');
+}
+.crow{
+    background-image: url('assets/icons/crow.png');
+}
+.crown{
+    background-image: url('assets/icons/crown.png');
+}
+.lantern{
+    background-image: url('assets/icons/lantern.png');
+}
+.key{
+    background-image: url('assets/icons/key.png');
+}
+.monster{
+    background-image: url('assets/icons/monster.png');
+}
+.door{
+    background-image: url('assets/icons/closed_door.png');
+}
+.cloud{
+    background-image: url('assets/icons/cloud.png');
+}
+.stairs{
+    background-image: url('assets/icons/stairs_down.png');
+}

@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="board">
+    <tile *ngFor='let tile of tiles; index as i' 
+    [name]='tile.id' [contains]='tile.contains' 
+    [ngClass]='{
+      darkness: !tile.visible,
+      empty: tile.empty, 
+      key: tile.key,
+      crown: tile.crown,
+      monster: tile.monster,
+      stairs: tile.stairs,
+      cloud: tile.cloud,
+      lantern: tile.lantern,
+      disguise: tile.disguise
+    }' >
+      <!-- some text -->
+    </tile>
+  </div>
+</div>
