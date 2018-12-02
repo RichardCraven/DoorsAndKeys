@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import{PlayerManagerService} from './services/player-manager.service'
 import { MainBoardComponent } from './main-board/main-board.component';
 import { TileComponent } from './tile/tile.component';
+import { InfoPanelComponent } from './info-panel/info-panel.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainBoardComponent,
-    TileComponent
+    TileComponent,
+    InfoPanelComponent
   ],
   imports: [
     BrowserModule

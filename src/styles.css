@@ -16,6 +16,7 @@ body{
     width: 100%;
 }
 tile{
+    cursor: crosshair;
     /* border: 1px solid black; */
     /* flex-grow: 1; */
     /* max-height: 300px;
@@ -34,24 +35,34 @@ tile{
     /* width: calc(10%-2px); */
     background-size: cover;
     background-repeat: no-repeat;
+    /* transition: */
+    -webkit-transition: background-color 0.5s; /* Safari */
+    transition: background-color 0.5s;
+    background-position: center;
 }
 tile:hover{
     /* background-color: azure; */
+    background-color: grey
 }
-.darkness{
-    background-color: black;
-}
-.edge{
-    /* background-color: aquamarine; */
+
+
+.red{
+    /* background-color: red; */
 }
 .disguise{
     background-image: url('assets/icons/disuise.png');
+    background-color: white;
 }
 .crown{
     background-image: url('assets/icons/crown.png');
+    background-color: white;
+}
+tile.crown:hover{
+    background-color: yellow;
 }
 .skull{
     background-image: url('assets/icons/skull1.png');
+    background-color: white;
 }
 .crow{
     background-image: url('assets/icons/crow.png');
@@ -61,25 +72,45 @@ tile:hover{
 }
 .lantern{
     background-image: url('assets/icons/lantern.png');
+    background-color: gold;
 }
 .key{
     background-image: url('assets/icons/key.png');
+    background-color: white;
 }
 .monster{
     background-image: url('assets/icons/monster.png');
+    background-color: indianred;
+}
+.monster:hover{
+    background-color: red;
 }
 .door{
     background-image: url('assets/icons/closed_door.png');
+    background-color: white;
 }
 .cloud{
     background-image: url('assets/icons/cloud.png');
+    background-color: white;
 }
 .stairs{
     background-image: url('assets/icons/stairs_down.png');
-}
-.empty{
-    /* background-color: black; */
+    background-color: white;
 }
 .occupied{
     background-image: url('assets/icons/avatar.png');
+    background-position: center;
+    background-attachment: white;
+}
+.green{
+    background-color: aquamarine;
+}
+.empty{
+    background-color: none;
+}
+.darkness{
+    background-color: black;
+}
+tile.darkness:hover{
+    background-color: black;
 }

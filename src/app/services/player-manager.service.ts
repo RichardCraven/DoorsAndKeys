@@ -1,18 +1,22 @@
 import { Injectable, OnInit, HostListener } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import { Logs } from 'selenium-webdriver';
+
 @Injectable({
   providedIn: 'root'
 })
 export class PlayerManagerService {
   private subject = new Subject<any>();
+  private messageSubject = new Subject<any>();
   public currentMap;
   public counter = 1;
   public empties = [];
   public players = [];
-  private activePlayer;
+  public activePlayer;
   constructor() {
     window.addEventListener('keydown', (event) => {
+      // console.log(event.key);
+      
       switch(event.key){
         case 'ArrowUp':
           this.movePlayer('up')
@@ -25,6 +29,9 @@ export class PlayerManagerService {
         break
         case 'ArrowRight':
           this.movePlayer('right')
+        break
+        case 'Enter':
+          this.startTurn();
         break
       }
     });
@@ -43,6 +50,9 @@ export class PlayerManagerService {
     this.currentMap = map;
     return this.subject.asObservable()
   }
+  getPlayerMessages(): Observable<any>{
+    return this.messageSubject.asObservable()
+  }
   newPlayer(){
     const map = this.currentMap;
     for(let a in map){
@@ -55,14 +65,27 @@ export class PlayerManagerService {
     const newPlayer = {
       name: 'player'+this.counter,
       location: location,
-      visibility: 2
+      visibility: 2,
+      moves: 2,
+      coordinates: [0,0]
     }
     this.activePlayer = newPlayer;
 
     const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
     this.subject.next({location, visibility: visible});
   }
+  startTurn(){
+    const player = this.activePlayer;
+    const location = player.location;
+    const visible = this.checkVisibility(player.location, player.visibility)
+    this.subject.next({location, visibility: visible, startTurn : true});
+    // let leftOrRight = this.leftOrRight(player.location)
+  }
+  leftOrRight(location){
+    return 'left'
+  }
   movePlayer(direction){
+    this.messageSubject.next({msg : 'moving '+direction});
     const old_location = this.currentMap[this.activePlayer.location]
     let destination;
     switch (direction){
