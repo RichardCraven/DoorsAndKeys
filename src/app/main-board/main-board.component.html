@@ -2,16 +2,22 @@
   <div class="board">
     <tile *ngFor='let tile of tiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
+    
+    (mouseenter) ="isId(tile)"
     [ngClass]='{
       darkness: !tile.visible,
-      empty: tile.empty, 
       key: tile.key,
       crown: tile.crown,
       monster: tile.monster,
       stairs: tile.stairs,
       cloud: tile.cloud,
       lantern: tile.lantern,
-      disguise: tile.disguise
+      disguise: tile.disguise,
+      door: tile.door,
+      skull: tile.skull,
+      edge: tile.edge,
+      empty: tile.empty,
+      occupied: tile.occupied
     }' >
       <!-- some text -->
     </tile>
