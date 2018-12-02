@@ -2,8 +2,6 @@
   <div class="board">
     <tile *ngFor='let tile of tiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
-    
-    (mouseenter) ="isId(tile)"
     [ngClass]='{
       darkness: !tile.visible,
       key: tile.key,

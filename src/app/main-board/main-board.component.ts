@@ -13,7 +13,7 @@ export class MainBoardComponent implements OnInit {
   idCount = 0;
   tiles = [];
   items = [
-    'crown',
+    
     'skull',
     'key',
     'disguise',
@@ -24,43 +24,31 @@ export class MainBoardComponent implements OnInit {
     // 'palm_tree',
     'door',
     'monster',
-    '', '', '', '','','','', '', '', '',''
+    'crown'
   ];
   boardInventory = {
-    monsters: 0,
-    keys: 0,
-    skulls: 0,
-    crowns: 0,
-    lanterns: 0,
-    disguises: 0,
-    buddhas: 0,
-    stairs: 0,
-    doors: 0,
-    clouds: 0
+    monster: 5,
+    key: 2,
+    skull: 1,
+    crown: 1,
+    lantern: 3,
+    disguise: 2,
+    buddha: 0,
+    stairs: 1,
+    door: 2,
+    cloud: 1
   }
   constructor(public playerManager: PlayerManagerService) { }
 
   ngOnInit() {
     var DOMboard = document.querySelector('.board')
     for (let i = 0; i<this.totalTiles; i++){
-      var num = Math.floor(Math.random() * this.items.length)  
-      if(num === 0){
-        if(Math.floor(Math.random()) + 0.3){
-          console.log('crown')
-          num = num
-        }else {
-          num = Math.floor(Math.random() * this.items.length)
-        }
-      } 
-      // console.log(num);
-      
       var tile = {
-        name : '',
         id : this.idCount,
-        occupied : false,
         empty: true,
+        occupied : false,
         buildable : false,
-        contains: this.items[num],
+        contains: '',
         door: false,
         stairs: false,
         cloud: false,
@@ -73,86 +61,22 @@ export class MainBoardComponent implements OnInit {
         buddha: false,
         visible: false,
         monster: false,
-        edge: false,
-        class: ''
-      }
-      const items = this.items;
-      if(items[num] === 'crown') items.splice(num, 1)
-      // tile.class = tile.contains
-      // tile.class = tit
-      // tile.contains = '';
-      switch(tile.contains){
-        case 'crown':
-          tile.crown = true;
-          tile.empty = false;
-          this.boardInventory.crowns++;
-          items.splice(items.indexOf('crown'),1)
-          break
-        case 'buddha':
-          tile.crown = true;
-          tile.empty = false;
-          this.boardInventory.buddhas++;
-          if (this.boardInventory.buddhas > 2) items.splice(items.indexOf('buddha'),1)
-          break
-        case 'lantern':
-          tile.lantern = true;
-          tile.empty = false;
-          this.boardInventory.lanterns++;
-          if (this.boardInventory.lanterns > 1) items.splice(items.indexOf('lantern'),1)
-          break
-        case 'monster':
-          tile.monster = true;
-          tile.empty = false;
-          this.boardInventory.monsters++;
-          if (this.boardInventory.monsters > 4) items.splice(items.indexOf('monster'),1)
-          break
-        case 'disguise':
-          tile.disguise = true;
-          tile.empty = false;
-          this.boardInventory.disguises++;
-          if (this.boardInventory.disguises > 0) items.splice(items.indexOf('disguise'),1)
-          break
-        case 'stairs':
-          tile.stairs = true;
-          tile.empty = false;
-          this.boardInventory.stairs++;
-          if (this.boardInventory.stairs > 0) items.splice(items.indexOf('stairs'),1)
-          break
-        case 'door':
-          tile.door = true;
-          tile.empty = false;
-          this.boardInventory.doors++;
-          if (this.boardInventory.doors > 1) items.splice(items.indexOf('door'),1)
-        break
-        case 'key':
-          tile.key = true;
-          tile.empty = false;
-          this.boardInventory.keys++;
-          if (this.boardInventory.keys > 0) items.splice(items.indexOf('key'),1)
-        break
-        case 'cloud':
-          tile.cloud = true;
-          tile.empty = false;
-          this.boardInventory.clouds++;
-          if (this.boardInventory.clouds > 0) items.splice(items.indexOf('cloud'),1)
-        break
-        case 'skull':
-          tile.skull = true;
-          tile.empty = false;
-          this.boardInventory.skulls++;
-          if (this.boardInventory.skulls > 0) items.splice(items.indexOf('skull'),1)
-        break
-        case 'stairs':
-          tile.stairs = true;
-          tile.empty = false;
-          this.boardInventory.stairs++;
-          if (this.boardInventory.stairs > 0) items.splice(items.indexOf('stairs'),1)
-        break
-        case 'default': 
-        break
+        edge: false
       }
       this.tiles.push(tile)
       this.idCount++
+    }
+    for(let i = 0; i <this.items.length; i++){
+      while(this.boardInventory[this.items[i]] > 0){
+        let num = Math.floor(Math.random() * this.tiles.length)
+        let tile = this.tiles[num]
+        if(tile.empty){
+          tile.contains = this.items[i]
+          tile[this.items[i]] = true;
+          tile.empty = false;
+          this.boardInventory[this.items[i]]--
+        } 
+      }
     }
 
     //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
@@ -184,24 +108,20 @@ export class MainBoardComponent implements OnInit {
         old_tile.visible = false;
         old_tile.occupied = false;
       }
+      for(let i = 0; i < this.tiles.length; i++){
+        this.tiles[i].visible = false;
+      }
+      if(res.visibility){
+        for(let v = 0; v < res.visibility.length; v++){
+          // console.log(res.visibility[v]);
+          if(this.tiles[res.visibility[v]]) this.tiles[res.visibility[v]].visible = true;
+        }
+      }
     })
     this.playerManager.newPlayer()
 
     const crownAbsent = false;
-    // for(let tile in this.tiles){
-    //   if(this.tiles[tile].class === 'crown'){
-    //     return
-    //   } else {
-    //     crownAbsent = true;
-    //   }
-    // }
-    // if()
   }
-  // @HostListener('window:keydown', ['$event'])
-  // keyEvent(event: KeyboardEvent) { 
-  //   console.log('ksfgsdfgsdfg',event.key);
-    
-  // }
   onEnterKey($event){
     console.log('WAYOOO, event is ', $event);
     
@@ -212,6 +132,4 @@ export class MainBoardComponent implements OnInit {
   isId(target){
     console.log('id: ',target.id);
   }
-  //catalogue all the empty tiles, push to an array, then randomly choose an index of the array to place player
-  
 }
