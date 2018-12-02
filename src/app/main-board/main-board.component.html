@@ -1,7 +1,9 @@
 <div class="container">
+  <canvas #myCanvas id="myCanvas" width="752" height="752"></canvas>
   <div class="board">
     <tile *ngFor='let tile of tiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
+    (click)='isId(tile)'
     [ngClass]='{
       darkness: !tile.visible,
       key: tile.key,
@@ -15,7 +17,9 @@
       skull: tile.skull,
       edge: tile.edge,
       empty: tile.empty,
-      occupied: tile.occupied
+      occupied: tile.occupied,
+      green : tile.green,
+      red: tile.monster
     }' >
       <!-- some text -->
     </tile>
