@@ -31,17 +31,18 @@ tile{
     max-width: 100px; */
     height: 100px;
     width: 100px;
+    /* width: calc(10%-2px); */
     background-size: cover;
     background-repeat: no-repeat;
 }
 tile:hover{
-    background-color: azure;
+    /* background-color: azure; */
 }
 .darkness{
-    /* background-color: black; */
+    background-color: black;
 }
 .edge{
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
 }
 .disguise{
     background-image: url('assets/icons/disuise.png');
