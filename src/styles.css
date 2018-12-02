@@ -8,9 +8,16 @@
     justify-content:center; 
     align-items:center; 
 } */
+*{
+    overflow-x: hidden;
+}
+body{
+    height: 100%;
+    width: 100%;
+}
 tile{
     /* border: 1px solid black; */
-    flex-grow: 1;
+    /* flex-grow: 1; */
     /* max-height: 300px;
     max-width: 300px;
     min-width: 100px;
@@ -19,8 +26,11 @@ tile{
     /* max-width: 200px; */
     /* min-height: 200px;
     min-width: 200px; */
-    min-height: 10vh;
-    min-width: 10vh;
+    /* min-height: 100px;
+    min-width: 100px;
+    max-width: 100px; */
+    height: 100px;
+    width: 100px;
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -28,7 +38,10 @@ tile:hover{
     background-color: azure;
 }
 .darkness{
-    background-color: black;
+    /* background-color: black; */
+}
+.edge{
+    background-color: aquamarine;
 }
 .disguise{
     background-image: url('assets/icons/disuise.png');
@@ -37,7 +50,7 @@ tile:hover{
     background-image: url('assets/icons/crown.png');
 }
 .skull{
-    background-image: url('assets/icons/skull.png');
+    background-image: url('assets/icons/skull1.png');
 }
 .crow{
     background-image: url('assets/icons/crow.png');
@@ -62,4 +75,10 @@ tile:hover{
 }
 .stairs{
     background-image: url('assets/icons/stairs_down.png');
+}
+.empty{
+    /* background-color: black; */
+}
+.occupied{
+    background-image: url('assets/icons/avatar.png');
 }

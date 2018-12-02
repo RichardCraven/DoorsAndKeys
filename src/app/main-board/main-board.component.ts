@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import {TileComponent} from '../tile/tile.component'
-
+import {PlayerManagerService} from '../services/player-manager.service'
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'main-board',
   templateUrl: './main-board.component.html',
   styleUrls: ['./main-board.component.css']
 })
 export class MainBoardComponent implements OnInit {
-  idCount = 1;
+  newPlayerSubscription: Subscription;
+  totalTiles = 225;
+  idCount = 0;
   tiles = [];
   items = [
     'crown',
@@ -35,11 +38,11 @@ export class MainBoardComponent implements OnInit {
     doors: 0,
     clouds: 0
   }
-  constructor() { }
+  constructor(public playerManager: PlayerManagerService) { }
 
   ngOnInit() {
     var DOMboard = document.querySelector('.board')
-    for (let i = 0; i<81; i++){
+    for (let i = 0; i<this.totalTiles; i++){
       var num = Math.floor(Math.random() * this.items.length)  
       if(num === 0){
         if(Math.floor(Math.random()) + 0.3){
@@ -52,7 +55,7 @@ export class MainBoardComponent implements OnInit {
       // console.log(num);
       
       var tile = {
-        name : 'j',
+        name : '',
         id : this.idCount,
         occupied : false,
         empty: true,
@@ -70,101 +73,120 @@ export class MainBoardComponent implements OnInit {
         buddha: false,
         visible: false,
         monster: false,
+        edge: false,
         class: ''
       }
       const items = this.items;
       if(items[num] === 'crown') items.splice(num, 1)
-      tile.class = tile.contains
+      // tile.class = tile.contains
       // tile.class = tit
-      
+      // tile.contains = '';
       switch(tile.contains){
         case 'crown':
           tile.crown = true;
+          tile.empty = false;
           this.boardInventory.crowns++;
           items.splice(items.indexOf('crown'),1)
           break
         case 'buddha':
           tile.crown = true;
+          tile.empty = false;
           this.boardInventory.buddhas++;
           if (this.boardInventory.buddhas > 2) items.splice(items.indexOf('buddha'),1)
           break
         case 'lantern':
-          tile.crown = true;
+          tile.lantern = true;
+          tile.empty = false;
           this.boardInventory.lanterns++;
           if (this.boardInventory.lanterns > 1) items.splice(items.indexOf('lantern'),1)
           break
         case 'monster':
           tile.monster = true;
+          tile.empty = false;
           this.boardInventory.monsters++;
           if (this.boardInventory.monsters > 4) items.splice(items.indexOf('monster'),1)
           break
         case 'disguise':
           tile.disguise = true;
+          tile.empty = false;
           this.boardInventory.disguises++;
           if (this.boardInventory.disguises > 0) items.splice(items.indexOf('disguise'),1)
           break
         case 'stairs':
           tile.stairs = true;
+          tile.empty = false;
           this.boardInventory.stairs++;
           if (this.boardInventory.stairs > 0) items.splice(items.indexOf('stairs'),1)
           break
         case 'door':
           tile.door = true;
+          tile.empty = false;
           this.boardInventory.doors++;
           if (this.boardInventory.doors > 1) items.splice(items.indexOf('door'),1)
         break
         case 'key':
           tile.key = true;
+          tile.empty = false;
           this.boardInventory.keys++;
           if (this.boardInventory.keys > 0) items.splice(items.indexOf('key'),1)
         break
         case 'cloud':
           tile.cloud = true;
+          tile.empty = false;
           this.boardInventory.clouds++;
           if (this.boardInventory.clouds > 0) items.splice(items.indexOf('cloud'),1)
         break
         case 'skull':
           tile.skull = true;
+          tile.empty = false;
           this.boardInventory.skulls++;
           if (this.boardInventory.skulls > 0) items.splice(items.indexOf('skull'),1)
         break
         case 'stairs':
           tile.stairs = true;
+          tile.empty = false;
           this.boardInventory.stairs++;
           if (this.boardInventory.stairs > 0) items.splice(items.indexOf('stairs'),1)
         break
         case 'default': 
         break
       }
-      // if(tile.contains === '') tile.class = tile.class += ', empty'
-      // if(tile.contains === 'crown') tile.crown = true;
-      // if(tile.contains === 'disguise') tile.disguise = true;
-      // if(tile.contains === 'lantern') tile.lantern = true;
-      // if(tile.contains === 'buddha') tile.buddha = true;
-      // if(tile.contains === 'key') tile.key = true;
-      // if(tile.contains === 'skull') tile.skull = true;
-      // if(tile.contains === 'monster') tile.monster = true;
-      // if(tile.contains === 'door') tile.door = true;
-      
-      // tile.id = this.idCount
-      // var id = 4
-      // var tile = new TileComponent(id);
-
       this.tiles.push(tile)
-
-      // var tile = document.createElement('div');
-      // var random = Math.round(Math.random() * 100) /100;
-      // tile.classList.add('tile');
-      // tile.classList.add('animated');
-      // tile.classList.add('bounceInDown');
-      // tile.setAttribute('style','animation-delay:'+random+'s; -moz-animation-delay:'+random+'s; -webkit-animation-delay:'+random+'s;')
-      // tile.setAttribute('id', this.idCount.toString()) 
-
-      // DOMboard.appendChild(tile)
-      
       this.idCount++
     }
-    // console.log(this.tiles);
+
+    //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
+    const tiles = this.tiles;
+    for(var t in tiles){
+      if(tiles[t].id >= 0 &&  tiles[t].id <= 14){
+        tiles[t].edge = 'top'
+      }
+      if(tiles[t].id >= 210 && tiles[t].id <= 224){
+        tiles[t].edge = 'bottom'
+      }
+      if(tiles[t].id %15 === 0){
+        tiles[t].edge = 'left'
+      }
+      if((tiles[t].id-14)%15 === 0){
+        tiles[t].edge = 'right'
+      }
+    }
+    this.playerManager.getPlayerActivity(this.tiles).subscribe(res => {
+      
+      const tile = this.tiles[res.location]
+      tile.empty = false;
+      tile.visible = true;
+      tile.occupied = true;
+      
+      if(res.old_location || res.old_location === 0){
+        const old_tile = this.tiles[res.old_location]
+        old_tile.empty = true;
+        old_tile.visible = false;
+        old_tile.occupied = false;
+      }
+    })
+    this.playerManager.newPlayer()
+
     const crownAbsent = false;
     // for(let tile in this.tiles){
     //   if(this.tiles[tile].class === 'crown'){
@@ -175,5 +197,21 @@ export class MainBoardComponent implements OnInit {
     // }
     // if()
   }
-
+  // @HostListener('window:keydown', ['$event'])
+  // keyEvent(event: KeyboardEvent) { 
+  //   console.log('ksfgsdfgsdfg',event.key);
+    
+  // }
+  onEnterKey($event){
+    console.log('WAYOOO, event is ', $event);
+    
+  }
+  isEmpty(target){
+    console.log('empty: ',target.empty);
+  }
+  isId(target){
+    console.log('id: ',target.id);
+  }
+  //catalogue all the empty tiles, push to an array, then randomly choose an index of the array to place player
+  
 }
