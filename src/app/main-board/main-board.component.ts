@@ -11,6 +11,7 @@ import { ViewChild, ElementRef } from '@angular/core';
 })
 export class MainBoardComponent implements OnInit {
   newPlayerSubscription: Subscription;
+  introVideo = true;
   totalTiles = 225;
   rowLength = 15;
   idCount = 0;
@@ -52,8 +53,6 @@ export class MainBoardComponent implements OnInit {
   constructor(public playerManager: PlayerManagerService) { }
 
   ngOnInit() {
-    console.log('this.myCanvas is ', this.myCanvas);
-    
     var DOMboard = document.querySelector('.board')
     // this.canvas = document.getElementById('myCanvas');
     this.context = (<HTMLCanvasElement>this.myCanvas.nativeElement).getContext('2d');
@@ -76,17 +75,168 @@ export class MainBoardComponent implements OnInit {
         lantern: false,
         disguise: false,
         buddha: false,
-        visible: true,
+        visible: false,
         monster: false,
         edge: false,
         green: false,
         red: false,
         darkness: false,
-        coordinates: []
+        void: false,
+        coordinates: [],
+        title1: false,
+        title2: false,
+        title3: false
       }
       this.tiles.push(tile)
       this.idCount++
     }
+    this.populateBoard();
+    this.assignEdges();
+
+    //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
+    
+    this.playerManager.getPlayerActivity(this.tiles).subscribe(res => {
+      this.handlePlayerServiceSubscription(res)
+    })
+
+    if(this.introVideo){
+      this.tiles[112].occupied = true;
+      this.tiles[112].empty = false;
+      const fade1 = timer(1000);
+      const fade2 = timer(2500);
+      const fade3 = timer(3500);
+      const fade4 = timer(4750);
+      const fade5 = timer(5000);
+      const fade6 = timer(7250);
+      const fade7 = timer(19250);
+      const fade8 = timer(19250);
+      const fade1Sub = fade1.subscribe( res => {
+        console.log('fade 1');
+        for(var t in this.tiles){
+          var tile = this.tiles[t]
+          tile.green = false;
+          tile.visible = true;
+        }
+      })
+      const fade2Sub = fade2.subscribe(val => {
+        console.log('fade 2');
+        this.buildVoid()
+      });
+      const fade3Sub = fade3.subscribe( res => {
+        const visibility = this.playerManager.checkVisibility(112, 2)
+        console.log('fade 3');
+        for(var t in this.tiles){
+          var tile = this.tiles[t]
+          tile.visible = false;
+          if(visibility.indexOf(tile.id) > -1){
+            tile.visible = true;
+            tile.void = false;
+          } 
+          this.paintMoveZone([7,7])
+          
+        }
+        // this.playerManager.newPlayer()
+      })
+      const fade4Sub = fade4.subscribe( res => {
+        console.log('fade 4');
+         const tiles = this.tiles
+         for(let i = 35; i <= 39; i++){
+           this.clearTile(tiles[i])
+           tiles[i].visible = true;
+           tiles[i].void = false;
+         }
+        const door1 = timer(200);
+        const door2 = timer(400);
+        const door3 = timer(600);
+        const door4 = timer(800);
+        const door5 = timer(1000);
+        door1.subscribe(res => {
+          tiles[35].title1 = true;
+        })
+        door2.subscribe(res => {
+          tiles[36].title2 = true;
+        })
+        door3.subscribe(res => {
+          tiles[37].title3 = true;
+        })
+        door4.subscribe(res => {
+          tiles[38].title4 = true;
+        })
+        door5.subscribe(res => {
+          tiles[39].title5 = true;
+        })
+
+         
+         
+        
+      })
+      const fade5Sub = fade5.subscribe( res => {
+        console.log('fade 5');
+        
+        const voids = [33, 50, 52, 22, 9]
+        for(let i = 0; i< voids.length; i++){
+          if(this.tiles[voids[i]]) this.tiles[voids[i]].void = true;
+        }
+        this.playerManager.newPlayer(35)
+        const move1 = timer(500);
+        const move2 = timer(1000);
+        const move3 = timer(1500);
+        const move4 = timer(2000);
+        move1.subscribe(res => {
+          this.playerManager.movePlayer('right')
+        })
+        move2.subscribe(res => {
+          this.playerManager.movePlayer('right')
+        })
+        move3.subscribe(res => {
+          this.playerManager.movePlayer('right')
+        })
+        move4.subscribe(res => {
+          this.playerManager.movePlayer('right')
+        })
+      })
+      const fade6Sub = fade6.subscribe( res => {
+        
+        
+        
+        
+        const keys1 = timer(200);
+        const keys2 = timer(500);
+        const keys3 = timer(600);
+        const keys4 = timer(800);
+        keys1.subscribe(res => {
+          this.tiles[51].title6 = true;
+        })
+        keys2.subscribe(res => {
+          this.tiles[52].title7 = true;
+        })
+        keys3.subscribe(res => {
+          this.tiles[53].title8 = true;
+        })
+        keys4.subscribe(res => {
+          this.tiles[54].title9 = true;
+        })
+      })
+      const fade7Sub = fade6.subscribe( res => {
+        console.log('fade 6');
+        this.tiles[112].occupied = false;
+        var arr = [0,14, 210, 224]
+        const empties = []
+        for(let i = 0; i< arr.length; i++){
+          if(this.tiles[arr[i]].empty) empties.push(arr[i])
+        }
+        var num = Math.floor(Math.random() * empties.length)
+        this.playerManager.newPlayer(empties[num])
+      })
+    } else {
+      // this.playerManager.newPlayer()
+    }
+  }
+  populateBoard(){
+
+    this.resetInventory()
+    this.resetTiles()
+
     for(let i = 0; i <this.items.length; i++){
       while(this.boardInventory[this.items[i]] > 0){
         let num = Math.floor(Math.random() * this.tiles.length)
@@ -99,8 +249,26 @@ export class MainBoardComponent implements OnInit {
         } 
       }
     }
+  }
+  buildVoid(){
+    const tiles = this.tiles;
+    for(let t in tiles){
+      if(tiles[t].empty){
+        let num = Math.random()
+        // console.log('num:',num);
+        
+        if(num >0.75){
+          // console.log('void');
+          tiles[t].empty = false;
+          tiles[t].void = true;
+        }
+      }
+    }
+  }
+  buildWalls(){
 
-    //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
+  }
+  assignEdges(){
     const tiles = this.tiles;
     const totalTiles = this.totalTiles;
     const rowLength = this.rowLength;
@@ -122,12 +290,12 @@ export class MainBoardComponent implements OnInit {
       }
       //need to change edge property to an array so you can have multiple edges (for corners)?
     }
-    this.playerManager.getPlayerActivity(this.tiles).subscribe(res => {
-      const tile = this.tiles[res.location]
+  }
+  handlePlayerServiceSubscription(res){
+    const tile = this.tiles[res.location]
       if(!res.startTurn){
         for(var t in this.tiles){
-          var newTile = this.tiles[t]
-          tile.visible = false
+          this.tiles[t].visible = false
         }
       }
       tile.empty = false;
@@ -140,59 +308,84 @@ export class MainBoardComponent implements OnInit {
         old_tile.occupied = false;
       }
       if(res.startTurn){
-        // return
         this.startTurn()
-        // let timer = interval(1500)
-        // .subscribe(i => { 
-        //   this.floatingCounter++
-        //   console.log(this.floatingCounter);
-        //   if(this.floatingCounter >5){
-        //     this.floatingCounter = 0;
-        //     timer.unsubscribe()
-        //   }
-        // })
-        for(let v = 0; v < res.visibility.length; v++){
-          if(this.tiles[res.visibility[v]]) this.tiles[res.visibility[v]].visible = true;
-        }
-        const source = timer(1000);
-        const subscribe = source.subscribe(val => {
+        const fade1 = timer(500);
+        const fade2 = timer(1500);
+        const fade1Sub = fade1.subscribe( res => {
+          console.log('fade 1');
+          for(var t in this.tiles){
+            var tile = this.tiles[t]
+            tile.green = false;
+            tile.visible = true;
+          }
           
+        })
+        const fade2Sub = fade2.subscribe(val => {
+          for(var t in this.tiles){
+            var tile = this.tiles[t]
+            tile.visible = false
+          }
+          if(res.visibility){
+            for(let v = 0; v < res.visibility.length; v++){
+              if(this.tiles[res.visibility[v]]) this.tiles[res.visibility[v]].visible = true;
+            }
+          }
           this.paintMoveZone()
         });
-      }
-      if(res.visibility && !res.startTurn){
-        console.log('check vis')
         for(let v = 0; v < res.visibility.length; v++){
           if(this.tiles[res.visibility[v]]) this.tiles[res.visibility[v]].visible = true;
         }
       }
-      
-    })
-    // this.infoPanel.getButtonPresses().subscribe(res => {
-    //   console.log('res is ', res);
-      
-    // })
-    this.playerManager.newPlayer()
-
-    const crownAbsent = false;
+      for(let i = 0; i < this.tiles.length; i++){
+        let tile = this.tiles[i]
+        tile.visible = false;
+      }
+      if(res.visibility){
+        for(let v = 0; v < res.visibility.length; v++){
+          if(this.tiles[res.visibility[v]]) this.tiles[res.visibility[v]].visible = true;
+        }
+      }
+  }
+  resetInventory(){
+    this.boardInventory = {
+      monster: 5,
+      key: 2,
+      skull: 1,
+      crown: 1,
+      lantern: 2,
+      disguise: 2,
+      buddha: 0,
+      stairs: 1,
+      door: 2,
+      cloud: 1
+    }
   }
   startTurn(){
-    console.log('starting turn', this.turnStarted)
     this.turnStarted = true;
     this.whichSide(this.playerManager.activePlayer.location)
     for(var t in this.tiles){
       var tile = this.tiles[t]
       tile.visible = false
     }
-    // console.log('starting turn for ', this.playerManager.activePlayer)
-    // this.infoPanel.displayMessage('Turn started', 'general')
-
   }
   onEnterKey($event){
     // console.log('WAYOOO, event is ', $event);
   }
   isEmpty(target){
     // console.log('empty: ',target.empty);
+  }
+  clearTile(tile){
+    tile.monster = tile.green = tile.red = tile.occupied = tile.crown = tile.door =
+    tile.key = tile.disguise = tile.lantern = tile.stairs = false;
+    tile.empty = true;
+  }
+  resetTiles(){
+    for(let t in this.tiles){
+      let tile = this.tiles[t]
+      tile.monster = tile.green = tile.red = tile.occupied = tile.crown = tile.door =
+      tile.key = tile.disguise = tile.lantern = tile.stairs = tile.void = false;
+      tile.empty = true;
+    }
   }
   isId(target){
     // console.log('id: ',target.coordinates);
@@ -231,10 +424,10 @@ export class MainBoardComponent implements OnInit {
     this.playerManager.activePlayer.coordinates = coordinates;
     
   }
-  paintMoveZone(){
-    const coords = this.playerManager.activePlayer.coordinates
-    
-    const moves = this.playerManager.activePlayer.moves
+  paintMoveZone(coords = this.playerManager.activePlayer.coordinates){
+    // const coords = this.playerManager.activePlayer.coordinates
+    // let coords = coords
+    const moves = this.playerManager.activePlayer ? this.playerManager.activePlayer.moves : 2
     for(let i = 0; i <3; i++){
       let leftPoint = this.coordinatePoint([coords[0]-i, coords[1]])
       let rightPoint = this.coordinatePoint([coords[0]+i, coords[1]])
