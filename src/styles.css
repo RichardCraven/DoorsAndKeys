@@ -114,3 +114,33 @@ tile.crown:hover{
 tile.darkness:hover{
     background-color: black;
 }
+.void{
+    background-color: black;
+}
+.title1{
+    background-image: url('assets/icons/title1.png');
+}
+.title2{
+    background-image: url('assets/icons/title2.png');
+}
+.title3{
+    background-image: url('assets/icons/title3.png');
+}
+.title4{
+    background-image: url('assets/icons/title4.png');
+}
+.title5{
+    background-image: url('assets/icons/title5.inverted.png');
+}
+.title6{
+    background-image: url('assets/icons/titleK.png');
+}
+.title7{
+    background-image: url('assets/icons/titleE.png');
+}
+.title8{
+    background-image: url('assets/icons/titleY.png');
+}
+.title9{
+    background-image: url('assets/icons/titleS.png');
+}

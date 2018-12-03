@@ -53,15 +53,17 @@ export class PlayerManagerService {
   getPlayerMessages(): Observable<any>{
     return this.messageSubject.asObservable()
   }
-  newPlayer(){
+  newPlayer(location){
     const map = this.currentMap;
-    for(let a in map){
-      if(map[a].empty){
-        this.empties.push(map[a].id)
-      }
-    }
-    var num = Math.floor(Math.random() * this.empties.length) 
-    const location = this.empties[num];
+    // for(let a in map){
+    //   if(map[a].empty){
+    //     this.empties.push(map[a].id)
+    //   }
+    // }
+    // this.empties = [0, 14, 210,224]
+    // for(let a )
+    // var num = Math.floor(Math.random() * this.empties.length) 
+    // const location = this.empties[num];
     const newPlayer = {
       name: 'player'+this.counter,
       location: location,
@@ -92,24 +94,24 @@ export class PlayerManagerService {
       case 'left':
       if(old_location.id === 210 || old_location.id === 0) return
       destination = this.currentMap[this.activePlayer.location-1]
-      if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right') return
+      if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right' || destination.void) return
       if(destination.empty) this.activePlayer.location = this.activePlayer.location-1
       break
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
-      if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left') return
+      if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
       if(destination.empty) this.activePlayer.location = this.activePlayer.location+1
       break
       case 'up':
       if(old_location.id === 0 || old_location.id === 14) return
       destination = this.currentMap[this.activePlayer.location-15]
-      if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge) return
+      if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
       if(destination.empty) this.activePlayer.location = this.activePlayer.location-15
       break
       case 'down':
       destination = this.currentMap[this.activePlayer.location+15]
       if(old_location.id === 210 || old_location.id === 224) return
-      if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge) return
+      if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
       if(destination.empty) this.activePlayer.location = this.activePlayer.location+15
       break
     }
@@ -143,7 +145,6 @@ export class PlayerManagerService {
     }
     //second from edge
     if(map[location-1] && map[location-1].edge && map[location-2] && map[location-2].edge && map[location-1].edge !== map[location-2].edge){ 
-      console.log('tests passed, at left edge');
       if(location !== 212){
         hidden.push(location-2)
       }
