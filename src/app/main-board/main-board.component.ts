@@ -3,6 +3,7 @@ import {TileComponent} from '../tile/tile.component'
 import {PlayerManagerService} from '../services/player-manager.service'
 import { Subscription, Observable, interval, timer } from 'rxjs';
 import { ViewChild, ElementRef } from '@angular/core';
+import { visitSiblingRenderNodes } from '@angular/core/src/view/util';
 // import {InfoPanelComponent} from '../info-panel/info-panel.component'
 @Component({
   selector: 'main-board',
@@ -140,31 +141,40 @@ export class MainBoardComponent implements OnInit {
       const fade4Sub = fade4.subscribe( res => {
         console.log('fade 4');
          const tiles = this.tiles
-         for(let i = 35; i <= 39; i++){
+         for(let i = 19; i <= 23; i++){
            this.clearTile(tiles[i])
-           tiles[i].visible = true;
-           tiles[i].void = false;
+           tiles[i].visible = false;
+          //  tiles[i].void = false;
          }
+         this.tiles[37].visible = false; 
+        //  this.tiles[52].void = false; 
         const door1 = timer(200);
-        const door2 = timer(400);
-        const door3 = timer(600);
-        const door4 = timer(800);
-        const door5 = timer(1000);
+        const door2 = timer(300);
+        const door3 = timer(400);
+        const door4 = timer(500);
+        const door5 = timer(600);
+        const door6 = timer(1000);
         door1.subscribe(res => {
-          tiles[35].title1 = true;
+          tiles[19].title1 = true;
         })
         door2.subscribe(res => {
-          tiles[36].title2 = true;
+          tiles[20].title2 = true;
         })
         door3.subscribe(res => {
-          tiles[37].title3 = true;
+          tiles[21].title3 = true;
         })
         door4.subscribe(res => {
-          tiles[38].title4 = true;
+          tiles[22].title4 = true;
         })
         door5.subscribe(res => {
-          tiles[39].title5 = true;
+          tiles[23].title5 = true;
         })
+        door6.subscribe(res => {
+          tiles[37].title6 = true;
+        })
+        // door7.subscribe(res => {
+        //   tiles[39].title7 = true;
+        // })
 
          
          
@@ -172,7 +182,7 @@ export class MainBoardComponent implements OnInit {
       })
       const fade5Sub = fade5.subscribe( res => {
         console.log('fade 5');
-        
+        // return
         const voids = [33, 50, 52, 22, 9]
         for(let i = 0; i< voids.length; i++){
           if(this.tiles[voids[i]]) this.tiles[voids[i]].void = true;
@@ -201,24 +211,26 @@ export class MainBoardComponent implements OnInit {
         
         
         const keys1 = timer(200);
-        const keys2 = timer(500);
+        const keys2 = timer(400);
         const keys3 = timer(600);
         const keys4 = timer(800);
         keys1.subscribe(res => {
-          this.tiles[51].title6 = true;
+          this.tiles[51].title7 = true;
+          // this.tiles[51].title7 = true;
         })
         keys2.subscribe(res => {
-          this.tiles[52].title7 = true;
+          this.tiles[52].title8 = true;
         })
         keys3.subscribe(res => {
-          this.tiles[53].title8 = true;
+          this.tiles[53].title9 = true;
         })
         keys4.subscribe(res => {
-          this.tiles[54].title9 = true;
+          this.tiles[54].title10 = true;
         })
       })
-      const fade7Sub = fade6.subscribe( res => {
-        console.log('fade 6');
+      const fade7Sub = fade7.subscribe( res => {
+        // console.log('fade 6');
+        return
         this.tiles[112].occupied = false;
         var arr = [0,14, 210, 224]
         const empties = []

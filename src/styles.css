@@ -118,29 +118,48 @@ tile.darkness:hover{
     background-color: black;
 }
 .title1{
-    background-image: url('assets/icons/title1.png');
+    background-image: url('assets/icons/DOORSKEYS-D.png');
+    background-color: black;
 }
 .title2{
-    background-image: url('assets/icons/title2.png');
+    background-image: url('assets/icons/DOORSKEYS-O.png');
+    background-color: black;
 }
 .title3{
-    background-image: url('assets/icons/title3.png');
+    background-image: url('assets/icons/DOORSKEYS-O.png');
+    background-color: black;
 }
 .title4{
-    background-image: url('assets/icons/title4.png');
+    background-image: url('assets/icons/DOORSKEYS-R.png');
+    background-color: black;
 }
 .title5{
-    background-image: url('assets/icons/title5.inverted.png');
+    background-image: url('assets/icons/DOORSKEYS-S.png');
+    background-color: black;
 }
 .title6{
-    background-image: url('assets/icons/titleK.png');
+    background-image: url('assets/icons/DOORSKEYS-&.png');
+    background-color: black;
 }
 .title7{
-    background-image: url('assets/icons/titleE.png');
-}
+    background-image: url('assets/icons/DOORSKEYS-K.png');
+    background-color: black;
+} 
 .title8{
+    background-image: url('assets/icons/DOORSKEYS-E.png');
+    background-color: black;
+}
+.title9{
+    background-image: url('assets/icons/DOORSKEYS-Y.png');
+    background-color: black;
+}
+.title10{
+    background-image: url('assets/icons/DOORSKEYS-S.png');
+    background-color: black;
+}
+/* .title8{
     background-image: url('assets/icons/titleY.png');
 }
 .title9{
     background-image: url('assets/icons/titleS.png');
-}
+}  */
