@@ -54,6 +54,8 @@ export class PlayerManagerService {
     return this.messageSubject.asObservable()
   }
   newPlayer(location){
+    console.log('IN NEW PLAYER!!!!');
+    
     const map = this.currentMap;
     // for(let a in map){
     //   if(map[a].empty){
