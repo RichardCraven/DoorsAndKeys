@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import {TileComponent} from '../tile/tile.component'
 import {PlayerManagerService} from '../services/player-manager.service'
+import {MapsService} from '../services/maps.service'
 import { Subscription, Observable, interval, timer } from 'rxjs';
 import { ViewChild, ElementRef } from '@angular/core';
 import { visitSiblingRenderNodes } from '@angular/core/src/view/util';
@@ -51,7 +52,7 @@ export class MainBoardComponent implements OnInit {
   public context: CanvasRenderingContext2D;
 
 
-  constructor(public playerManager: PlayerManagerService) { }
+  constructor(public playerManager: PlayerManagerService, public mapsService: MapsService) { }
 
   ngOnInit() {
     var DOMboard = document.querySelector('.board')
@@ -107,10 +108,11 @@ export class MainBoardComponent implements OnInit {
       const fade2 = timer(2500);
       const fade3 = timer(3500);
       const fade4 = timer(4750);
-      const fade5 = timer(5000);
-      const fade6 = timer(7250);
-      const fade7 = timer(19250);
-      const fade8 = timer(19250);
+      const fade5 = timer(6100);
+      const fade6 = timer(6850);
+      //^keys
+      const fade7 = timer(10250);
+      const fade8 = timer(12250);
       const fade1Sub = fade1.subscribe( res => {
         console.log('fade 1');
         for(var t in this.tiles){
@@ -127,8 +129,11 @@ export class MainBoardComponent implements OnInit {
         const visibility = this.playerManager.checkVisibility(112, 2)
         console.log('fade 3');
         for(var t in this.tiles){
-          var tile = this.tiles[t]
-          tile.visible = false;
+          if(t !== '112'){
+            var tile = this.tiles[t]
+            this.clearTile(tile, true)
+
+          }
           if(visibility.indexOf(tile.id) > -1){
             tile.visible = true;
             tile.void = false;
@@ -142,18 +147,20 @@ export class MainBoardComponent implements OnInit {
         console.log('fade 4');
          const tiles = this.tiles
          for(let i = 19; i <= 23; i++){
-           this.clearTile(tiles[i])
+           this.clearTile(tiles[i], false)
            tiles[i].visible = false;
-          //  tiles[i].void = false;
+           tiles[i].void = false;
+           tiles[i].title = true;
          }
          this.tiles[37].visible = false; 
-        //  this.tiles[52].void = false; 
+         this.tiles[37].title = true;
+         this.tiles[52].void = false; 
         const door1 = timer(200);
-        const door2 = timer(300);
-        const door3 = timer(400);
-        const door4 = timer(500);
-        const door5 = timer(600);
-        const door6 = timer(1000);
+        const door2 = timer(500);
+        const door3 = timer(700);
+        const door4 = timer(900);
+        const door5 = timer(1100);
+        const door6 = timer(1500);
         door1.subscribe(res => {
           tiles[19].title1 = true;
         })
@@ -183,15 +190,18 @@ export class MainBoardComponent implements OnInit {
       const fade5Sub = fade5.subscribe( res => {
         console.log('fade 5');
         // return
-        const voids = [33, 50, 52, 22, 9]
+        const voids = [17, 34, 36, 6, 80]
+        this.tiles[49].skull = true;
+        this.clearTile(this.tiles[25])
+        this.tiles[25].key = true;
         for(let i = 0; i< voids.length; i++){
           if(this.tiles[voids[i]]) this.tiles[voids[i]].void = true;
         }
-        this.playerManager.newPlayer(35)
-        const move1 = timer(500);
-        const move2 = timer(1000);
-        const move3 = timer(1500);
-        const move4 = timer(2000);
+        this.playerManager.newPlayer(19)
+        const move1 = timer(1200);
+        const move2 = timer(1500);
+        const move3 = timer(1700);
+        const move4 = timer(1900);
         move1.subscribe(res => {
           this.playerManager.movePlayer('right')
         })
@@ -215,30 +225,147 @@ export class MainBoardComponent implements OnInit {
         const keys3 = timer(600);
         const keys4 = timer(800);
         keys1.subscribe(res => {
-          this.tiles[51].title7 = true;
+          this.tiles[51].title = this.tiles[51].title7 = true;
           // this.tiles[51].title7 = true;
         })
         keys2.subscribe(res => {
-          this.tiles[52].title8 = true;
+          this.tiles[52].title = this.tiles[52].title8 = true;
         })
         keys3.subscribe(res => {
-          this.tiles[53].title9 = true;
+          
+          this.tiles[53].title = this.tiles[53].title9 = true;
         })
         keys4.subscribe(res => {
-          this.tiles[54].title10 = true;
+          this.tiles[54].title = this.tiles[54].title10 = true;
         })
       })
       const fade7Sub = fade7.subscribe( res => {
-        // console.log('fade 6');
-        return
-        this.tiles[112].occupied = false;
+        console.log('fade 7');
+        // return
+        // this.tiles[112].occupied = false;
+
+        // this.resetTiles()
         var arr = [0,14, 210, 224]
         const empties = []
         for(let i = 0; i< arr.length; i++){
           if(this.tiles[arr[i]].empty) empties.push(arr[i])
         }
         var num = Math.floor(Math.random() * empties.length)
-        this.playerManager.newPlayer(empties[num])
+        console.log('EMPTIES ARE', empties);
+        
+        // this.playerManager.newPlayer(empties[num])
+
+        for(var t in this.tiles){
+          let tile = this.tiles[t]
+          this.clearTile(tile)
+
+          this.tiles[t].visible = true;
+          if(this.tiles[t].title) this.tiles[t].title = false;
+        }
+       
+      })
+      const fade8Sub = fade8.subscribe( res => {
+        console.log('fade 8');
+        console.log(this.mapsService.generateMap())
+        const newMap = this.mapsService.generateMap()
+        const voids = newMap['voids']
+        const keys = newMap['keys']
+        const lanterns = newMap['lanterns']
+        const shields = newMap['shields']
+        const stairs = newMap['stairs']
+        const cloud = newMap['cloud']
+        const headgear = newMap['headgear']
+        const doors = newMap['doors']
+        const weapons = newMap['weapons']
+        const charms = newMap['charms']
+        // skipping spawns for now
+
+        const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+        //removed scimitar from weaponsArr
+        const wandsArr = ['maerlyns', 'glindas', 'vardas'];
+        const headgearArr = ['bundu_mask', 'court_mask', 'etoli_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet']
+        const charmsArr = ['beatle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm',]
+        const amuletsArr = ['sayan','lundi','evilai','nukta',]
+
+        const monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre','sphinx','troll','slime_mold','white_vampire','black_vampire','white_gorgon','black_gorgon']
+        const demonsArr = ['black_demon','golden_demon','kabuki_demon','dulu_demon']
+        const devils = ['zul','ishtar','mordu','goloth','vukular']
+
+        //populate voids
+        for(let a = 0; a < voids.length; a++){
+          let point = this.coordinatePoint([voids[a][0],voids[a][1]])
+          this.tiles[point].void = true;
+          this.tiles[point].contains = 'void';
+        }
+
+        //populate keys
+        for(let b = 0; b < keys.length; b++){
+          let point = this.coordinatePoint([keys[b][0],keys[b][1]])
+          this.tiles[point].key = true;
+          this.tiles[point].contains = 'key';
+        }
+
+        //populate lanterns
+        for(let c = 0; c < lanterns.length; c++){
+          let point = this.coordinatePoint([lanterns[c][0],lanterns[c][1]])
+          this.tiles[point].lantern = true;
+          this.tiles[point].contains = 'lantern'
+        }
+        // this.tiles[this.coordinatePoint(shield)].shield = true;
+        this.tiles[this.coordinatePoint(stairs)].stairs = true;
+        // this.tiles[this.coordinatePoint(headgear)].h = true;
+        this.tiles[this.coordinatePoint(cloud)].cloud = true;
+        // this.tiles[].shield = true
+
+        //populate doors
+        for(let d = 0; d < doors.length; d++){
+          let point = this.coordinatePoint([doors[d][0],doors[d][1]])
+          this.tiles[point].door = true;
+          this.tiles[point].contains = 'door'
+        }
+        //populate weapons
+        for(let e = 0; e < weapons.length; e++){
+          let point = this.coordinatePoint([weapons[e][0],weapons[e][1]])
+          let weapon = weaponsArr[Math.floor(Math.random() * weaponsArr.length)]
+          console.log('point is ', point,'weapon is ', weapon);
+          this.tiles[point][weapon] = true;
+          this.tiles[point].contains = weapon;
+        }
+        //populate headgear
+        for(let f = 0; f < headgear.length; f++){
+          let point = this.coordinatePoint([headgear[f][0],headgear[f][1]])
+          let headgearInstance = headgearArr[Math.floor(Math.random() * headgearArr.length)]
+          console.log('point is ', point,'headgear is ', headgearInstance);
+          this.tiles[point][headgearInstance] = true;
+          this.tiles[point].contains = headgearInstance;
+        }
+        //populate charms
+        for(let g = 0; g < charms.length; g++){
+          let point = this.coordinatePoint([charms[g][0],charms[g][1]])
+          let charm = charmsArr[Math.floor(Math.random() * charmsArr.length)]
+          console.log('point is ', point,'headgear is ', charm);
+          this.tiles[point][charm] = true;
+          this.tiles[point].contains = charm;
+        }
+
+        //populate monsters
+        let numOfMonsters = Math.floor(Math.random() * 15 + 4)
+        console.log('monster count is ', numOfMonsters);
+        while(numOfMonsters > 0){
+          let num = Math.floor(Math.random() * this.tiles.length)
+          let tile = this.tiles[num]
+          if(!tile.contains || tile.contains === ''){
+            console.log('k');
+            
+            const monster = monstersArr[Math.floor(Math.random()*monstersArr.length)]
+            tile.contains = monster;
+            tile[monster] = true;
+            tile.empty = false;
+            //need to phase out tile.empty
+            numOfMonsters--
+          } 
+        }
+       
       })
     } else {
       // this.playerManager.newPlayer()
@@ -249,18 +376,18 @@ export class MainBoardComponent implements OnInit {
     this.resetInventory()
     this.resetTiles()
 
-    for(let i = 0; i <this.items.length; i++){
-      while(this.boardInventory[this.items[i]] > 0){
-        let num = Math.floor(Math.random() * this.tiles.length)
-        let tile = this.tiles[num]
-        if(tile.empty){
-          tile.contains = this.items[i]
-          tile[this.items[i]] = true;
-          tile.empty = false;
-          this.boardInventory[this.items[i]]--
-        } 
-      }
-    }
+    // for(let i = 0; i <this.items.length; i++){
+    //   while(this.boardInventory[this.items[i]] > 0){
+    //     let num = Math.floor(Math.random() * this.tiles.length)
+    //     let tile = this.tiles[num]
+    //     if(tile.empty){
+    //       tile.contains = this.items[i]
+    //       tile[this.items[i]] = true;
+    //       tile.empty = false;
+    //       this.boardInventory[this.items[i]]--
+    //     } 
+    //   }
+    // }
   }
   buildVoid(){
     const tiles = this.tiles;
@@ -307,7 +434,7 @@ export class MainBoardComponent implements OnInit {
     const tile = this.tiles[res.location]
       if(!res.startTurn){
         for(var t in this.tiles){
-          this.tiles[t].visible = false
+          // this.tiles[t].visible = false
         }
       }
       tile.empty = false;
@@ -316,9 +443,10 @@ export class MainBoardComponent implements OnInit {
       if(res.old_location || res.old_location === 0){
         const old_tile = this.tiles[res.old_location]
         old_tile.empty = true;
-        old_tile.visible = false;
+        // old_tile.visible = false;
         old_tile.occupied = false;
       }
+      return
       if(res.startTurn){
         this.startTurn()
         const fade1 = timer(500);
@@ -373,11 +501,15 @@ export class MainBoardComponent implements OnInit {
     }
   }
   startTurn(){
+    console.log('STARTING TURN');
+    
     this.turnStarted = true;
     this.whichSide(this.playerManager.activePlayer.location)
     for(var t in this.tiles){
       var tile = this.tiles[t]
-      tile.visible = false
+      tile.visible = true;
+      // tile.visible = tile.title1 =tile.title2=tile.title3=tile.title4=tile.title5=tile.title6=
+      // tile.title7=tile.title8=tile.title9=tile.title10= false;
     }
   }
   onEnterKey($event){
@@ -386,16 +518,21 @@ export class MainBoardComponent implements OnInit {
   isEmpty(target){
     // console.log('empty: ',target.empty);
   }
-  clearTile(tile){
-    tile.monster = tile.green = tile.red = tile.occupied = tile.crown = tile.door =
-    tile.key = tile.disguise = tile.lantern = tile.stairs = false;
+  clearTile(tile, invisible = false){
+    tile.monster = tile.green = tile.red = tile.occupied = tile.skull = tile.crown = tile.door =
+    tile.key = tile.disguise = tile.lantern = tile.stairs = tile.void = false;
     tile.empty = true;
+    if(invisible){
+      tile.visible = false;
+    }
   }
   resetTiles(){
     for(let t in this.tiles){
       let tile = this.tiles[t]
-      tile.monster = tile.green = tile.red = tile.occupied = tile.crown = tile.door =
-      tile.key = tile.disguise = tile.lantern = tile.stairs = tile.void = false;
+      tile.monster = tile.green = tile.red = tile.crown = tile.door =
+      tile.key = tile.disguise = tile.lantern = tile.stairs = tile.void = tile.title1 =
+      tile.title2 = tile.title3 = tile.title4 = tile.title5 = tile.title6 = tile.title7 =
+      tile.title8 = tile.title9 = tile.title10 = false;
       tile.empty = true;
     }
   }
@@ -464,5 +601,25 @@ export class MainBoardComponent implements OnInit {
   }
   coordinatePoint(coordinates){
     return coordinates[1]*this.rowLength + coordinates[0]
+  };
+
+  whatsAdjacent(coords, radius = 1) {
+    let adjacentItems = [];
+    let checkCoords = function(coords){
+      let tile = this.tiles[this.coordinatePoint(coords)]
+      if(tile.contains){
+        adjacentItems.push(tile)
+      }
+    }
+    checkCoords([coords[0],coords[1]+radius])
+    checkCoords([coords[0]+radius,coords[1]])
+    checkCoords([coords[0]+radius,coords[1]+radius])
+    checkCoords([coords[0],coords[1]-radius])
+    checkCoords([coords[0]-radius,coords[1]])
+    checkCoords([coords[0]-radius,coords[1]-radius])
+    checkCoords([coords[0]-radius,coords[1]+radius])
+    checkCoords([coords[0]+radius,coords[1]-radius])
+
+    return adjacentItems
   }
 }

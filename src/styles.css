@@ -1,4 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+@import '/styles/items.css';
+@import '/styles/monsters.css';
 /* .tile{
     height:150px; 
     width:150px; 
@@ -49,33 +51,58 @@ tile:hover{
 .red{
     /* background-color: red; */
 }
+
+/* .scimitar{
+    background-image: url('assets/icons/items/weapons/scimitar.png');
+    background-color: white;
+}
+.scepter{
+    background-image: url('assets/icons/items/weapons/scepter.png');
+    background-color: white;
+}
+.flail{
+    background-image: url('assets/icons/items/weapons/flail.png');
+    background-color: white;
+}
+.axe{
+    background-image: url('assets/icons/items/weapons/axe.png');
+    background-color: white;
+}
+.spear{
+    background-image: url('assets/icons/items/weapons/spear.png');
+    background-color: white;
+}
+.sword{
+    background-image: url('assets/icons/items/weapons/sword.png');
+    background-color: white;
+} */
+
+
+
 .disguise{
-    background-image: url('assets/icons/disuise.png');
+    background-image: url('assets/icons/items/headgear/mardi_mask.png');
     background-color: white;
 }
 .crown{
-    background-image: url('assets/icons/crown.png');
+    background-image: url('assets/icons/items/crown.png');
     background-color: white;
 }
 tile.crown:hover{
     background-color: yellow;
 }
 .skull{
-    background-image: url('assets/icons/skull1.png');
+    background-image: url('assets/icons/misc/long_skull.png');
     background-color: white;
 }
 .crow{
-    background-image: url('assets/icons/crow.png');
-}
-.crown{
-    background-image: url('assets/icons/crown.png');
+    background-image: url('assets/icons/crows/crow.png');
 }
 .lantern{
-    background-image: url('assets/icons/lantern.png');
+    background-image: url('assets/icons/items/lantern.png');
     background-color: gold;
 }
 .key{
-    background-image: url('assets/icons/key.png');
+    background-image: url('assets/icons/items/key.png');
     background-color: white;
 }
 .monster{
@@ -86,15 +113,15 @@ tile.crown:hover{
     background-color: red;
 }
 .door{
-    background-image: url('assets/icons/closed_door.png');
+    background-image: url('assets/icons/portals/closed_door.png');
     background-color: white;
 }
 .cloud{
-    background-image: url('assets/icons/cloud.png');
+    background-image: url('assets/icons/portals/cloud.png');
     background-color: white;
 }
 .stairs{
-    background-image: url('assets/icons/stairs_down.png');
+    background-image: url('assets/icons/portals/stairs_down.png');
     background-color: white;
 }
 .occupied{
@@ -117,49 +144,43 @@ tile.darkness:hover{
 .void{
     background-color: black;
 }
-.title1{
-    background-image: url('assets/icons/DOORSKEYS-D.png');
+.title.title1{
+    background-image: url('assets/icons/title/DOORSKEYS-D.png');
     background-color: black;
 }
-.title2{
-    background-image: url('assets/icons/DOORSKEYS-O.png');
+.title.title2{
+    background-image: url('assets/icons/title/DOORSKEYS-O.png');
     background-color: black;
 }
-.title3{
-    background-image: url('assets/icons/DOORSKEYS-O.png');
+.title.title3{
+    background-image: url('assets/icons/title/DOORSKEYS-O.png');
     background-color: black;
 }
-.title4{
-    background-image: url('assets/icons/DOORSKEYS-R.png');
+.title.title4{
+    background-image: url('assets/icons/title/DOORSKEYS-R.png');
     background-color: black;
 }
-.title5{
-    background-image: url('assets/icons/DOORSKEYS-S.png');
+.title.title5{
+    background-image: url('assets/icons/title/DOORSKEYS-S.png');
     background-color: black;
 }
-.title6{
-    background-image: url('assets/icons/DOORSKEYS-&.png');
+.title.title6{
+    background-image: url('assets/icons/title/DOORSKEYS-&.png');
     background-color: black;
 }
-.title7{
-    background-image: url('assets/icons/DOORSKEYS-K.png');
+.title.title7{
+    background-image: url('assets/icons/title/DOORSKEYS-K.png');
     background-color: black;
 } 
-.title8{
-    background-image: url('assets/icons/DOORSKEYS-E.png');
+.title.title8{
+    background-image: url('assets/icons/title/DOORSKEYS-E.png');
     background-color: black;
 }
-.title9{
-    background-image: url('assets/icons/DOORSKEYS-Y.png');
+.title.title9{
+    background-image: url('assets/icons/title/DOORSKEYS-Y.png');
     background-color: black;
 }
-.title10{
-    background-image: url('assets/icons/DOORSKEYS-S.png');
+.title.title10{
+    background-image: url('assets/icons/title/DOORSKEYS-S.png');
     background-color: black;
 }
-/* .title8{
-    background-image: url('assets/icons/titleY.png');
-}
-.title9{
-    background-image: url('assets/icons/titleS.png');
-}  */

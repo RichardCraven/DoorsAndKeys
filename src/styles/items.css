@@ -1,0 +1,85 @@
+/* WEAPONS */
+.scimitar{
+    background-image: url('../assets/icons/items/weapons/scimitar.png');
+    background-color: white;
+}
+.scepter{
+    background-image: url('../assets/icons/items/weapons/scepter.png');
+    background-color: white;
+}
+.flail{
+    background-image: url('../assets/icons/items/weapons/flail.png');
+    background-color: white;
+}
+.axe{
+    background-image: url('../assets/icons/items/weapons/axe.png');
+    background-color: white;
+}
+.spear{
+    background-image: url('../assets/icons/items/weapons/spear.png');
+    background-color: white;
+}
+.sword{
+    background-image: url('../assets/icons/items/weapons/sword.png');
+    background-color: white;
+}
+
+/* HEADGEAR */
+.lundi_mask{
+    background-image: url('../assets/icons/items/headgear/lundi_mask.png');
+    background-color: white;
+}
+.mardi_mask{
+    background-image: url('../assets/icons/items/headgear/mardi_mask.png');
+    background-color: white;
+}
+.zul_mask{
+    background-image: url('../assets/icons/items/headgear/zul_mask.png');
+    background-color: white;
+}
+.solomon_mask{
+    background-image: url('../assets/icons/items/headgear/solomon_mask.png');
+    background-color: white;
+}
+.bundu_mask{
+    background-image: url('../assets/icons/items/headgear/bundu_mask.png');
+    background-color: white;
+}
+.court_mask{
+    background-image: url('../assets/icons/items/headgear/court_mask.png');
+    background-color: white;
+}
+.helmet{
+    background-image: url('../assets/icons/items/headgear/helmet.png');
+    background-color: white;
+}
+
+/* CHARMS */
+.beetle_charm{
+    background-image: url('../assets/icons/items/charms/beetle_charm.png');
+    background-color: white;
+}
+.demonskull_charm{
+    background-image: url('../assets/icons/items/charms/demonskull_charm.png');
+    background-color: white;
+}
+.evilai_charm{
+    background-image: url('../assets/icons/items/charms/evilai_charm.png');
+    background-color: white;
+}
+.hamsa_charm{
+    background-image: url('../assets/icons/items/charms/hamsa_charm.png');
+    background-color: white;
+}
+.lundi_charm{
+    background-image: url('../assets/icons/items/charms/lundi_charm.png');
+    background-color: white;
+}
+.nukta_charm{
+    background-image: url('../assets/icons/items/charms/nukta_charm.png');
+    background-color: white;
+}
+.scarab_charm{
+    background-image: url('../assets/icons/items/charms/scarab_charm.png');
+    background-color: white;
+}
