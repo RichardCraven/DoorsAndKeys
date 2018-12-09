@@ -52,40 +52,13 @@ tile:hover{
     /* background-color: red; */
 }
 
-/* .scimitar{
-    background-image: url('assets/icons/items/weapons/scimitar.png');
-    background-color: white;
-}
-.scepter{
-    background-image: url('assets/icons/items/weapons/scepter.png');
-    background-color: white;
-}
-.flail{
-    background-image: url('assets/icons/items/weapons/flail.png');
-    background-color: white;
-}
-.axe{
-    background-image: url('assets/icons/items/weapons/axe.png');
-    background-color: white;
-}
-.spear{
-    background-image: url('assets/icons/items/weapons/spear.png');
-    background-color: white;
-}
-.sword{
-    background-image: url('assets/icons/items/weapons/sword.png');
-    background-color: white;
-} */
 
-
-
-.disguise{
-    background-image: url('assets/icons/items/headgear/mardi_mask.png');
-    background-color: white;
-}
 .crown{
     background-image: url('assets/icons/items/crown.png');
     background-color: white;
+}
+.grown.highlight{
+    background-color: gold;
 }
 tile.crown:hover{
     background-color: yellow;
@@ -99,30 +72,49 @@ tile.crown:hover{
 }
 .lantern{
     background-image: url('assets/icons/items/lantern.png');
+    background-color: white;
+}
+.lantern.highlight{
     background-color: gold;
 }
 .key{
     background-image: url('assets/icons/items/key.png');
     background-color: white;
 }
-.monster{
+.key.highlight{
+    background-color: gold;
+}
+/* .monster{
     background-image: url('assets/icons/monster.png');
     background-color: indianred;
 }
 .monster:hover{
     background-color: red;
+} */
+.spawn_point{
+    background-image: url('assets/icons/misc/spawn_point.png');
+    background-color: white;
 }
 .door{
     background-image: url('assets/icons/portals/closed_door.png');
     background-color: white;
 }
+.door.highlight{
+    background: aliceblue;
+}
 .cloud{
     background-image: url('assets/icons/portals/cloud.png');
     background-color: white;
 }
+.cloud.highlight{
+    background-color: aliceblue;
+}
 .stairs{
     background-image: url('assets/icons/portals/stairs_down.png');
     background-color: white;
+}
+.stairs.highlight{
+    background-color: aliceblue;
 }
 .occupied{
     background-image: url('assets/icons/avatar.png');
@@ -131,9 +123,6 @@ tile.crown:hover{
 }
 .green{
     background-color: aquamarine;
-}
-.empty{
-    background-color: none;
 }
 .darkness{
     background-color: black;
