@@ -1,57 +1,97 @@
 /* MONSTERS */
+.monster{
+    background-color: white;
+}
+.monster.highlight{
+    background-color: rgba(255,0,0, 0.5)
+}
 .beholder{
     background-image: url('../assets/icons/monsters/beholder.png');
-    background-color: white;
 }
 .black_gorgon{
     background-image: url('../assets/icons/monsters/black_gorgon.png');
-    background-color: white;
 }
 .white_gorgon{
     background-image: url('../assets/icons/monsters/white_gorgon.png');
-    background-color: white;
 }
 .white_vampire{
     background-image: url('../assets/icons/monsters/white_vampire.png');
-    background-color: white;
 }
 .black_vampire{
     background-image: url('../assets/icons/monsters/black_vampire.png');
-    background-color: white;
 }
 .dragon{
     background-image: url('../assets/icons/monsters/dragon.png');
-    background-color: white;
 }
 .goblin{
     background-image: url('../assets/icons/monsters/goblin.png');
-    background-color: white;
 }
 .horror{
     background-image: url('../assets/icons/monsters/horror.png');
-    background-color: white;
 }
 .imp_overlord{
     background-image: url('../assets/icons/monsters/imp_overlord.png');
-    background-color: white;
 }
 .imp{
     background-image: url('../assets/icons/monsters/imp.png');
-    background-color: white;
 }
 .ogre{
     background-image: url('../assets/icons/monsters/ogre.png');
-    background-color: white;
 }
 .troll{
     background-image: url('../assets/icons/monsters/troll.png');
-    background-color: white;
 }
 .sphinx{
     background-image: url('../assets/icons/monsters/sphinx.png');
-    background-color: white;
 }
 .slime_mold{
     background-image: url('../assets/icons/monsters/slime_mold.png');
-    background-color: white;
+}
+.white_djinn{
+    background-image: url('../assets/icons/monsters/white_djinn.png');
+}
+.black_djinn{
+    background-image: url('../assets/icons/monsters/black_djinn.png');
+}
+.giant_scorpion{
+    background-image: url('../assets/icons/monsters/giant_scorpion.png');
+}
+.wyvern{
+    background-image: url('../assets/icons/monsters/wyvern.png');
+}
+.white_wraith{
+    background-image: url('../assets/icons/monsters/white_wraith.png');
+}
+.black_wraith{
+    background-image: url('../assets/icons/monsters/black_wraith.png');
+}
+.white_minotaur{
+    background-image: url('../assets/icons/monsters/white_minotaur.png');
+}
+.black_minotaur{
+    background-image: url('../assets/icons/monsters/black_minotaur.png');
+}
+.white_kronos{
+    background-image: url('../assets/icons/monsters/white_kronos.png');
+}
+.black_kronos{
+    background-image: url('../assets/icons/monsters/black_kronos.png');
+}
+.white_banshee{
+    background-image: url('../assets/icons/monsters/white_banshee.png');
+}
+.black_banshee{
+    background-image: url('../assets/icons/monsters/black_banshee.png');
+}
+.mummy{
+    background-image: url('../assets/icons/monsters/mummy.png');
+}
+.naiad{
+    background-image: url('../assets/icons/monsters/naiad.png');
+}
+.manticore{
+    background-image: url('../assets/icons/monsters/manticore.png');
+}
+.skeleton{
+    background-image: url('../assets/icons/monsters/skeleton.png');
 }

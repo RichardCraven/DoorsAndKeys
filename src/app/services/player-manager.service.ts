@@ -15,8 +15,6 @@ export class PlayerManagerService {
   public activePlayer;
   constructor() {
     window.addEventListener('keydown', (event) => {
-      // console.log(event.key);
-      
       switch(event.key){
         case 'ArrowUp':
           this.movePlayer('up')
@@ -39,11 +37,8 @@ export class PlayerManagerService {
   
 
   ping(){
-    console.log('pinged')
   }
   onInit(){
-    console.log('service initted');
-    
   }
   // Observable<any>
   getPlayerActivity(map): Observable<any>{
@@ -54,28 +49,27 @@ export class PlayerManagerService {
     return this.messageSubject.asObservable()
   }
   newPlayer(location){
-    console.log('IN NEW PLAYER!!!!');
     
     const map = this.currentMap;
     // for(let a in map){
-    //   if(map[a].empty){
-    //     this.empties.push(map[a].id)
-    //   }
-    // }
-    // this.empties = [0, 14, 210,224]
-    // for(let a )
-    // var num = Math.floor(Math.random() * this.empties.length) 
-    // const location = this.empties[num];
-    const newPlayer = {
-      name: 'player'+this.counter,
-      location: location,
-      visibility: 2,
-      moves: 2,
-      coordinates: [0,0]
-    }
-    this.activePlayer = newPlayer;
-
-    const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
+      //   if(map[a].empty){
+        //     this.empties.push(map[a].id)
+        //   }
+        // }
+        // this.empties = [0, 14, 210,224]
+        // for(let a )
+        // var num = Math.floor(Math.random() * this.empties.length) 
+        // const location = this.empties[num];
+        const newPlayer = {
+          name: 'player'+this.counter,
+          location: location,
+          visibility: 2,
+          moves: 2,
+          coordinates: [0,0]
+        }
+        this.activePlayer = newPlayer;
+        
+        const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility);
     this.subject.next({location, visibility: visible});
   }
   startTurn(){
@@ -89,6 +83,7 @@ export class PlayerManagerService {
     return 'left'
   }
   movePlayer(direction){
+    if(!this.activePlayer) return
     this.messageSubject.next({msg : 'moving '+direction});
     const old_location = this.currentMap[this.activePlayer.location]
     let destination;
@@ -97,27 +92,27 @@ export class PlayerManagerService {
       if(old_location.id === 210 || old_location.id === 0) return
       destination = this.currentMap[this.activePlayer.location-1]
       if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right' || destination.void) return
-      if(destination.empty) this.activePlayer.location = this.activePlayer.location-1
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-1
       break
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
       if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
-      if(destination.empty) this.activePlayer.location = this.activePlayer.location+1
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+1
       break
       case 'up':
       if(old_location.id === 0 || old_location.id === 14) return
       destination = this.currentMap[this.activePlayer.location-15]
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
-      if(destination.empty) this.activePlayer.location = this.activePlayer.location-15
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-15
       break
       case 'down':
       destination = this.currentMap[this.activePlayer.location+15]
       if(old_location.id === 210 || old_location.id === 224) return
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
-      if(destination.empty) this.activePlayer.location = this.activePlayer.location+15
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+15
       break
     }
-    if(this.currentMap[this.activePlayer.location].empty){
+    if(!this.currentMap[this.activePlayer.location].contains){
       const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
       this.subject.next({location: this.activePlayer.location, old_location : old_location.id, visibility: visible});
     }     
@@ -154,24 +149,27 @@ export class PlayerManagerService {
     if(map[location+1] && map[location+1].edge && map[location+2] && map[location+2].edge && map[location+1].edge !== map[location+2].edge){
       hidden.push(location+2)
     }
-    for(var t = 0; t <= visibility; t++){
-      if(map[location-t] && hidden.indexOf(location-t) === -1){ 
+    
+    for(var t = 1; t <= visibility; t++){
+      if(map[location-t] && hidden.indexOf(location-t) === -1 && !map[(location-t)+1].void){ 
         visible.push(map[location-t].id)
+        //should be able to just push the number and not the id
       }
-      if(map[location+t] && hidden.indexOf(location+t) === -1){ 
+      if(map[location+t] && hidden.indexOf(location+t) === -1 && !map[(location+t)-1].void){ 
         visible.push(map[location+t].id)
       }
-      if(map[location-15*t] && hidden.indexOf(location-15*t) === -1 ) {
+      if(map[location-15*t] && hidden.indexOf(location-15*t) === -1 && !map[(location-15*t)+15].void ) {
         visible.push(map[(location-15*t)].id)
       }
-      if(map[location+15*t] && hidden.indexOf(location+15*t) === -1) {
+      if(map[location+15*t] && hidden.indexOf(location+15*t) === -1 && !map[(location+15*t)-15].void) {
         visible.push(map[(location+15*t)].id)
       }
       if(t === 1){
-        if(map[location-16] && hidden.indexOf(location-16) === -1) {visible.push(map[(location-16)].id)}
-        if(map[location-14] && hidden.indexOf(location-14) === -1 && location !== 224) {visible.push(map[(location-14)].id)}
-        if(map[location+14] && hidden.indexOf(location+14) === -1 && location !== 0) {visible.push(map[(location+14)].id)}
-        if(map[location+16] && hidden.indexOf(location+16) === -1) {visible.push(map[(location+16)].id)}
+        //this is where it checks if the square is hidden (edge wrap) or if it's obscured by TWO voids (so you can't see through cracks)
+        if(map[location-16] && hidden.indexOf(location-16) === -1 && !map[location-15].void && !map[location-1].void) {visible.push(map[(location-16)].id)}
+        if(map[location-14] && hidden.indexOf(location-14) === -1 && location !== 224 && (!map[location-15].void || !map[location+1].void)) {visible.push(map[(location-14)].id)}
+        if(map[location+14] && hidden.indexOf(location+14) === -1 && location !== 0 && (!map[location+15].void || !map[location-1].void)) {visible.push(map[(location+14)].id)}
+        if(map[location+16] && hidden.indexOf(location+16) === -1 && !map[location+15].void && !map[location+1].void) {visible.push(map[(location+16)].id)}
       }
     }
     return visible;
