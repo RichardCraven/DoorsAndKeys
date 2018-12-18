@@ -1,7 +1,12 @@
 .info-panel{
     width: 400px;
     height: 800px;
-    /* border: 1px solid black; */
+    border: 1px solid black;
     left: 20px;
     position: absolute;
+}
+.adjacency{
+    height: 300px;
+    width: 300px;
+    border: 1px solid blue;
 }

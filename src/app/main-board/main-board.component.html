@@ -3,7 +3,7 @@
   <div class="board">
     <tile *ngFor='let tile of tiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
-    (click)='isId(tile)'
+    (click)='clickTile(tile)'
     [ngClass]='{
       darkness: !tile.visible,
       key: tile.key,
@@ -16,7 +16,7 @@
       door: tile.door,
       skull: tile.skull,
       edge: tile.edge,
-      empty: tile.empty,
+      empty: tile && !tile.contains,
       occupied: tile.occupied,
       green : tile.green,
       red: tile.monster,
@@ -89,7 +89,8 @@
       title10: tile.title10,
 
       spawn_point: tile.spawn_point,
-      highlight: tile.highlight
+      highlight: tile.highlight,
+      selected: tile.selected
     }' >
       <!-- some text -->
     </tile>

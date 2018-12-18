@@ -9,6 +9,7 @@ import {PlayerManagerService} from '../services/player-manager.service'
 })
 export class InfoPanelComponent implements OnInit {
   private message : string;
+  private adjacency = true;
   private buttonSubject = new Subject<any>();
   messageSubscription: Subscription;
   constructor(public playerManager: PlayerManagerService) {
@@ -16,6 +17,10 @@ export class InfoPanelComponent implements OnInit {
       
       // console.log('resss is ', res);
       this.message = res.msg
+
+      if(res.monster){
+        console.log('IT WORKED!', res.monster)
+      }
     })
    }
 

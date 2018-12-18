@@ -7,7 +7,7 @@ import { Logs } from 'selenium-webdriver';
 })
 export class PlayerManagerService {
   private subject = new Subject<any>();
-  private messageSubject = new Subject<any>();
+  public messageSubject = new Subject<any>();
   public currentMap;
   public counter = 1;
   public empties = [];
@@ -41,8 +41,8 @@ export class PlayerManagerService {
   onInit(){
   }
   // Observable<any>
-  getPlayerActivity(map): Observable<any>{
-    this.currentMap = map;
+  getPlayerActivity(tileMap): Observable<any>{
+    this.currentMap = tileMap;
     return this.subject.asObservable()
   }
   getPlayerMessages(): Observable<any>{
