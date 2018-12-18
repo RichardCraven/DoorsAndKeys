@@ -2,8 +2,14 @@
 .monster{
     background-color: white;
 }
+.monster:hover{
+    cursor:url('../assets/icons/cursors/gethsemane/gethsemane_normal.cur'), auto;
+}
 .monster.highlight{
-    background-color: rgba(255,0,0, 0.5)
+    background-color: rgba(255,0,0, 0.5);
+}
+.monster.highlight.selected{
+    background-color: red;
 }
 .beholder{
     background-image: url('../assets/icons/monsters/beholder.png');
