@@ -1,6 +1,6 @@
 <div class="container">
   <canvas #myCanvas id="myCanvas" width="752" height="752"></canvas>
-  <div class="board">
+  <div class="board" *ngIf="!showCombatBoard">
     <tile *ngFor='let tile of tiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
     (click)='clickTile(tile)'
@@ -92,7 +92,9 @@
       highlight: tile.highlight,
       selected: tile.selected
     }' >
-      <!-- some text -->
     </tile>
   </div>
+  <combat-board *ngIf="showCombatBoard" [monster]="engagedMonster">
+      
+  </combat-board>
 </div>

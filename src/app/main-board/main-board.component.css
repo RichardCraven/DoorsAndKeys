@@ -10,22 +10,12 @@
     margin: 0 auto;
 }
 .board{
-    /* width: 80vw; */
     width: 1500px;
     height: 1500px;
-	/* height: 100%; */
-	/* border-radius: 1%; */
-	/* padding-left: 50px; */
-	/* padding-top: 30px; */
-    /* position: relative; */
     border: 1px solid black;
     display: flex;
     flex-flow: row wrap;
-    /* justify-content: flex-start;
-    align-items: flex-start; */
     align-content: flex-end;
-    /* flex-basis: auto; */
-    /* flex: 1; */
 }
 #myCanvas{
     /* height: 752px; */

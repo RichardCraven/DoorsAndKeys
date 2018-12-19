@@ -19,7 +19,7 @@ export class InfoPanelComponent implements OnInit {
       this.message = res.msg
 
       if(res.monster){
-        console.log('IT WORKED!', res.monster)
+        // console.log('IT WORKED!', res.monster)
       }
     })
    }
