@@ -1,0 +1,29 @@
+.combat-board{
+    width: 1500px;
+    height: 1500px;
+    border: 1px solid black;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+.combat-grid{
+    display: flex;
+    flex-flow: row wrap;
+    height: 800px;
+    width: 1000px;
+    border: 1px solid black;
+}
+.monster-row{
+    display: flex;
+    width: 1000px;
+    height: 100px;
+    border: 1px solid red;
+}
+.player-row{
+    display: flex;
+    width: 1000px;
+    height: 100px;
+    border: 1px solid blue;
+}

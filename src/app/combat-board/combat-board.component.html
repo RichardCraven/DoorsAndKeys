@@ -1,0 +1,59 @@
+<div class='combat-board'>
+  <div class="monster-row">
+      <tile *ngFor='let tile of topTiles; index as m' 
+      (click)='clickTile(tile)'  
+      [ngClass]='{
+        darkness: !tile.visible,
+
+        beholder: tile.beholder,
+        black_gorgon: tile.black_gorgon,
+        white_gorgon: tile.white_gorgon,
+        black_vampire: tile.black_vampire,
+        white_vampire: tile.white_vampire,
+        dragon: tile.dragon,
+        horror: tile.horror,
+        goblin: tile.goblin,
+        imp: tile.imp,
+        imp_overlord: tile.imp_overlord,
+        ogre: tile.ogre,
+        troll: tile.troll,
+        sphinx: tile.sphinx,
+        slime_mold: tile.slime_mold,
+        black_minotaur: tile.black_minotaur,
+        white_minotaur: tile.white_minotaur,
+        black_banshee: tile.black_banshee,
+        white_banshee: tile.white_banshee,
+        black_wraith: tile.black_wraith,
+        white_wraith: tile.white_wraith,
+        black_kronos: tile.black_kronos,
+        white_kronos: tile.white_kronos,
+        naiad: tile.naiad,
+        mummy: tile.mummy,
+        skeleton: tile.skeleton,
+        wyvern: tile.wyvern,
+        black_djinn: tile.black_djinn,
+        white_djinn: tile.white_djinn,
+        manticore: tile.manticore,
+        giant_scorpion: tile.giant_scorpion
+      }
+      ' >
+      </tile>
+  </div>
+  <div class="combat-grid">
+      <tile *ngFor='let tile of gridTiles; index as i' 
+      (click)='clickTile(tile)' 
+      [ngClass]='{
+        darkness: !tile.visible
+      }' >
+      </tile>
+  </div>
+  <div class="player-row">
+      <tile *ngFor='let tile of botTiles; index as p' 
+      (click)='clickTile(tile)' 
+      [ngClass]='{
+        darkness: !tile.visible,
+        occupied: tile.occupied
+      }' >
+      </tile>
+  </div>
+</div>

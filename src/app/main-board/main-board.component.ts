@@ -13,13 +13,15 @@ import { ViewChild, ElementRef } from '@angular/core';
 })
 export class MainBoardComponent implements OnInit {
   newPlayerSubscription: Subscription;
-  introVideo = true;
+  introVideo = false;
   totalTiles = 225;
   rowLength = 15;
   idCount = 0;
   floatingCounter = 0;
   stopTimer = false;
   turnStarted = false;
+  showCombatBoard = false;
+  engagedMonster = 'jerry';
   canvas;
   tiles = [];
   items = [
@@ -55,13 +57,12 @@ export class MainBoardComponent implements OnInit {
   constructor(public playerManager: PlayerManagerService, public mapsService: MapsService) { }
 
   ngOnInit() {
-    var DOMboard = document.querySelector('.board')
     // this.canvas = document.getElementById('myCanvas');
     this.context = (<HTMLCanvasElement>this.myCanvas.nativeElement).getContext('2d');
     this.context.scale(16,16);
     // this.context = this.canvas.getContext('2d');
     for (let i = 0; i<this.totalTiles; i++){
-      var tile = {
+      let tile = {
         id : this.idCount,
         occupied : false,
         buildable : false,
@@ -376,12 +377,19 @@ export class MainBoardComponent implements OnInit {
         // this.playerManager.startTurn()
         
        
-      })
-      const spawn_player = step8.subscribe(res=> {
-        
-      })
+      });
     } else {
-      // this.playerManager.newPlayer()
+      // INTRO SKIPPED
+      // const newMap = this.mapsService.generateMap()
+      // const spawn_points = newMap['spawns']
+      console.log('CALLED COMBAT BOARD');
+      
+      this.engagedMonster = 'naiad'
+      this.showCombatBoard = true;
+
+      // this.playerManager.activePlayer = null;
+      // const spawn_point = spawn_points[Math.floor(Math.random()*spawn_points.length)]
+      // this.playerManager.newPlayer(this.coordinatePoint(spawn_point))
     }
   }
   
@@ -548,6 +556,10 @@ export class MainBoardComponent implements OnInit {
     // console.log('id: ',target.coordinates);
     if(target.selected){
       console.log('launch combat window, for ', target.contains);
+      this.showCombatBoard = true;
+      this.engagedMonster = target.contains
+      console.log('from main board, this.engaged monster is ', this.engagedMonster);
+      
       return
     }
     if(target.highlight){

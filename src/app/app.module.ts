@@ -7,13 +7,15 @@ import{PlayerManagerService} from './services/player-manager.service'
 import { MainBoardComponent } from './main-board/main-board.component';
 import { TileComponent } from './tile/tile.component';
 import { InfoPanelComponent } from './info-panel/info-panel.component';
+import { CombatBoardComponent } from './combat-board/combat-board.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainBoardComponent,
     TileComponent,
-    InfoPanelComponent
+    InfoPanelComponent,
+    CombatBoardComponent
   ],
   imports: [
     BrowserModule
