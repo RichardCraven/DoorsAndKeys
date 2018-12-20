@@ -1,9 +1,12 @@
 <div class='combat-board'>
+  <div class="corner"></div>
   <div class="monster-row">
       <tile *ngFor='let tile of topTiles; index as m' 
       (click)='clickTile(tile)'  
       [ngClass]='{
         darkness: !tile.visible,
+        flash: tile.flash,
+        slowFade: tile.slowFade,
 
         beholder: tile.beholder,
         black_gorgon: tile.black_gorgon,
@@ -34,26 +37,55 @@
         black_djinn: tile.black_djinn,
         white_djinn: tile.white_djinn,
         manticore: tile.manticore,
-        giant_scorpion: tile.giant_scorpion
+        giant_scorpion: tile.giant_scorpion,
+
+        scimitar: tile.scimitar,
+        flail: tile.flail,
+        spear: tile.spear,
+        sword: tile.sword,
+        axe: tile.axe,
+        scepter: tile.scepter
       }
       ' >
       </tile>
+  </div>
+  <div class="corner"></div>
+  <div class="left-panel">
+      <div id="myProgress">
+          <div id="myBar"></div>
+        </div>
   </div>
   <div class="combat-grid">
       <tile *ngFor='let tile of gridTiles; index as i' 
       (click)='clickTile(tile)' 
       [ngClass]='{
-        darkness: !tile.visible
+        darkness: !tile.visible,
+        placementZone: tile.placementZone,
+        monsterZone: tile.monsterZone,
+        down: tile.down,
+
+        scimitar: tile.scimitar,
+        flail: tile.flail,
+        spear: tile.spear,
+        sword: tile.sword,
+        axe: tile.axe,
+        scepter: tile.scepter
       }' >
       </tile>
   </div>
+  <div class="right-panel"></div>
+  <div class="corner"></div>
   <div class="player-row">
       <tile *ngFor='let tile of botTiles; index as p' 
       (click)='clickTile(tile)' 
       [ngClass]='{
         darkness: !tile.visible,
-        occupied: tile.occupied
+        slowFade: tile.slowFade,
+        occupied: tile.occupied,
+        flash: tile.flash,
+        down: tile.down
       }' >
       </tile>
   </div>
+  <div class="corner"></div>
 </div>

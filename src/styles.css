@@ -38,7 +38,8 @@ tile{
     background-size: cover;
     background-repeat: no-repeat;
     /* transition: */
-    -webkit-transition: background-color 0.5s; /* Safari */
+    -webkit-transition: background-color 0.5s; 
+    /* Safari */
     transition: background-color 0.5s;
     background-position: center;
 }
@@ -121,6 +122,11 @@ tile.crown:hover{
     background-position: center;
     background-attachment: white;
 }
+.down{
+    background-image: url('assets/icons/misc/down.png');
+    background-position: center;
+    background-attachment: white;
+}
 .green{
     background-color: aquamarine;
 }
@@ -172,4 +178,21 @@ tile.darkness:hover{
 .title.title10{
     background-image: url('assets/icons/title/DOORSKEYS-S.png');
     background-color: black;
+}
+
+.placementZone{
+    background-color: lightgrey;
+}
+.monsterZone{
+    background-color: #001a33;
+}
+.placementZone:hover{
+    background-color: whitesmoke;
+}
+.flash{
+    background-color: red;
+}
+slowFade{
+    -webkit-transition: background-color 1.5s;
+    transition: background-color 1.5s;
 }
