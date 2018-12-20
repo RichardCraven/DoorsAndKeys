@@ -122,11 +122,9 @@ export class MainBoardComponent implements OnInit {
           var tile = this.tiles[t]
           tile.visible = true;
         }
-        // console.log('step 1: placing voids');
         this.buildVoid()
       });
       const step2Sub = step2.subscribe( res => {
-        // console.log('step 2: painting green zone');
         const greenZone = [110,111,113,114,96,97,98,82,126,127,128,142]
         for(let r = 0; r < greenZone.length; r++){
           this.clearTile(this.tiles[greenZone[r]])

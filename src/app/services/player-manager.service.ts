@@ -1,11 +1,11 @@
-import { Injectable, OnInit, HostListener } from '@angular/core';
+import { Injectable, HostListener } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import { Logs } from 'selenium-webdriver';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PlayerManagerService {
+export class PlayerManagerService{
   private subject = new Subject<any>();
   public messageSubject = new Subject<any>();
   public currentMap;
@@ -14,31 +14,52 @@ export class PlayerManagerService {
   public players = [];
   public activePlayer;
   constructor() {
-    window.addEventListener('keydown', (event) => {
-      switch(event.key){
-        case 'ArrowUp':
-          this.movePlayer('up')
-        break
-        case 'ArrowDown':
-          this.movePlayer('down')
-        break
-        case 'ArrowLeft':
-          this.movePlayer('left')
-        break
-        case 'ArrowRight':
-          this.movePlayer('right')
-        break
-        case 'Enter':
-          this.startTurn();
-        break
-      }
-    });
+    // window.addEventListener('keydown', (event) => {
+    //   switch(event.key){
+    //     case 'ArrowUp':
+    //       this.movePlayer('up')
+    //     break
+    //     case 'ArrowDown':
+    //       this.movePlayer('down')
+    //     break
+    //     case 'ArrowLeft':
+    //       this.movePlayer('left')
+    //     break
+    //     case 'ArrowRight':
+    //       this.movePlayer('right')
+    //     break
+    //     case 'Enter':
+    //       this.startTurn();
+    //     break
+    //   }
+    // });
+    
+    const newPlayer = {
+      name: 'player1',
+      inventory: {
+        weapon: {
+         type: 'flail',
+         attack: 3,
+         damage: 2
+        }
+      },
+      location: null,
+      visibility: 2,
+      moves: 2,
+      coordinates: [0,0]
+    }
+    this.activePlayer = newPlayer;
   }
   
-
-  ping(){
+  initiateCombat(){
+    console.log('about to remove from playerService');
+    
+    // window.removeEventListener('keydown', (event) => {
+    //   console.log('removing window.event listener');
+      
+    // });
   }
-  onInit(){
+  ping(){
   }
   // Observable<any>
   getPlayerActivity(tileMap): Observable<any>{
@@ -62,6 +83,9 @@ export class PlayerManagerService {
         // const location = this.empties[num];
         const newPlayer = {
           name: 'player'+this.counter,
+          inventory: {
+            weapon: 'flail'
+          },
           location: location,
           visibility: 2,
           moves: 2,

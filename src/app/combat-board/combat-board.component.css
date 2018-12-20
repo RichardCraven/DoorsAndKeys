@@ -15,6 +15,38 @@
     width: 1000px;
     border: 1px solid black;
 }
+.corner{
+    width: 200px;
+    /* border: 1px solid black; */
+    height: 100px;
+}
+.left-panel{
+    height: 200px;
+    width: 200px;
+    /* border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.right-panel{
+    height: 200px;
+    width: 200px;
+    /* border-right: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black; */
+}
+#myProgress {
+  width: 100%;
+  height: 50px;
+  background-color: grey;
+}
+#myBar {
+  width: 1%;
+  height: 50px;
+  background-color: green;
+}
 .monster-row{
     display: flex;
     width: 1000px;
