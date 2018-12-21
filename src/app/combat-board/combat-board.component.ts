@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
 import { Subscription, Observable, interval, timer } from 'rxjs';
-import { timeout } from 'q';
-import { TryCatchStmt } from '@angular/compiler';
 
 @Component({
   selector: 'combat-board',
@@ -19,14 +17,19 @@ export class CombatBoardComponent implements OnInit {
   monsterAttackOrigins = [];
   windowOpen = false;
   playerLocked = false;
+  sub1;
+  sub2;
+  sub3;
   inventory;
   weapon;
   monsterWeapon;
   weaponCount;
   weaponDamage;
+  initialOpenWindow;
   hideMonsterTimer;
   monsterAttackTimer;
   showTimer;
+  fadeTimer;
   monsterEndpoint;
   playerEndpoint;
   @Input()monster
@@ -91,9 +94,12 @@ export class CombatBoardComponent implements OnInit {
     // this.monsterAttackTimer = timer(6500)
     this.hideMonster()
     
-    const initialOpenWindow = timer(1000)
-    initialOpenWindow.subscribe(e => {
-      this.openWindow();
+    this.initialOpenWindow = timer(1000)
+    const subscription = this.initialOpenWindow.subscribe(e => {
+      this.openWindow('initial');
+      console.log('subscribtion is ', subscription);
+      
+      subscription.unsubscribe();
     })
     
     // this.monsterAttackTimer.subscribe(e => {
@@ -114,7 +120,9 @@ export class CombatBoardComponent implements OnInit {
       this.weaponCount--
     }
   }
-  openWindow(){
+  openWindow(origin){
+    console.log('opening window from ', origin);
+    
     this.hideMonster();
     this.weaponCount = this.inventory.weapon.attack;
     let that = this;
@@ -133,37 +141,39 @@ export class CombatBoardComponent implements OnInit {
       }
   }
   closeWindow(){
+    this.revealMonster();
     for(let g in this.gridTiles){
       if(this.gridTiles[g][this.weapon]){
         this.fireWeapon(this.gridTiles[g])
       }
     }
-    this.revealMonster()
-
     if(!this.playerLocked){
-      const refreshWindow = timer(3000);
-      refreshWindow.subscribe(res => {
-        this.openWindow();
-      })
+      this.openWindow('closed window');
+      // const refreshWindow = timer(3000);
+      // refreshWindow.subscribe(res => {
+      //   if(!this.playerLocked){
+
+      //   }
+      // })
     }
   }
 
   hideMonster(){
-    console.log('IN HIDE MONSTER');
-    this.hideMonsterTimer = timer(200)
-    this.hideMonsterTimer.subscribe(e => {
+    // console.log('IN HIDE MONSTER');
+    this.hideMonsterTimer = timer(800)
+    const that = this;
+    const subscription = this.hideMonsterTimer.subscribe(e => {
       for(let tile of this.topTiles){
         if(tile){
           tile[this.monster] = false;
           tile.visible = false;
         } 
       }
+      subscription.unsubscribe()
     })
   }
 
   revealMonster(){
-    // console.log('revealing monster');
-    
     const num = Math.floor(Math.random() * this.topTiles.length)
     const tile = this.topTiles[num];
     tile[this.monster] = tile.visible = true;
@@ -171,12 +181,13 @@ export class CombatBoardComponent implements OnInit {
   }
 
   fireWeapon(tile){
-    console.log('TILE IS ', tile);
-    
     const that = this;
     const id = tile.id
     const tiles = this.gridTiles;
     tile[this.weapon] = false;
+
+    //need to handle monster being hit so this part doesn't break
+    if(!tiles[id -10]) return
     tiles[id -10][this.weapon] = true;
 
     const launch = setInterval(travel, 100);
@@ -215,8 +226,6 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   fireMonsterWeapon(tile){
-    // console.log('firing tile ', tile);
-    
     const id = tile.id;
     const tiles = this.gridTiles;
     tile[this.monsterWeapon] = false;
@@ -228,8 +237,6 @@ export class CombatBoardComponent implements OnInit {
       // tile[that.weapon] = false;
       if (counter >= 80) {
         that.checkMonsterHit(tiles[final]);
-        // console.log('STRIKED at ', tiles[final]);
-        
         clearInterval(launch);
       } else {
         const newTileId = id+counter;
@@ -275,16 +282,12 @@ export class CombatBoardComponent implements OnInit {
   }
 
   checkContact(tile){
-    // console.log('CHECK, for tile');
     if (!tile) return
     if(tile.id === this.monsterEndpoint) this.monsterHit();
       else this.monsterMiss(tile)
   }
   checkMonsterHit(tile){
     if (!tile) return
-    // console.log('in check monster hit');
-    // console.log(tile.id % 10, this.playerEndpoint);
-    
     if(tile.id % 10 === this.playerEndpoint) this.playerHit()
       else this.playerMiss(tile);
   }
@@ -307,35 +310,51 @@ export class CombatBoardComponent implements OnInit {
     tile.monsterZone = true;
     const monsterRowTile = this.topTiles[tile.id];
     if(monsterRowTile) monsterRowTile[this.weapon] = monsterRowTile.visible = monsterRowTile.slowFade = true;
-    const fadeTimer = timer(750)
+    this.fadeTimer = timer(750);
     const that = this;
-    fadeTimer.subscribe(e => {
+    const subscription = this.fadeTimer.subscribe(e => {
       monsterRowTile[that.weapon] = monsterRowTile.visible = false;
-      
+      subscription.unsubscribe()
     })
   }
   playerHit(){
-    console.log('player hit! about to flash');
     this.playerLocked = true;
     const that = this;
     const flashInterval = setInterval(flash, 100)
     let counter = 0;
     function flash(){
-      console.log('flash');
       
-      if(counter < 7){
+      if(counter < 10){
         that.botTiles[that.playerEndpoint].flash = !that.botTiles[that.playerEndpoint].flash
       } else {
-        that.playerLocked = false;
+        that.handlePlayerHit();
         clearInterval(flashInterval)
-
-        const refreshWindow = timer(3000);
-        refreshWindow.subscribe(res => {
-        that.openWindow();
-        })
       }
       counter++
     }
+  }
+  handlePlayerHit(){
+    console.log('handling player hit');
+
+    //check hit points
+
+
+    //survived?
+    for(let t in this.botTiles){
+      this.botTiles[t].flash = false;
+    }
+    // this.botTiles[this.playerEndpoint].flash = false;
+    for(let y = 50; y <= 79; y++){
+      const tile = this.gridTiles[y]
+      if(tile[this.monsterWeapon]) tile[this.monsterWeapon] = null;
+      tile.placementZone = tile.visible = true;
+    }
+
+    this.playerLocked = false;
+    // this.openWindow('handle hit');
+    // const renewWindow = timer(3000);
+    // renewWindow.subscribe(res => {
+    // });
   }
   playerMiss(tile){
     //this is for the monster missing the player
@@ -346,10 +365,16 @@ export class CombatBoardComponent implements OnInit {
     if(playerRowTile) playerRowTile[this.monsterWeapon] = playerRowTile.visible = playerRowTile.slowFade = true;
     const fadeTimer = timer(750)
     const that = this;
-    fadeTimer.subscribe(e => {
-      playerRowTile[that.monsterWeapon] = playerRowTile.visible = false;
+    this.sub1 = fadeTimer.subscribe(e => {
+      console.log('in sub');
+      this.fade(playerRowTile)
       
     })
+  }
+  fade(tile){
+    tile[this.monsterWeapon] = tile.visible = false;
+    
+    this.sub1.unsubscribe()
   }
   movePlayer(direction){
     if(this.playerLocked) return
@@ -359,7 +384,7 @@ export class CombatBoardComponent implements OnInit {
     switch (direction){
       case 'left':
         console.log('left');
-        if(tiles[endPoint - 1]){
+        if(tiles[endPoint - 1] && !tiles[endPoint-1][this.monsterWeapon]){
           tiles[endPoint].occupied = tiles[endPoint].visible = false;
           tiles[endPoint - 1].occupied = tiles[endPoint - 1].visible = true;
           this.playerEndpoint = this.playerEndpoint - 1
@@ -367,7 +392,7 @@ export class CombatBoardComponent implements OnInit {
       break
       case 'right':
       console.log('right');
-      if(tiles[endPoint + 1]){
+      if(tiles[endPoint + 1] && !tiles[endPoint+1][this.monsterWeapon]){
         tiles[endPoint].occupied = tiles[endPoint].visible = false;
         tiles[endPoint + 1].occupied = tiles[endPoint + 1].visible = true;
         this.playerEndpoint = this.playerEndpoint + 1
