@@ -39,7 +39,7 @@ export class PlayerManagerService{
       inventory: {
         weapon: {
          type: 'flail',
-         attack: 3,
+         attack: 5,
          damage: 2
         }
       },

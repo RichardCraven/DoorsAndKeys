@@ -20,6 +20,10 @@
     /* border: 1px solid black; */
     height: 100px;
 }
+.corner.right-corner{
+     display: flex;
+}
+
 .left-panel{
     height: 200px;
     width: 200px;
@@ -38,20 +42,52 @@
     border-bottom: 1px solid black; */
 }
 #myProgress {
-  width: 100%;
-  height: 50px;
+  width: 1000px;
+  position: absolute;
+  left: 250px;
+  height: 200px;
   background-color: grey;
 }
 #myBar {
-  width: 1%;
-  height: 50px;
-  background-color: green;
+  width: 0%;
+  height: 200px;
+  background-color: black;
+}
+.monster-main-tile{
+    height: 246px;
+    width: 404px;
+    position: absolute;
+    border: 1px solid red;
+    top: 0;
+}
+.monster-icon{
+    position: absolute;
+    height: 244px;
+    width: 244px;
+    top: 0;
+    left: 55px;
+    background-position: center;
+    background-size: cover;
+}
+.monster-health{
+    position: absolute;
+    height: 244px;
+    width: 99px;
+    top: 0;
+    left: 303px;
+    border: 1px solid blue;
+    background-color: red;
+}
+#monster-health-bar {
+    width: 100%;
+    /* height: 50px; */
+    background-color: white;
 }
 .monster-row{
     display: flex;
     width: 1000px;
     height: 100px;
-    border: 1px solid red;
+    /* border: 1px solid red; */
 }
 .player-row{
     display: flex;

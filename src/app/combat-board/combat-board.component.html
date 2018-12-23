@@ -49,11 +49,69 @@
       ' >
       </tile>
   </div>
-  <div class="corner"></div>
+  <div class="corner right-corner">
+    <tile *ngFor='let tile of roundNumTiles' (click)='clickTile(tile)'
+    [ngClass]='{
+      darkness: false,
+
+      zero: tile.zero,
+      one: tile.one,
+      two: tile.two,
+      three: tile.three,
+      four: tile.four,
+      five: tile.five,
+      six: tile.six,
+      seven: tile.seven,
+      eight: tile.eight,
+      nine: tile.nine
+    }'
+    >
+    </tile>
+  </div>
   <div class="left-panel">
-      <div id="myProgress">
+      <div [ngClass]='{hidden: !showBar}' id="myProgress">
           <div id="myBar"></div>
+      </div>
+      <div class="monster-main-tile">
+        <div class="monster-icon" 
+        [ngClass]='{
+          beholder: monsterIcon.beholder,
+          black_gorgon: monsterIcon.black_gorgon,
+          white_gorgon: monsterIcon.white_gorgon,
+          black_vampire: monsterIcon.black_vampire,
+          white_vampire: monsterIcon.white_vampire,
+          dragon: monsterIcon.dragon,
+          horror: monsterIcon.horror,
+          goblin: monsterIcon.goblin,
+          imp: monsterIcon.imp,
+          imp_overlord: monsterIcon.imp_overlord,
+          ogre: monsterIcon.ogre,
+          troll: monsterIcon.troll,
+          sphinx: monsterIcon.sphinx,
+          slime_mold: monsterIcon.slime_mold,
+          black_minotaur: monsterIcon.black_minotaur,
+          white_minotaur: monsterIcon.white_minotaur,
+          black_banshee: monsterIcon.black_banshee,
+          white_banshee: monsterIcon.white_banshee,
+          black_wraith: monsterIcon.black_wraith,
+          white_wraith: monsterIcon.white_wraith,
+          black_kronos: monsterIcon.black_kronos,
+          white_kronos: monsterIcon.white_kronos,
+          naiad: monsterIcon.naiad,
+          mummy: monsterIcon.mummy,
+          skeleton: monsterIcon.skeleton,
+          wyvern: monsterIcon.wyvern,
+          black_djinn: monsterIcon.black_djinn,
+          white_djinn: monsterIcon.white_djinn,
+          manticore: monsterIcon.manticore,
+          giant_scorpion: monsterIcon.giant_scorpion
+        }
+        '
+        ></div>
+        <div class="monster-health" id='monster-health-container'>
+          <div id="monster-health-bar"></div>
         </div>
+      </div>
   </div>
   <div class="combat-grid">
       <tile *ngFor='let tile of gridTiles; index as i' 
