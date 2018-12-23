@@ -21,11 +21,14 @@ export class MainBoardComponent implements OnInit {
   stopTimer = false;
   turnStarted = false;
   showCombatBoard = false;
-  engagedMonster = 'jerry';
+  engagedMonster = {};
   canvas;
+  monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre',
+        'sphinx','troll','slime_mold','white_vampire','black_vampire','white_gorgon','black_gorgon',
+        'mummy','naiad','wyvern','skeleton','giant_scorpion','white_djinn','black_djinn','white_kronos','black_kronos',
+        'white_banshee','black_banshee','white_wraith','black_wraith'];
   tiles = [];
   items = [
-    
     'skull',
     'key',
     'disguise',
@@ -257,10 +260,7 @@ export class MainBoardComponent implements OnInit {
         const charmsArr = ['beatle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm',]
         const amuletsArr = ['sayan','lundi','evilai','nukta',]
 
-        const monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre',
-        'sphinx','troll','slime_mold','white_vampire','black_vampire','white_gorgon','black_gorgon',
-        'mummy','naiad','wyvern','skeleton','giant_scorpion','white_djinn','black_djinn','white_kronos','black_kronos',
-        'white_banshee','black_banshee','white_wraith','black_wraith']
+        const monstersArr = this.monstersArr;
         const demonsArr = ['black_demon','golden_demon','kabuki_demon','dulu_demon']
         const devils = ['zul','ishtar','mordu','goloth','vukular']
 
@@ -381,8 +381,9 @@ export class MainBoardComponent implements OnInit {
       // const newMap = this.mapsService.generateMap()
       // const spawn_points = newMap['spawns']
       console.log('CALLED COMBAT BOARD');
-      
-      this.engagedMonster = 'naiad'
+      const num = Math.floor(Math.random() * this.monstersArr.length)
+      this.engagedMonster['type'] = this.monstersArr[num]
+      this.engagedMonster['health'] = 75
       this.showCombatBoard = true;
 
       // this.playerManager.activePlayer = null;

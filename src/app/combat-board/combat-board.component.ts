@@ -1,6 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
-import { Subscription, Observable, interval, timer } from 'rxjs';
+import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
+// import { Observable, of, empty, fromEvent, from } from 'rxjs';
+import {
+  delay,
+  mapTo,
+  takeWhile,
+  switchMapTo,
+  concatAll,
+  count,
+  scan,
+  withLatestFrom,
+  share
+} from 'rxjs/operators';
+
+// import { Observable } from 'rxjs/Observable';
+// import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'combat-board',
@@ -8,21 +23,34 @@ import { Subscription, Observable, interval, timer } from 'rxjs';
   styleUrls: ['./combat-board.component.css']
 })
 export class CombatBoardComponent implements OnInit {
+  subject = new Subject<any>();
+  delayed2000 = new Subject<any>();
+  delayed1000 = new Subject<any>();
+  delayed750 = new Subject<any>();
+  delayed500 = new Subject<any>();
   topTilesCount = 10;
   botTilesCount = 10;
   gridTilesCount = 80;
+  round = 8;
   topTiles = [];
   botTiles = [];
   gridTiles = [];
+  roundNumTiles = [];
+  numbers = ['zero','one','two','three','four','five','six','seven','eight','nine',];
   monsterAttackOrigins = [];
+  monsterHealthInitial = 0;
+  monsterHealth = 0;
   windowOpen = false;
   playerLocked = false;
+  showBar = true;
   sub1;
   sub2;
   sub3;
+  sub4;
   inventory;
   weapon;
   monsterWeapon;
+  monsterIcon = {};
   weaponCount;
   weaponDamage;
   initialOpenWindow;
@@ -31,7 +59,8 @@ export class CombatBoardComponent implements OnInit {
   showTimer;
   fadeTimer;
   monsterEndpoint;
-  playerEndpoint;
+  playerPosition;
+  monsterBar;
   @Input()monster
 
   constructor(public playerManager: PlayerManagerService) {
@@ -39,16 +68,45 @@ export class CombatBoardComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('initting combat board');
+    
+    //emit 1,2,3,4,5
+    // const source = of(1, 2, 3, 4, 5);
+
+    //allow values until value from source is greater than 4, then complete
+    // const example = source.pipe(takeWhile(val => val <= 4));
+
+    //output: 1,2,3,4
+    // const subscribe = example.subscribe(val => console.log(val));
+
+
+    // var monsterBar = document.getElementById("monster-health-bar"); 
+      this.monsterHealthInitial = this.monster.health;
+      this.monsterHealth = this.monster.health;
+      var height = 100;
+      console.log('monster bar is ',this.monsterBar);
+      this.monsterBar = document.getElementById("monster-health-bar");
+      this.monsterBar.style.height = 0+'%'
+
+
+    // console.log('initting combat board');
     this.playerManager.initiateCombat()
 
     window.addEventListener('keydown', (event) => {
       switch(event.key){
+        // case 'ArrowUp':
+        //   this.subject.next('up')
+        // break
+        // case 'ArrowDown':
+        // this.delayed1000.next('chickendown')
+        // break
         case 'ArrowLeft':
           this.movePlayer('left')
         break
         case 'ArrowRight':
           this.movePlayer('right')
+        break
+        case ' ':
+          this.addAttack()
         break
       }
     });
@@ -78,105 +136,238 @@ export class CombatBoardComponent implements OnInit {
     }
     for(let y = 50; y <= 79; y++){
       const tile = this.gridTiles[y]
-      tile.placementZone = tile.visible = true;
+      tile.placementZone = true;
+      tile.visible = false;
     }
     for(let q = 0; q <= 29; q++){
       const tile = this.gridTiles[q]
       tile.monsterZone = true;
     }
 
-    this.topTiles[4][this.monster] = true;
+    for(let q = 0; q < 2; q++){
+      let tile = {}
+      this.roundNumTiles.push(tile)
+      // tile.monsterZone = true;
+    }
+    
+    this.topTiles[4][this.monster.type] = true;
     this.topTiles[4].visible = true;
     this.botTiles[5].visible = true;
     this.botTiles[5].occupied = true;
-    this.playerEndpoint = 5;
+    this.playerPosition = 5;
 
     // this.monsterAttackTimer = timer(6500)
-    this.hideMonster()
+    // this.hideMonster()
     
-    this.initialOpenWindow = timer(1000)
-    const subscription = this.initialOpenWindow.subscribe(e => {
-      this.openWindow('initial');
-      console.log('subscribtion is ', subscription);
-      
-      subscription.unsubscribe();
-    })
     
-    // this.monsterAttackTimer.subscribe(e => {
-    //   this.monsterAttack();
-    // })
     this.inventory = this.playerManager.activePlayer.inventory;
     this.weapon = this.inventory.weapon.type;
     // this.weaponCount = this.inventory.weapon.attack;
     this.weaponDamage = this.inventory.weapon.damage;
     this.monsterWeapon = 'down';
+
+    //subscribe
+    this.sub1 = this.getDelayed2000().subscribe( res => {
+      switch (res){
+        case 'openWindow':
+          // console.log('opening window');
+          this.openWindow()
+        break
+
+        case 'closeWindow':
+          // console.log('closing window');
+          this.closeWindow();
+        break
+      }
+    })
+    
+    this.sub2 = this.getDelayed1000().subscribe( res => {
+      switch (res){
+        case 'openWindow':
+          // console.log('opening window');
+          this.openWindow()
+        break
+
+        case 'closeWindow':
+          // console.log('closing window');
+          this.closeWindow();
+        break
+      }
+    })
+    this.sub3 = this.getDelayed750().subscribe( res => {
+      //ONLY TO BE USED FOR FADE OUT
+      if(typeof res !== 'string'){
+        res[this.weapon] = res.visible = false;
+      } else if(res === 'closeGate'){
+          this.closeGate()
+      }
+    })
+    this.sub4 = this.getDelayed500().subscribe( res => {
+      switch (res){
+        case 'openWindow':
+          // console.log('opening window');
+          this.openWindow()
+        break
+
+        case 'closeWindow':
+          // console.log('closing window');
+          this.closeWindow();
+        break
+
+        case 'monsterAttack':
+          this.monsterAttack();
+        break
+
+        case 'revealBar':
+          this.showBar = true;
+        break
+
+        case 'closeGate':
+          this.closeGate()
+        break
+      }
+    })
+
+    this.delayed1000.next('openWindow')
   }
   clickTile(tile){
     console.log(tile);
     
-    if(tile.placementZone && this.weaponCount && !tile[this.weapon]){
+    if(tile.placementZone && this.weaponCount && !tile[this.weapon] && !this.playerLocked){
+      console.log('IN HERE');
+      
       tile.visible = true;
       tile[this.weapon] = true;
       this.weaponCount--
     }
   }
-  openWindow(origin){
-    console.log('opening window from ', origin);
+  clearMonsterRows(){
+    for(let t in this.topTiles){
+      this.topTiles[t].flash = false;
+    }
+    for(let o = 0; o < 30; o++){
+      this.gridTiles[o].monsterZone = true;
+    }
+  }
+  clearPlayerRows(){
+    for(let t in this.botTiles){
+      this.botTiles[t][this.monsterWeapon] = false;
+    }
+  }
+  clearGridRows(){
+    for(let t in this.gridTiles){
+      this.gridTiles[t][this.monsterWeapon] = this.gridTiles[t][this.weapon] = this.gridTiles[t].visible = false;
+    }
+  }
+  openWindow(){
+    this.playerLocked = false;
+    this.monsterIcon[this.monster.type] = true
     
+    // console.log('monster bar is ',this.monsterBar);
+
+
+    console.log('monster health is at: ', this.monsterHealth);
+    
+    this.showBar = true;
+    const tiles = this.roundNumTiles;
+    const round = this.round;
+    const first = tiles[0]
+    const second = tiles[1]
+
+    for(let i = 0; i < this.numbers.length; i++){
+      first[this.numbers[i]] = false;
+      second[this.numbers[i]] = false;
+    }
+    console.log('round is ', this.round);
+    if(round < 10){
+      tiles[0][this.numbers[round]] = true;
+      if(round > 0 && tiles[0][this.numbers[round -1]]){
+        tiles[0][this.numbers[round -1]] = false;
+      }
+    }
+    if(round === 10) {
+      if(round > 0 && tiles[0][this.numbers[round -1]]){
+        tiles[0][this.numbers[round -1]] = false;
+      }
+      tiles[0].one = true;
+      tiles[1].zero = true;
+    }
+    if(round > 10) {
+      tiles[0][this.numbers[Math.floor(round/10)]] = true;
+      tiles[1][this.numbers[round%10]] = true;
+    }
+
     this.hideMonster();
+    this.clearMonsterRows();
+    this.clearPlayerRows();
+    this.clearGridRows();
+    
+    
     this.weaponCount = this.inventory.weapon.attack;
+    this.openGate();
+    return 'openWindow'
+  }
+  openGate(){
     let that = this;
       var elem = document.getElementById("myBar"); 
       var width = 1;
-      var id = setInterval(frame, 50);
+      var id = setInterval(frame, 25);
       function frame() {
         if (width >= 100) {
           clearInterval(id);
-          that.closeWindow()
-          that.monsterAttack();
+          that.revealMonster();
+          that.playerLocked = true;
+          that.delayed500.next('closeWindow')
+          that.delayed500.next('monsterAttack')
         } else {
           width++; 
           elem.style.width = width + '%'; 
         }
       }
   }
+  closeGate(){
+    let that = this;
+      var elem = document.getElementById("myBar"); 
+      var width = 100;
+      var id = setInterval(frame, 10);
+      function frame() {
+        if (width === 0) {
+          clearInterval(id);
+        } else {
+          width--; 
+          elem.style.width = width + '%'; 
+        }
+      }
+  }
   closeWindow(){
-    this.revealMonster();
+    this.round++
+    this.showBar = false;
     for(let g in this.gridTiles){
       if(this.gridTiles[g][this.weapon]){
         this.fireWeapon(this.gridTiles[g])
       }
     }
-    if(!this.playerLocked){
-      this.openWindow('closed window');
-      // const refreshWindow = timer(3000);
-      // refreshWindow.subscribe(res => {
-      //   if(!this.playerLocked){
-
-      //   }
-      // })
-    }
+    // if(!this.playerLocked){
+      this.delayed500.next('revealBar')
+      this.delayed750.next('closeGate')
+      this.delayed2000.next('openWindow')
+    // }
+    return 'closeWindow'
   }
 
   hideMonster(){
-    // console.log('IN HIDE MONSTER');
-    this.hideMonsterTimer = timer(800)
-    const that = this;
-    const subscription = this.hideMonsterTimer.subscribe(e => {
-      for(let tile of this.topTiles){
-        if(tile){
-          tile[this.monster] = false;
-          tile.visible = false;
-        } 
-      }
-      subscription.unsubscribe()
-    })
+    for(let tile of this.topTiles){
+      if(tile){
+        tile[this.monster.type] = false;
+        tile.visible = false;
+      } 
+    }
   }
 
   revealMonster(){
     const num = Math.floor(Math.random() * this.topTiles.length)
     const tile = this.topTiles[num];
-    tile[this.monster] = tile.visible = true;
+    tile[this.monster.type] = tile.visible = true ;
     this.monsterEndpoint = num;
   }
 
@@ -263,7 +454,7 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   monsterAttack(){
-    console.log('monster attacking!');
+    this.monsterAttackOrigins = [];
     let attacks = 3; //to be replaced with monster attack from json
     const tiles = this.gridTiles;
     
@@ -272,15 +463,28 @@ export class CombatBoardComponent implements OnInit {
     while(attacks > 0){
       let num = Math.floor(Math.random()* 30)
       if(this.monsterAttackOrigins.indexOf(num) < 0){
+        attacks--
         this.monsterAttackOrigins.push(num)
         let tile = tiles[num];
         tile[this.monsterWeapon] = true;
         this.fireMonsterWeapon(tile);
-        attacks--
       }
     }
   }
-
+  addAttack(){
+    if(!this.weaponCount || this.playerLocked) return
+    
+    if(!this.gridTiles[this.playerPosition + 70][this.weapon]){
+      this.gridTiles[this.playerPosition + 70][this.weapon] = this.gridTiles[this.playerPosition + 70].visible = true;
+      this.weaponCount --
+    } else if(!this.gridTiles[this.playerPosition + 60][this.weapon]){
+      this.gridTiles[this.playerPosition + 60][this.weapon] = this.gridTiles[this.playerPosition + 60].visible = true;
+      this.weaponCount --
+    } else if(!this.gridTiles[this.playerPosition + 50][this.weapon]){
+      this.gridTiles[this.playerPosition + 50][this.weapon] = this.gridTiles[this.playerPosition + 50].visible = true;
+      this.weaponCount --
+    }
+  }
   checkContact(tile){
     if (!tile) return
     if(tile.id === this.monsterEndpoint) this.monsterHit();
@@ -288,7 +492,7 @@ export class CombatBoardComponent implements OnInit {
   }
   checkMonsterHit(tile){
     if (!tile) return
-    if(tile.id % 10 === this.playerEndpoint) this.playerHit()
+    if(tile.id % 10 === this.playerPosition) this.playerHit()
       else this.playerMiss(tile);
   }
 
@@ -304,18 +508,23 @@ export class CombatBoardComponent implements OnInit {
       }
       counter++
     }
+    this.monsterHealth -= 10
+
+    console.log('monster health is now at ', this.monsterHealth);
+    console.log('monster health initial was ', this.monsterHealthInitial);
+    console.log('percentage is ', (this.monsterHealth / this.monsterHealthInitial *100)+'%');
+    
+    
+    this.monsterBar = document.getElementById("monster-health-bar");
+    const percentage = (100 - (this.monsterHealth / this.monsterHealthInitial * 100))
+    this.monsterBar.style.height = percentage+'%'
   }
   monsterMiss(tile){
     tile.visible = tile[this.weapon] = false;
     tile.monsterZone = true;
     const monsterRowTile = this.topTiles[tile.id];
     if(monsterRowTile) monsterRowTile[this.weapon] = monsterRowTile.visible = monsterRowTile.slowFade = true;
-    this.fadeTimer = timer(750);
-    const that = this;
-    const subscription = this.fadeTimer.subscribe(e => {
-      monsterRowTile[that.weapon] = monsterRowTile.visible = false;
-      subscription.unsubscribe()
-    })
+    this.delayed750.next(monsterRowTile)
   }
   playerHit(){
     this.playerLocked = true;
@@ -325,7 +534,7 @@ export class CombatBoardComponent implements OnInit {
     function flash(){
       
       if(counter < 10){
-        that.botTiles[that.playerEndpoint].flash = !that.botTiles[that.playerEndpoint].flash
+        that.botTiles[that.playerPosition].flash = !that.botTiles[that.playerPosition].flash
       } else {
         that.handlePlayerHit();
         clearInterval(flashInterval)
@@ -334,8 +543,6 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   handlePlayerHit(){
-    console.log('handling player hit');
-
     //check hit points
 
 
@@ -343,18 +550,14 @@ export class CombatBoardComponent implements OnInit {
     for(let t in this.botTiles){
       this.botTiles[t].flash = false;
     }
-    // this.botTiles[this.playerEndpoint].flash = false;
+    // this.botTiles[this.playerPosition].flash = false;
     for(let y = 50; y <= 79; y++){
       const tile = this.gridTiles[y]
       if(tile[this.monsterWeapon]) tile[this.monsterWeapon] = null;
-      tile.placementZone = tile.visible = true;
+      tile.placementZone = true;
+      tile.visible = false;
     }
-
     this.playerLocked = false;
-    // this.openWindow('handle hit');
-    // const renewWindow = timer(3000);
-    // renewWindow.subscribe(res => {
-    // });
   }
   playerMiss(tile){
     //this is for the monster missing the player
@@ -363,13 +566,12 @@ export class CombatBoardComponent implements OnInit {
 
     const playerRowTile = this.botTiles[tile.id%10];
     if(playerRowTile) playerRowTile[this.monsterWeapon] = playerRowTile.visible = playerRowTile.slowFade = true;
-    const fadeTimer = timer(750)
-    const that = this;
-    this.sub1 = fadeTimer.subscribe(e => {
-      console.log('in sub');
-      this.fade(playerRowTile)
-      
-    })
+    this.delayed750.next(playerRowTile)
+    // const fadeTimer = timer(750)
+    // const that = this;
+    // this.sub1 = fadeTimer.subscribe(e => {
+    //   this.fade(playerRowTile)
+    // })
   }
   fade(tile){
     tile[this.monsterWeapon] = tile.visible = false;
@@ -379,29 +581,72 @@ export class CombatBoardComponent implements OnInit {
   movePlayer(direction){
     if(this.playerLocked) return
     const tiles = this.botTiles;
-    let endPoint = this.playerEndpoint;
+    let endPoint = this.playerPosition;
 
     switch (direction){
       case 'left':
-        console.log('left');
         if(tiles[endPoint - 1] && !tiles[endPoint-1][this.monsterWeapon]){
           tiles[endPoint].occupied = tiles[endPoint].visible = false;
           tiles[endPoint - 1].occupied = tiles[endPoint - 1].visible = true;
-          this.playerEndpoint = this.playerEndpoint - 1
+          this.playerPosition = this.playerPosition - 1
         } 
       break
       case 'right':
-      console.log('right');
       if(tiles[endPoint + 1] && !tiles[endPoint+1][this.monsterWeapon]){
         tiles[endPoint].occupied = tiles[endPoint].visible = false;
         tiles[endPoint + 1].occupied = tiles[endPoint + 1].visible = true;
-        this.playerEndpoint = this.playerEndpoint + 1
+        this.playerPosition = this.playerPosition + 1
       } 
       break
     }
-    // if(!this.currentMap[this.activePlayer.location].contains){
-    //   const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
-    //   this.subject.next({location: this.activePlayer.location, old_location : old_location.id, visibility: visible});
-    // }     
+  }
+
+
+  //OBSERVABLES
+
+  
+
+  // Observable<any>]
+  // getDelayedThing(): Observable<any>{
+  //   return of('delayed?').pipe(
+  //     mapTo('world'),
+  //     delay(1000)
+  //   )
+  // }
+  getDelayed2000(): Observable<any>{
+    return this.delayed2000.pipe(
+      delay(2000)
+    )
+  }
+  getDelayed1000(): Observable<any>{
+    return this.delayed1000.pipe(
+      delay(1000)
+    )
+  }
+  getDelayed750(): Observable<any>{
+    return this.delayed750.pipe(
+      delay(750)
+    )
+  }
+  getDelayed500(): Observable<any>{
+    return this.delayed500.pipe(
+      delay(500)
+    )
+  }
+
+  // takeWhileObservable
+
+  setThing(){
+    this.subject.next('dood');
+  }
+
+  ngOnDestroy(): void {
+    console.log('calling UNSUBSCRIBE');
+    
+    this.sub1.unsubscribe();
+    this.sub2.unsubscribe();
+    this.sub3.unsubscribe();
+    this.sub4.unsubscribe();
+  
   }
 }

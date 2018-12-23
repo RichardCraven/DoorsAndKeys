@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import '/styles/items.css';
 @import '/styles/monsters.css';
+@import '/styles/numbers.css';
 /* .tile{
     height:150px; 
     width:150px; 
@@ -16,6 +17,9 @@
 body{
     height: 100%;
     width: 100%;
+}
+.hidden{
+    display: none;
 }
 tile{
     cursor: crosshair;
@@ -181,10 +185,10 @@ tile.darkness:hover{
 }
 
 .placementZone{
-    background-color: lightgrey;
+    /* background-color: none; */
 }
 .monsterZone{
-    background-color: #001a33;
+    /* background-color: #b1bfcc; */
 }
 .placementZone:hover{
     background-color: whitesmoke;
