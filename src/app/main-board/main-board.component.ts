@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import {TileComponent} from '../tile/tile.component'
 import {PlayerManagerService} from '../services/player-manager.service'
 import {MapsService} from '../services/maps.service'
+import {MonstersService} from '../services/monsters.service';
 import { Subscription, Observable, interval, timer } from 'rxjs';
 import { ViewChild, ElementRef } from '@angular/core';
 
@@ -24,9 +25,9 @@ export class MainBoardComponent implements OnInit {
   engagedMonster = {};
   canvas;
   monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre',
-        'sphinx','troll','slime_mold','white_vampire','black_vampire','white_gorgon','black_gorgon',
-        'mummy','naiad','wyvern','skeleton','giant_scorpion','white_djinn','black_djinn','white_kronos','black_kronos',
-        'white_banshee','black_banshee','white_wraith','black_wraith'];
+        'sphinx','troll','slime_mold','black_vampire','black_gorgon',
+        'mummy','naiad','wyvern','skeleton','giant_scorpion','black_djinn','black_kronos',
+        'black_banshee','black_wraith'];
   tiles = [];
   items = [
     'skull',
@@ -57,7 +58,7 @@ export class MainBoardComponent implements OnInit {
   public context: CanvasRenderingContext2D;
 
 
-  constructor(public playerManager: PlayerManagerService, public mapsService: MapsService) { }
+  constructor(public playerManager: PlayerManagerService, public mapsService: MapsService, public monstersService: MonstersService) { }
 
   ngOnInit() {
     // this.canvas = document.getElementById('myCanvas');
@@ -382,14 +383,18 @@ export class MainBoardComponent implements OnInit {
       // const spawn_points = newMap['spawns']
       console.log('CALLED COMBAT BOARD');
       const num = Math.floor(Math.random() * this.monstersArr.length)
+      console.log('verifying ', this.monstersService.library[this.monstersArr[num]]);
+      // const mo
+      this.engagedMonster = this.monstersService.library[this.monstersArr[num]]
       this.engagedMonster['type'] = this.monstersArr[num]
-      this.engagedMonster['health'] = 75
+      // this.engagedMonster['health'] = 75
       this.showCombatBoard = true;
 
       // this.playerManager.activePlayer = null;
       // const spawn_point = spawn_points[Math.floor(Math.random()*spawn_points.length)]
       // this.playerManager.newPlayer(this.coordinatePoint(spawn_point))
     }
+    
   }
   
   buildVoid(){
@@ -433,6 +438,9 @@ export class MainBoardComponent implements OnInit {
   handlePlayerServiceSubscription(res){
     const player = this.playerManager.activePlayer;
     const tile = this.tiles[res.location]
+    if(res.endCombat){
+      this.showCombatBoard = false;
+    }
     if(!res.startTurn){
       for(var t in this.tiles){
         // this.tiles[t].visible = false

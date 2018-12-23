@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
+import {ItemsService} from '../services/items.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
 // import { Observable, of, empty, fromEvent, from } from 'rxjs';
 import {
@@ -63,7 +64,7 @@ export class CombatBoardComponent implements OnInit {
   monsterBar;
   @Input()monster
 
-  constructor(public playerManager: PlayerManagerService) {
+  constructor(public playerManager: PlayerManagerService, public itemsService: ItemsService) {
     
   }
 
@@ -82,8 +83,7 @@ export class CombatBoardComponent implements OnInit {
     // var monsterBar = document.getElementById("monster-health-bar"); 
       this.monsterHealthInitial = this.monster.health;
       this.monsterHealth = this.monster.health;
-      var height = 100;
-      console.log('monster bar is ',this.monsterBar);
+      
       this.monsterBar = document.getElementById("monster-health-bar");
       this.monsterBar.style.height = 0+'%'
 
@@ -162,8 +162,9 @@ export class CombatBoardComponent implements OnInit {
     
     this.inventory = this.playerManager.activePlayer.inventory;
     this.weapon = this.inventory.weapon.type;
-    // this.weaponCount = this.inventory.weapon.attack;
-    this.weaponDamage = this.inventory.weapon.damage;
+    const itemLibrary = this.itemsService.library;
+    this.weaponCount = itemLibrary.weapons[this.weapon].attack;
+    this.weaponDamage = itemLibrary.weapons[this.weapon].damage;
     this.monsterWeapon = 'down';
 
     //subscribe
@@ -518,6 +519,10 @@ export class CombatBoardComponent implements OnInit {
     this.monsterBar = document.getElementById("monster-health-bar");
     const percentage = (100 - (this.monsterHealth / this.monsterHealthInitial * 100))
     this.monsterBar.style.height = percentage+'%'
+    if(percentage < 1){
+      console.log('monster dead!!!!');
+      this.playerManager.endCombat();
+    }
   }
   monsterMiss(tile){
     tile.visible = tile[this.weapon] = false;

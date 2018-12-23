@@ -1,6 +1,7 @@
 import { Injectable, HostListener } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import { Logs } from 'selenium-webdriver';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Injectable({
   providedIn: 'root'
@@ -33,14 +34,13 @@ export class PlayerManagerService{
     //     break
     //   }
     // });
-    
+    const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+    const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
     const newPlayer = {
       name: 'player1',
       inventory: {
         weapon: {
-         type: 'flail',
-         attack: 5,
-         damage: 2
+         type: weapon
         }
       },
       location: null,
@@ -58,6 +58,9 @@ export class PlayerManagerService{
     //   console.log('removing window.event listener');
       
     // });
+  }
+  endCombat(){
+    this.subject.next({endCombat : true})
   }
   ping(){
   }
