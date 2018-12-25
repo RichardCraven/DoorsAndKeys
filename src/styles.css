@@ -62,7 +62,7 @@ tile:hover{
     background-image: url('assets/icons/items/crown.png');
     background-color: white;
 }
-.grown.highlight{
+.crown.highlight{
     background-color: gold;
 }
 tile.crown:hover{
@@ -79,7 +79,7 @@ tile.crown:hover{
     background-image: url('assets/icons/items/lantern.png');
     background-color: white;
 }
-.lantern.highlight{
+.item.highlight{
     background-color: gold;
 }
 .key{
@@ -98,11 +98,11 @@ tile.crown:hover{
 } */
 .spawn_point{
     background-image: url('assets/icons/misc/spawn_point.png');
-    background-color: white;
+    /* background-color: white; */
 }
 .door{
     background-image: url('assets/icons/portals/closed_door.png');
-    background-color: white;
+    /* background-color: white; */
 }
 .door.highlight{
     background: aliceblue;

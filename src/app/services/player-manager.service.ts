@@ -1,7 +1,6 @@
 import { Injectable, HostListener } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import { Logs } from 'selenium-webdriver';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { ItemsService } from './items.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,39 +8,43 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 export class PlayerManagerService{
   private subject = new Subject<any>();
   public messageSubject = new Subject<any>();
+  public globalSubject = new Subject<any>();
   public currentMap;
   public counter = 1;
   public empties = [];
   public players = [];
   public activePlayer;
-  constructor() {
-    // window.addEventListener('keydown', (event) => {
-    //   switch(event.key){
-    //     case 'ArrowUp':
-    //       this.movePlayer('up')
-    //     break
-    //     case 'ArrowDown':
-    //       this.movePlayer('down')
-    //     break
-    //     case 'ArrowLeft':
-    //       this.movePlayer('left')
-    //     break
-    //     case 'ArrowRight':
-    //       this.movePlayer('right')
-    //     break
-    //     case 'Enter':
-    //       this.startTurn();
-    //     break
-    //   }
-    // });
+  public inCombat = false;
+  constructor(public itemsService: ItemsService) {
+    window.addEventListener("focus", (event) => {
+    }, false);
+    
+    window.addEventListener('keydown', (event) => {
+      switch(event.key){
+        case 'ArrowUp':
+        this.movePlayer('up')
+        break
+        case 'ArrowDown':
+        this.movePlayer('down')
+        break
+        case 'ArrowLeft':
+        this.movePlayer('left')
+        break
+        case 'ArrowRight':
+        this.movePlayer('right')
+        break
+        case 'Enter':
+          this.startTurn();
+          break
+        }
+      });
+    window.focus();
     const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
     const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
     const newPlayer = {
       name: 'player1',
       inventory: {
-        weapon: {
-         type: weapon
-        }
+        weapon: this.itemsService.library.weapons[weapon]
       },
       location: null,
       visibility: 2,
@@ -52,15 +55,19 @@ export class PlayerManagerService{
   }
   
   initiateCombat(){
-    console.log('about to remove from playerService');
-    
+    this.inCombat = true;
     // window.removeEventListener('keydown', (event) => {
     //   console.log('removing window.event listener');
       
     // });
   }
-  endCombat(){
-    this.subject.next({endCombat : true})
+  endCombat(whoDied = null){
+    if(whoDied === 'playerDead'){
+      this.subject.next({endCombat : true, playerDied : true})
+    } else if(whoDied === 'monsterDead') {
+      this.subject.next({endCombat : true, monsterDied : true})
+    }
+    this.inCombat = false;
   }
   ping(){
   }
@@ -71,6 +78,9 @@ export class PlayerManagerService{
   }
   getPlayerMessages(): Observable<any>{
     return this.messageSubject.asObservable()
+  }
+  getGlobalMessages(): Observable<any>{
+    return this.globalSubject.asObservable()
   }
   newPlayer(location){
     
@@ -84,10 +94,13 @@ export class PlayerManagerService{
         // for(let a )
         // var num = Math.floor(Math.random() * this.empties.length) 
         // const location = this.empties[num];
+        const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+        const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
+
         const newPlayer = {
           name: 'player'+this.counter,
           inventory: {
-            weapon: 'flail'
+            weapon: this.itemsService.library.weapons[weapon]
           },
           location: location,
           visibility: 2,
@@ -99,6 +112,7 @@ export class PlayerManagerService{
         const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility);
     this.subject.next({location, visibility: visible});
   }
+
   startTurn(){
     const player = this.activePlayer;
     const location = player.location;
@@ -106,11 +120,13 @@ export class PlayerManagerService{
     this.subject.next({location, visibility: visible, startTurn : true});
     // let leftOrRight = this.leftOrRight(player.location)
   }
+
   leftOrRight(location){
     return 'left'
   }
+
   movePlayer(direction){
-    if(!this.activePlayer) return
+    if(!this.activePlayer || !this.activePlayer.location || this.inCombat) return
     this.messageSubject.next({msg : 'moving '+direction});
     const old_location = this.currentMap[this.activePlayer.location]
     let destination;
@@ -120,23 +136,27 @@ export class PlayerManagerService{
       destination = this.currentMap[this.activePlayer.location-1]
       if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right' || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location-1
+      if(destination.monster) this.subject.next({monster: destination})
       break
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
       if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location+1
+      if(destination.monster) this.subject.next({monster: destination})
       break
       case 'up':
       if(old_location.id === 0 || old_location.id === 14) return
       destination = this.currentMap[this.activePlayer.location-15]
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location-15
+      if(destination.monster) this.subject.next({monster: destination})
       break
       case 'down':
       destination = this.currentMap[this.activePlayer.location+15]
       if(old_location.id === 210 || old_location.id === 224) return
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location+15
+      if(destination.monster) this.subject.next({monster: destination})
       break
     }
     if(!this.currentMap[this.activePlayer.location].contains){
