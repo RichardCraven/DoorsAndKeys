@@ -1,7 +1,7 @@
 <div class="container">
   <div class="board">
     <div class="inventory-panel">
-      <tile  *ngFor='let tile of tiles' [ngClass]='{
+      <tile  *ngFor='let tile of tiles' (click)='click(tile)' [overlay]='tile.overlay' [ngClass]='{
        darkness: tile.darkness,
 
        scimitar: tile.scimitar,
@@ -40,8 +40,9 @@
       }
        '
       > 
-  
+      
       </tile>
+      
     </div>
   </div>
 </div>

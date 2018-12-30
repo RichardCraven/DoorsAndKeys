@@ -18,6 +18,7 @@ export class InventoryPanelComponent implements OnInit {
     })
   }
   tiles = [];
+  combatStarted = false;
   itemSubscription: Subscription;
   ngOnInit() {
     // console.log(this.playerManager.activePlayer.inventory);
@@ -48,6 +49,7 @@ export class InventoryPanelComponent implements OnInit {
     // }
     // console.log(this.tiles);
     this.updateInventory();
+    this.beginTimers();
   }
   updateInventory(){
     const inventory = this.playerManager.activePlayer.inventory;
@@ -56,6 +58,7 @@ export class InventoryPanelComponent implements OnInit {
       let weapon = inventory.weapons[i].type
       let tile = {}
       tile[weapon] = true;
+      tile['weapon'] = true;
       this.tiles.push(tile)
     }
     for(let i in inventory.charms){
@@ -83,5 +86,17 @@ export class InventoryPanelComponent implements OnInit {
       this.tiles.push(tile)
     }
   }
-
+  click(tile){
+    console.log('tile is ', tile);
+    // tile.overlay = true;
+    
+  }
+  beginTimers(){
+    for(let i in this.tiles){
+      console.log(this.tiles[i])
+      if(this.tiles[i].weapon){
+        this.tiles[i].overlay = true;
+      }
+    }
+  }
 }
