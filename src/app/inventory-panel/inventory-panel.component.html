@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="board">
+    <div class="inventory-panel">
+      <tile  *ngFor='let tile of tiles' [ngClass]='{
+       darkness: tile.darkness,
+
+       scimitar: tile.scimitar,
+       flail: tile.flail,
+       spear: tile.spear,
+       sword: tile.sword,
+       axe: tile.axe,
+       scepter: tile.scepter,
+ 
+       basic_shield: tile.basic_shield,
+       seeing_shield: tile.seeing_shield,
+ 
+       sayan_amulet : tile.sayan_amulet,
+       lundi_amulet : tile.lundi_amulet,
+       evilai_amulet : tile.evilai_amulet,
+       nukta_amulet: tile.nukta_amulet,
+
+       bundu_mask: tile.bundu_mask,
+       lundi_mask: tile.lundi_mask,
+       mardi_mask: tile.mardi_mask,
+       solomon_mask: tile.solomon_mask,
+       zul_mask: tile.zul_mask,
+       court_mask: tile.court_mask,
+       helmet: tile.helmet,
+ 
+       beetle_charm: tile.beetle_charm,
+       demonskull_charm: tile.demonskull_charm,
+       evilai_charm: tile.evilai_charm,
+       hamsa_charm: tile.hamsa_charm,
+       nukta_charm: tile.nukta_charm,
+       scarab_charm: tile.scarab_charm,
+       lundi_charm: tile.lundi_charm,
+
+       key: tile.key,
+       lantern: tile.lantern
+      }
+       '
+      > 
+  
+      </tile>
+    </div>
+  </div>
+</div>

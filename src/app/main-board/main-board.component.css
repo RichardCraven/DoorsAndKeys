@@ -1,16 +1,14 @@
 .container{
     align-items: center;
-    /* display: flex; */
     position: relative;
     justify-content: center;
     width: 1504px;
     height: 1504px;
-    /* width: 1410px; */
-    /* height: 970px; */
-    /* flex: 1; */
     margin: 0 auto;
+    /* margin- */
 }
 .board{
+    /* margin-top: 300px; */
     width: 1500px;
     height: 1500px;
     border: 1px solid black;
@@ -28,3 +26,12 @@
     position: absolute;
     z-index: -1;
 }
+/* inventory-panel{
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    width: 1504px;
+    height: 1504px;
+    margin: 0 auto;
+    border: 1px solid red;
+} */

@@ -13,7 +13,7 @@
     flex-flow: row wrap;
     height: 800px;
     width: 1000px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 .corner{
     width: 200px;
@@ -66,6 +66,14 @@
     background-position: center;
     background-size: cover;
 }
+.monster-stats-container{
+    position: absolute;
+    height: 244px;
+    width: 244px;
+    top: 244px;
+    left: 55px;
+    border: 1px solid black;
+}
 .monster-health{
     position: absolute;
     height: 244px;
@@ -82,7 +90,12 @@
 .monster-row{
     display: flex;
     width: 1000px;
-    height: 100px;
+    height: 102px;
+    border: bottom  1px solid black;
+}
+.top-tile{
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 .monster-info{
     position: absolute;
@@ -95,6 +108,20 @@
     padding: 20px;
     box-sizing: border-box;
     font-size: 2em;
+}
+.monsterMovementLeftEnd{
+    border-left: 1px solid yellow;
+    border-top: 1px solid yellow;
+    border-bottom: 2px solid yellow;
+}
+.monsterMovementRightEnd{
+    border-right: 1px solid yellow;
+    border-top: 1px solid yellow;
+    border-bottom: 2px solid yellow;
+}
+.monsterMovementMiddle{
+    border-top: 1px solid yellow;
+    border-bottom: 2px solid yellow;
 }
 .player-row{
     display: flex;
@@ -110,6 +137,23 @@
     bottom: 0px;
     right: 2px;
 }
+.player-inventory{
+    height: 494px;
+    width: 244px;
+    position: absolute;
+    border: 1px solid blue;
+    bottom: 247px;
+    right: 2px;
+    /* display: flex; */
+}
+.inventory-item{
+    height: 100px;
+    width: 100px;
+    border: 1px solid blue;
+    bottom: 247px;
+    right: 2px;
+    display: flex;
+}
 .player-icon{
     position: absolute;
     height: 244px;
@@ -118,6 +162,14 @@
     right: 0;
     background-position: center;
     background-size: cover;
+}
+.player-stats-container{
+    position: absolute;
+    height: 244px;
+    width: 244px;
+    top: 244px;
+    left: 55px;
+    border: 1px solid black;
 }
 .player-health{
     position: absolute;

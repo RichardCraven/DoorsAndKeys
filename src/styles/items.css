@@ -5,6 +5,9 @@
 .item.highlight{
     background-color: rgba(149, 135, 10, 0.5)
 }
+.item.highlight.selected{
+    background-color: darkgoldenrod;
+}
 .scimitar{
     background-image: url('../assets/icons/items/weapons/scimitar.png');
     
@@ -87,5 +90,34 @@
 }
 .scarab_charm{
     background-image: url('../assets/icons/items/charms/scarab_charm.png');
-    
+}
+/* SHIELDS */
+.seeing_shield{
+    background-image: url('../assets/icons/items/shields/basic_shield.png');
+}
+.seeing_shield{
+    background-image: url('../assets/icons/items/shields/seeing_shield.png');
+}
+/* WANDS */
+.vardas_wand{
+    background-image: url('../assets/icons/items/wands/vardas_wand.png');
+}
+.glindas_wand{
+    background-image: url('../assets/icons/items/wands/glindas_wand.png');
+}
+.maerlyns_rod{
+    background-image: url('../assets/icons/items/wands/maerlyns_rod.png');
+}
+/* AMULETS */
+.lundi_amulet{
+    background-image: url('../assets/icons/items/amulets/lundi_amulet.png');
+}
+.sayan_amulet{
+    background-image: url('../assets/icons/items/amulets/sayan_amulet.png');
+}
+.evilai_amulet{
+    background-image: url('../assets/icons/items/amulets/evilai_amulet.png');
+}
+.nukta_amulet{
+    background-image: url('../assets/icons/items/amulets/nukta_amulet.png');
 }

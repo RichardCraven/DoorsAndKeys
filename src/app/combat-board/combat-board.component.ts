@@ -33,9 +33,11 @@ export class CombatBoardComponent implements OnInit {
   botTilesCount = 10;
   gridTilesCount = 80;
   round = 0;
+  differential = 0;
   monsterDefeated;
-  monsterInfo = 'lez go'
-  playerInfo = 'die!'
+  monsterInfoLine1;
+  monsterInfoLine2;
+  playerInfo;
   topTiles = [];
   botTiles = [];
   gridTiles = [];
@@ -49,19 +51,22 @@ export class CombatBoardComponent implements OnInit {
   windowOpen = false;
   playerLocked = false;
   showBar = true;
-  monsterPosition;
   sub1;
   sub2;
   sub3;
   sub4;
-  inventory;
+  playerInventoryTiles = [];
   weapon;
   monsterWeapon;
   monsterIcon = {};
+  monsterMovementZoneStartpoint;
+  monsterMovementZoneEndpoint;
+  monsterMovementLeftEnd;
+  monsterMovementRightEnd;
+  monsterMovementMiddle;
   weaponCount;
   weaponDamage;
   initialOpenWindow;
-  hideMonsterTimer;
   monsterAttackTimer;
   showTimer;
   fadeTimer;
@@ -77,27 +82,41 @@ export class CombatBoardComponent implements OnInit {
   }
 
   ngOnInit() {
+    const inventory = this.playerManager.activePlayer.inventory;
     
-    //emit 1,2,3,4,5
-    // const source = of(1, 2, 3, 4, 5);
+    
+    for(let i = 0; i < inventory.weapons.length; i++){
+      let tile = {};
+      tile[inventory.weapons[i].type] = true;
+      this.playerInventoryTiles.push(tile)
+    }
+    for(let w = 0; w < inventory.wands.length; w++){
+      let tile = {};
+      tile[inventory.wands[w].type] = true;
+      this.playerInventoryTiles.push(tile)
+    }
+    for(let s = 0; s < inventory.shields.length; s++){
+      let tile = {};
+      tile[inventory.shields[s].type] = true;
+      this.playerInventoryTiles.push(tile)
+    }
+    for(let h = 0; h < inventory.headgear.length; h++){
+      let tile = {};
+      tile[inventory.headgear[h].type] = true;
+      this.playerInventoryTiles.push(tile)
+    }
+    for(let c = 0; c < inventory.charms.length; c++){
+      let tile = {};
+      tile[inventory.charms[c].type] = true;
+      this.playerInventoryTiles.push(tile)
+    };
+    this.monsterHealthInitial = this.monster.health;
+    this.monsterHealth = this.monster.health;
 
-    //allow values until value from source is greater than 4, then complete
-    // const example = source.pipe(takeWhile(val => val <= 4));
+    this.monsterBar = document.getElementById("monster-health-bar");
+    this.monsterBar.style.height = 0+'%'
 
-    //output: 1,2,3,4
-    // const subscribe = example.subscribe(val => console.log(val));
-
-
-    // var monsterBar = document.getElementById("monster-health-bar"); 
-      this.monsterHealthInitial = this.monster.health;
-      this.monsterHealth = this.monster.health;
-
-      this.monsterBar = document.getElementById("monster-health-bar");
-      this.monsterBar.style.height = 0+'%'
-
-      console.log('this monster is ', this.monster);
-      
-    // console.log('initting combat board');
+    this.monsterInfoLine1 = this.monster.combatMessages.greeting
     this.playerManager.initiateCombat()
 
     window.addEventListener('keydown', (event) => {
@@ -173,18 +192,22 @@ export class CombatBoardComponent implements OnInit {
     
     this.topTiles[4][this.monster.type] = true;
     this.topTiles[4].visible = true;
-    this.monsterPosition = 4;
+    this.monsterEndpoint = 4;
     this.botTiles[5].visible = true;
     this.botTiles[5].occupied = true;
     this.playerPosition = 5;
 
     this.monsterIcon[this.monster.type] = true
     
-    this.weapon = this.playerManager.activePlayer.inventory.weapon;
+    this.weapon = this.playerManager.activePlayer.inventory.weapons[0];
 
     this.weaponCount = this.weapon.attack;
     this.weaponDamage = this.weapon.damage;
     this.monsterWeapon = 'down';
+
+    const max = this.topTiles.length
+    this.monsterMovementZoneStartpoint = this.monsterEndpoint - this.monster.agility >= 0 ? this.monsterEndpoint - this.monster.agility : 0
+    this.monsterMovementZoneEndpoint = this.monsterEndpoint + this.monster.agility <= max ? this.monsterEndpoint + this.monster.agility : max
 
     //subscribe
 
@@ -198,7 +221,7 @@ export class CombatBoardComponent implements OnInit {
     this.sub3 = this.getDelayed750().subscribe( res => {
       if(typeof res !== 'string'){
         res[this.weapon.type] = res.visible = false;
-      } else if(res === 'closeGate'){
+      } else {
         this.functionRouter(res);
       }
     })
@@ -230,6 +253,10 @@ export class CombatBoardComponent implements OnInit {
           this.closeGate()
         break
 
+        case 'showMovementZone':
+          this.showMovementZone()
+        break
+
         case 'endCombat-monsterDead':
         this.playerManager.endCombat('monsterDead');
         break
@@ -240,7 +267,7 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   clickTile(tile){
-    console.log(this.weapon);
+    console.log(tile);
     
     if(tile.placementZone && this.weaponCount && !tile[this.weapon.type] && !this.playerLocked){
       tile.visible = true;
@@ -267,10 +294,12 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   openWindow(){
-    this.playerManager.globalSubject.next('hi')
+    // this.playerManager.globalSubject.next('hi')
     if(this.monsterDefeated) return
     this.playerLocked = false;
+    this.monsterInfoLine1 = this.monsterInfoLine2 = this.playerInfo = '';
     this.showBar = true;
+    
     const tiles = this.roundNumTiles;
     const round = this.round;
     const first = tiles[0]
@@ -351,6 +380,7 @@ export class CombatBoardComponent implements OnInit {
       }
     }
     this.delayed500.next('revealBar')
+    this.delayed750.next('showMovementZone')
     this.delayed750.next('closeGate')
     this.delayed2000.next('openWindow')
     return 'closeWindow'
@@ -359,25 +389,67 @@ export class CombatBoardComponent implements OnInit {
   hideMonster(){
     for(let tile of this.topTiles){
       if(tile){
-        tile[this.monster.type] = false;
-        tile.visible = false;
+        tile[this.monster.type] = tile.visible = tile.monsterMovementLeftEnd = tile.monsterMovementMiddle = tile.monsterMovementRightEnd = false;
       } 
     }
   }
 
   revealMonster(){
-    const max = this.topTiles.length
-    const zoneStartpoint = this.monsterPosition - this.monster.agility >= 0 ? this.monsterPosition - this.monster.agility : 0
-    const zoneEndpoint = this.monsterPosition + this.monster.agility <= max ? this.monsterPosition + this.monster.agility : max
-
-    let num = Math.floor(Math.random() * this.monster.agility + zoneStartpoint)
-    if (num === this.monsterEndpoint) num = Math.floor(Math.random() * this.monster.agility + zoneStartpoint)
-    if (num > zoneEndpoint) num = zoneEndpoint;
+    let options = [];
+    if(this.monsterEndpoint < 5){
+      for(let i = this.monsterEndpoint; i<=(this.monsterEndpoint+this.monster.agility); i++){
+        options.push(i)
+      }
+    } else {
+      for(let i = this.monsterEndpoint; i>=(this.monsterEndpoint-this.monster.agility); i--){
+        options.push(i)
+      }
+    }
     
+    let num = Math.floor(Math.random() * options.length)
+    let index = options[num]
 
-    const tile = this.topTiles[num];
-    tile[this.monster.type] = tile.visible = true ;
-    this.monsterEndpoint = num;
+    if (index === this.monsterEndpoint){
+      num = Math.floor(Math.random() * options.length)
+      index = options[num]
+    }
+    if (index > 9) index = 9;
+    if (index < 0 ) index = 0
+
+    let tile = this.topTiles[index];
+    tile[this.monster.type] = tile.visible = true;
+    this.monsterEndpoint = index;
+  }
+
+  showMovementZone(){
+    const max = this.topTiles.length
+    this.monsterMovementZoneStartpoint = (this.monsterEndpoint - this.monster.agility) >= 0 ? (this.monsterEndpoint - this.monster.agility) : 0
+    // this.monsterMovementZoneStartpoint = this.monsterEndpoint - this.monster.agility
+    this.monsterMovementZoneEndpoint = (this.monsterEndpoint + this.monster.agility) <= max ? (this.monsterEndpoint + this.monster.agility) : max
+    // this.monsterMovementZoneEndpoint = this.monsterEndpoint + this.monster.agility
+    if(this.monsterMovementZoneStartpoint === 10){
+      console.log('ERROR!! monster movement zone start point is 10');
+      
+    }
+    if(this.monsterMovementZoneEndpoint === 10){
+      console.log('ERROR!! monster movement zone end point is 10');
+      
+    }
+
+
+    for(let i = this.monsterMovementZoneStartpoint; i <= this.monsterMovementZoneEndpoint; i++){
+      if(!this.topTiles[i]){
+        console.log('ERROR! tile is undefined. i is ', i);
+        continue
+      }
+      if(i === this.monsterMovementZoneStartpoint){
+        this.topTiles[i].monsterMovementLeftEnd = true;
+      } else if(i === this.monsterMovementZoneEndpoint){
+        this.topTiles[i].monsterMovementRightEnd = true;
+      }else{
+        this.topTiles[i].monsterMovementMiddle = true;
+      }
+    }
   }
 
   fireWeapon(tile){
@@ -468,6 +540,8 @@ export class CombatBoardComponent implements OnInit {
     this.monsterAttackOrigins = [];
     let attacks = this.monster.attack; //to be replaced with monster attack from json
     const tiles = this.gridTiles;
+
+    this.monsterInfoLine1 = this.monster.combatMessages.attack[Math.floor(Math.random()*this.monster.combatMessages.attack.length)]
     
     //NEED TO ACCOUNT FOR STACKING OF ATTACKS
     //PROBABLY BY ASSIGNING A 'STACKED' PROPERTY TO PAIRS OF STACKS
@@ -521,6 +595,7 @@ export class CombatBoardComponent implements OnInit {
       counter++
     }
     this.monsterHealth -= damage;
+    this.playerInfo = 'You hit for ' + damage + ' damage!'
 
     this.monsterBar = document.getElementById("monster-health-bar");
     const percentage = (100 - (this.monsterHealth / this.monsterHealthInitial * 100))
@@ -554,7 +629,7 @@ export class CombatBoardComponent implements OnInit {
       counter++
     }
     this.playerHealth -= this.monster.damage;
-
+    this.playerInfo = 'Hit you for ' + this.monster.damage + ' damage!'
     this.playerBar = document.getElementById("player-health-bar");
     const percentage = (100 - (this.playerHealth / this.playerHealthInitial * 100))
     this.playerBar.style.height = percentage+'%'

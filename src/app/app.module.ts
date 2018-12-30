@@ -8,6 +8,7 @@ import { MainBoardComponent } from './main-board/main-board.component';
 import { TileComponent } from './tile/tile.component';
 import { InfoPanelComponent } from './info-panel/info-panel.component';
 import { CombatBoardComponent } from './combat-board/combat-board.component';
+import { InventoryPanelComponent } from './inventory-panel/inventory-panel.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { CombatBoardComponent } from './combat-board/combat-board.component';
     MainBoardComponent,
     TileComponent,
     InfoPanelComponent,
-    CombatBoardComponent
+    CombatBoardComponent,
+    InventoryPanelComponent
   ],
   imports: [
     BrowserModule

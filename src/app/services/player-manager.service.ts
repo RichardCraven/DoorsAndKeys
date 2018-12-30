@@ -8,6 +8,7 @@ import { ItemsService } from './items.service';
 export class PlayerManagerService{
   private subject = new Subject<any>();
   public messageSubject = new Subject<any>();
+  public itemRequestSubject = new Subject<any>();
   public globalSubject = new Subject<any>();
   public currentMap;
   public counter = 1;
@@ -40,18 +41,47 @@ export class PlayerManagerService{
       });
     window.focus();
     const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
-    const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
+    const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
+    const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
+    const charm = charmsArr[Math.floor(Math.random()* weaponsArr.length)];
+    const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];
+    const wand = wandsArr[Math.floor(Math.random()* wandsArr.length)];
+    const headgearArr = ['bundu_mask', 'court_mask', 'lundi_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet'];
+    const headgear = headgearArr[Math.floor(Math.random()* headgearArr.length)];
+    const amuletsArr = ['sayan_amulet','lundi_amulet','evilai_amulet','nukta_amulet',]
+    const amulet = amuletsArr[Math.floor(Math.random()* amuletsArr.length)];
+    const shieldsArr = ['seeing_shield','basic_shield'];
+    const shield = shieldsArr[Math.floor(Math.random()* shieldsArr.length)];
+
     const newPlayer = {
       name: 'player1',
       inventory: {
-        weapon: this.itemsService.library.weapons[weapon]
+        weapons: [
+          this.itemsService.library.weapons[weapon]
+        ],
+        amulets: [],
+        headgear: [],
+        wands: [
+          this.itemsService.library.wands[wand]
+        ],
+        shields: [],
+        misc: []
       },
       location: null,
       visibility: 2,
       moves: 2,
       coordinates: [0,0]
     }
+    console.log('AMULET IS ', amulet);
+    console.log(this.itemsService.library.amulets[amulet]);
+    
+    if(Math.random()) newPlayer.inventory.headgear.push(this.itemsService.library.headgear[headgear])
+    if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
+    if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
+    console.log('YOOO', newPlayer);
+    
     this.activePlayer = newPlayer;
+
   }
   
   initiateCombat(){
@@ -61,13 +91,44 @@ export class PlayerManagerService{
       
     // });
   }
+  requestItem(item){
+    // this.globalSubject.next({showInfo: true})
+    if(item === 'clear'){
+      this.itemRequestSubject.next({clear : true})
+    }else {
+      this.itemRequestSubject.next({item})
+    }
+  }
   endCombat(whoDied = null){
+    console.log('in player service endCombat ', whoDied, ' died.');
+    
     if(whoDied === 'playerDead'){
       this.subject.next({endCombat : true, playerDied : true})
     } else if(whoDied === 'monsterDead') {
       this.subject.next({endCombat : true, monsterDied : true})
     }
     this.inCombat = false;
+  }
+  gainItem(item){
+    // console.log('in gain item, item is ', item);
+    // console.log(this.itemsService)
+    for(let itemArr in this.itemsService.library){
+      // console.log('sukka',this.itemsService.library[itemArr]);
+      
+      for(let itemInstance in this.itemsService.library[itemArr]){
+        // console.log(i);
+        // console.log(this.itemsService.library[itemArr][i]);
+        if(item === this.itemsService.library[itemArr][itemInstance].type){
+          console.log('item is ', this.itemsService.library[itemArr][itemInstance].type);
+          this.activePlayer.inventory[itemArr].push(this.itemsService.library[itemArr][itemInstance])
+        }
+        // console.log(this.itemsService.library[itemArr][itemInstance]);
+        
+      }
+    }
+    console.log(this.activePlayer);
+    this.globalSubject.next({update: true})
+    
   }
   ping(){
   }
@@ -78,6 +139,9 @@ export class PlayerManagerService{
   }
   getPlayerMessages(): Observable<any>{
     return this.messageSubject.asObservable()
+  }
+  getItem(): Observable<any>{
+    return this.itemRequestSubject.asObservable()
   }
   getGlobalMessages(): Observable<any>{
     return this.globalSubject.asObservable()
@@ -94,20 +158,60 @@ export class PlayerManagerService{
         // for(let a )
         // var num = Math.floor(Math.random() * this.empties.length) 
         // const location = this.empties[num];
-        const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
-        const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
+        // const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+        // const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
 
-        const newPlayer = {
-          name: 'player'+this.counter,
-          inventory: {
-            weapon: this.itemsService.library.weapons[weapon]
-          },
-          location: location,
-          visibility: 2,
-          moves: 2,
-          coordinates: [0,0]
-        }
-        this.activePlayer = newPlayer;
+        const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+    const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
+    const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
+    const charm = charmsArr[Math.floor(Math.random()* weaponsArr.length)];
+    const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];
+    const wand = wandsArr[Math.floor(Math.random()* wandsArr.length)];
+    const headgearArr = ['bundu_mask', 'court_mask', 'lundi_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet'];
+    const headgear = headgearArr[Math.floor(Math.random()* headgearArr.length)];
+    const amuletsArr = ['sayan_amulet','lundi_amulet','evilai_amulet','nukta_amulet',]
+    const amulet = amuletsArr[Math.floor(Math.random()* amuletsArr.length)];
+    const shieldsArr = ['seeing_shield','basic_shield'];
+    const shield = shieldsArr[Math.floor(Math.random()* shieldsArr.length)];
+
+    const newPlayer = {
+      name: 'player1',
+      inventory: {
+        weapons: [
+          this.itemsService.library.weapons[weapon]
+        ],
+        amulets: [],
+        headgear: [],
+        wands: [
+          this.itemsService.library.wands[wand]
+        ],
+        shields: [],
+        misc: [],
+        charms: [],
+      },
+      location: location,
+      visibility: 2,
+      moves: 2,
+      coordinates: [0,0]
+    }
+
+    if(Math.random()) newPlayer.inventory.headgear.push(this.itemsService.library.headgear[headgear])
+    if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
+    if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
+    this.activePlayer = newPlayer;
+
+
+        // const newPlayer = {
+        //   name: 'player'+this.counter,
+        //   inventory: {
+        //     weapon: this.itemsService.library.weapons[weapon]
+        //   },
+        //   location: location,
+        //   visibility: 2,
+        //   moves: 2,
+        //   coordinates: [0,0]
+        // }
+        // this.activePlayer = newPlayer;
         
         const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility);
     this.subject.next({location, visibility: visible});
@@ -137,12 +241,14 @@ export class PlayerManagerService{
       if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right' || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location-1
       if(destination.monster) this.subject.next({monster: destination})
+      if(destination.item) this.subject.next({item: destination})
       break
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
       if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location+1
       if(destination.monster) this.subject.next({monster: destination})
+      if(destination.item) this.subject.next({item: destination})
       break
       case 'up':
       if(old_location.id === 0 || old_location.id === 14) return
@@ -150,6 +256,7 @@ export class PlayerManagerService{
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location-15
       if(destination.monster) this.subject.next({monster: destination})
+      if(destination.item) this.subject.next({item: destination})
       break
       case 'down':
       destination = this.currentMap[this.activePlayer.location+15]
@@ -157,6 +264,7 @@ export class PlayerManagerService{
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
       if(!destination.contains) this.activePlayer.location = this.activePlayer.location+15
       if(destination.monster) this.subject.next({monster: destination})
+      if(destination.item) this.subject.next({item: destination})
       break
     }
     if(!this.currentMap[this.activePlayer.location].contains){

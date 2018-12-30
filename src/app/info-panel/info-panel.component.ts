@@ -10,16 +10,30 @@ import {PlayerManagerService} from '../services/player-manager.service'
 export class InfoPanelComponent implements OnInit {
   private message : string;
   private adjacency = true;
+  public item = '';
+  public showItemOption = false;
   private buttonSubject = new Subject<any>();
+  tile = {};
   messageSubscription: Subscription;
+  itemSubscription: Subscription;
   constructor(public playerManager: PlayerManagerService) {
     this.playerManager.getPlayerMessages().subscribe(res => {
       
-      // console.log('resss is ', res);
       this.message = res.msg
 
       if(res.monster){
-        // console.log('IT WORKED!', res.monster)
+      }
+    })
+    this.playerManager.getItem().subscribe(res => {
+      console.log('in get item');
+      if(!res.clear){
+        this.showItemOption = true;
+        
+        this.item = res.item
+        this.tile = {}
+        this.tile[res.item] = true;
+      } else  {
+        this.showItemOption = false;
       }
     })
    }
@@ -29,6 +43,9 @@ export class InfoPanelComponent implements OnInit {
   }
   displayMessage(msg, type = 'general'){
     this.message = msg
+  }
+  displayItem(item){
+    this.item = item
   }
   // getButtonPresses(): Observable<any>{
   //   return this.buttonSubject.asObservable()
