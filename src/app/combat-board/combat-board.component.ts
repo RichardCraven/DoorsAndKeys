@@ -2,7 +2,6 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
-// import { Observable, of, empty, fromEvent, from } from 'rxjs';
 import {
   delay,
   mapTo,
@@ -14,9 +13,6 @@ import {
   withLatestFrom,
   share
 } from 'rxjs/operators';
-
-// import { Observable } from 'rxjs/Observable';
-// import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'combat-board',
@@ -121,12 +117,6 @@ export class CombatBoardComponent implements OnInit {
 
     window.addEventListener('keydown', (event) => {
       switch(event.key){
-        // case 'ArrowUp':
-        //   this.subject.next('up')
-        // break
-        // case 'ArrowDown':
-        // this.delayed1000.next('chickendown')
-        // break
         case 'ArrowLeft':
           this.movePlayer('left')
         break

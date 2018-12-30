@@ -3,7 +3,9 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'tile',
   template: `
-    <div *ngIf='_overlay'  class="tile-overlay"></div>
+    <div *ngIf='_overlay' class="tile-overlay" [ngClass]='{
+      begin : _begin
+    }' ></div>
   `,
   styleUrls: ['./tile.component.css']
 })
@@ -11,6 +13,7 @@ export class TileComponent implements OnInit {
   private _name = '';
   private _contains = '';
   private _overlay=false;
+  private _begin=false;
   private _empty = true;
   @Input()
   set name(name: string) {
@@ -41,6 +44,13 @@ export class TileComponent implements OnInit {
   }
  
   get overlay(): boolean { return this._overlay; }
+
+  @Input()
+  set begin(begin: boolean) {
+    this._begin = (begin)  
+  }
+ 
+  get begin(): boolean { return this._begin; }
 
   ngOnInit() {
   }

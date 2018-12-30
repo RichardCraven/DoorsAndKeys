@@ -49,8 +49,10 @@ tile{
 }
 
 tile:hover{
-    /* background-color: azure; */
     background-color: grey
+}
+tile.inventory:hover{
+    background-color: transparent;
 }
 
 
