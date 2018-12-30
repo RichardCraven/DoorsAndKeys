@@ -5,38 +5,34 @@
     width: 100px;
     opacity: 0.8;
     position: absolute;
-
-    background: 
-    /* top, transparent red, faked with gradient */ 
-    linear-gradient(
-      to right,  #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%
-    ),
-    /* bottom, image */
-    url('../../assets/icons/items/charms/scarab_charm.png');
-
-    background-size: 400% 400%;
-    -webkit-animation: selectionTimer 10s ease infinite;
-    -moz-animation: selectionTimer 10s ease infinite;
-    animation: selectionTimer 10s ease infinite;
+    /* background: rgba(55, 61, 82, 0.516); */
+    background: rgba(82, 222, 82, 0.516);
+    
 }
+.tile-overlay.begin{
+    background: linear-gradient(
+      to right,  white 0%, white 50%, rgba(245, 112, 112, 0.598) 60%, yellow 67.5%, rgba(82, 222, 82, 0.516) 75%
+    );
+    background-size: 400% 400%;
+    -webkit-animation: selectionTimer 5s ;
+    -moz-animation: selectionTimer 5s ;
+    animation: selectionTimer 5s ;
 
-/* background: linear-gradient(135deg, #30e5b6, #7450c5);
-background-size: 400% 400%; */
-
-
+    animation-fill-mode: forwards;
+}
 
 @-webkit-keyframes selectionTimer {
-    0%{background-position:15% 0%}
-    50%{background-position:86% 100%}
-    100%{background-position:15% 0%}
+    0%{background-position:0% 0%}
+    50%{background-position:50% 0%}
+    100%{background-position:100% 0%}
 }
 @-moz-keyframes selectionTimer {
-    0%{background-position:15% 0%}
-    50%{background-position:86% 100%}
-    100%{background-position:15% 0%}
+    0%{background-position:0% 0%}
+    50%{background-position:50% 0%}
+    100%{background-position:100% 0%}
 }
 @keyframes selectionTimer { 
-    0%{background-position:15% 0%}
-    50%{background-position:86% 100%}
-    100%{background-position:15% 0%}
+    0%{background-position:0% 0%}
+    50%{background-position:50% 0%}
+    100%{background-position:100% 0%}
 }

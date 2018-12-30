@@ -460,6 +460,7 @@ export class MainBoardComponent implements OnInit {
         this.engagedMonster = this.monstersService.library[res.monster.contains] 
         this.engagedMonster['location'] = res.monster.id;
         this.playerManager.requestItem('clear')
+        this.playerManager.globalSubject.next({startCombat: true})
         this.showCombatBoard = true;
       }
       if(res.monster.highlight){
