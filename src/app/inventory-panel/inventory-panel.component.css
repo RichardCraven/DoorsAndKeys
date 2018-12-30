@@ -1,0 +1,27 @@
+.container{
+    /* margin-top: 5%; */
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    display: flex;
+    width: 1504px;
+    height: 200px;
+    margin: 0 auto;
+    /* border: 1px solid green; */
+}
+.board{
+    width: 1500px;
+    height: 150px;
+    /* border: 1px solid black; */
+    display: flex;
+    flex-flow: row wrap;
+    align-content: flex-end;
+}
+.inventory-panel{
+    /* border: 3px solid blue; */
+    height: 102px;
+    width: 1200px;
+    display: flex;
+    flex-flow: row wrap;
+    align-content: flex-end;
+}

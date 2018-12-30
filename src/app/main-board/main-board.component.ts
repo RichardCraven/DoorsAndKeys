@@ -4,6 +4,7 @@ import {PlayerManagerService} from '../services/player-manager.service'
 import {MapsService} from '../services/maps.service'
 import {MonstersService} from '../services/monsters.service';
 import { ViewChild, ElementRef } from '@angular/core';
+import {InfoPanelComponent} from '../info-panel/info-panel.component';
 import { Subscription, Observable, Subject, interval, timer } from 'rxjs';
 import {
   delay,
@@ -36,6 +37,7 @@ export class MainBoardComponent implements OnInit {
   turnStarted = false;
   showCombatBoard = false;
   engagedMonster = {};
+  itemPickup;
   canvas;
   monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre',
         'sphinx','troll','slime_mold','black_vampire','black_gorgon',
@@ -241,19 +243,21 @@ export class MainBoardComponent implements OnInit {
     
   }
   functionRouter(string){
-    console.log('in function router, command is ', string);
     let monsterTile = this.tiles[this.engagedMonster['location']]
     let playerTile = this.tiles[this.playerManager.activePlayer.location]
     switch (string){
       case 'removeMonster':
-        console.log(this.engagedMonster['location'])
-        
         monsterTile.monster = monsterTile[monsterTile.contains] = monsterTile.selected = monsterTile.highlight = false;
         monsterTile.contains = '';
       break
       case 'removePlayer':
         playerTile.occupied = false;
         playerTile.contains = '';
+      break
+      case 'gainItem':
+        this.itemPickup[this.itemPickup.contains] = false;
+        this.itemPickup.highlight = this.itemPickup.selected = false;
+        this.itemPickup.contains = '';
       break
     }
   }
@@ -278,7 +282,6 @@ export class MainBoardComponent implements OnInit {
     }
   }
   populateBoard(){
-    console.log('populating, active: ', this.playerManager.activePlayer);
         const newMap = this.mapsService.generateMap()
         const voids = newMap['voids']
         const keys = newMap['keys']
@@ -293,10 +296,11 @@ export class MainBoardComponent implements OnInit {
         const spawn_points = newMap['spawns']
 
         const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
-        const wandsArr = ['maerlyns', 'glindas', 'vardas'];
-        const headgearArr = ['bundu_mask', 'court_mask', 'lundi_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet']
-        const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm',]
-        const amuletsArr = ['sayan','lundi','evilai','nukta',]
+        const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];
+        const headgearArr = ['bundu_mask', 'court_mask', 'lundi_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet'];
+        const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
+        const amuletsArr = ['sayan_amulet','lundi_amulet','evilai_amulet','nukta_amulet',]
+        const shieldsArr = ['seeing_shield','basic_shield'];
 
         const monstersArr = this.monstersArr;
         const demonsArr = ['black_demon','golden_demon','kabuki_demon','dulu_demon']
@@ -323,6 +327,15 @@ export class MainBoardComponent implements OnInit {
           const tile = this.tiles[point];
           tile.lantern = tile.item =  true;
           tile.contains = 'lantern'
+        }
+
+        //populate shields
+        for(let s = 0; s < shields.length; s++){
+          let point = this.coordinatePoint([shields[s][0],shields[s][1]])
+          const tile = this.tiles[point];
+          const shield = shieldsArr[Math.floor(Math.random() * shieldsArr.length)]
+          tile[shield] = tile.item =  true;
+          tile.contains = shield;
         }
         // this.tiles[this.coordinatePoint(shield)].shield = true;
         this.tiles[this.coordinatePoint(stairs)].stairs = true;
@@ -434,18 +447,11 @@ export class MainBoardComponent implements OnInit {
     const player = this.playerManager.activePlayer;
     const tile = this.tiles[res.location]
     if(res.endCombat){
-      
-      console.log('in maindboard, res is ', res);
       if(res.playerDied){
-        console.log('PLAYER DIED!!!!!')
         this.delayed500.next('removePlayer')
       } else {
         this.delayed500.next('removeMonster')
       }
-      // tile.monster = tile[tile.contains] = tile.selected = tile.highlight = false;
-      // tile.contains = '';
-      // console.log(tile);
-      // this.engagedMonster
       this.showCombatBoard = false;
       return
     }
@@ -453,10 +459,30 @@ export class MainBoardComponent implements OnInit {
       if(res.monster.selected){
         this.engagedMonster = this.monstersService.library[res.monster.contains] 
         this.engagedMonster['location'] = res.monster.id;
+        this.playerManager.requestItem('clear')
         this.showCombatBoard = true;
       }
       if(res.monster.highlight){
         res.monster.selected = true;
+      }
+      return
+    }
+    if(res.item){
+      if(res.item.selected){
+        console.log('ITEM SELECTED is ', res.item);
+        console.log(this.playerManager.activePlayer.inventory);
+        this.playerManager.gainItem(res.item.contains)
+        this.itemPickup = res.item;
+        this.itemPickup[this.itemPickup.contains] = false;
+        this.itemPickup.highlight = this.itemPickup.selected = false;
+        this.itemPickup.contains = ''
+        // this.delayed500.next('gainItem')
+        // this.engagedMonster = this.monstersService.library[res.monster.contains] 
+        // this.engagedMonster['location'] = res.monster.id;
+        // this.showCombatBoard = true;
+      }
+      if(res.item.highlight){
+        res.item.selected = true;
       }
       return
     }
@@ -488,6 +514,7 @@ export class MainBoardComponent implements OnInit {
       player.coordinates = this.pointToCoordinates(player.location)
 
       const adjacent = this.whatsAdjacent(player.coordinates);
+      let itemToPickUp = false;
       for(var w in adjacent){
 
         //NEED TO DO EDGE DETECTION HERE
@@ -499,7 +526,13 @@ export class MainBoardComponent implements OnInit {
         }
         if(adjacent[w].item){
           adjacent[w].highlight = true;
+          itemToPickUp = adjacent[w].contains;
         }
+      }
+      if(itemToPickUp){
+        this.playerManager.requestItem(itemToPickUp)
+      }else {
+        this.playerManager.requestItem('clear')
       }
     }
   }
@@ -548,21 +581,16 @@ export class MainBoardComponent implements OnInit {
     }
   }
   clickTile(target){
-    console.log('tile is ',target);
-
     if(target.selected){
+      this.playerManager.requestItem('clear')
       this.showCombatBoard = true;
       this.engagedMonster = this.monstersService.library[target.contains] 
       this.engagedMonster['location'] = target.id;
       return
     }
     if(target.highlight){
-      // console.log(target.contains);
       target.selected = true;
     }
-    // console.log(target);
-    
-    // this.checkDistance(target.coordinates, this.pointToCoordinates(this.playerManager.activePlayer.location))
   }
   shroudMap(){
     for(let i = 0; i < this.tiles.length; i++){
@@ -611,8 +639,6 @@ export class MainBoardComponent implements OnInit {
       let upperRightPoint = this.coordinatePoint([coords[0]+i, coords[1]+i])
       let lowerRightPoint = this.coordinatePoint([coords[0]+i, coords[1]-i])
       let lowerLeftPoint = this.coordinatePoint([coords[0]-i, coords[1]+i])
-      // console.log(coords[0]-3)
-      // console.log(coords[0]-3)
       if(this.tiles[leftPoint]) this.tiles[leftPoint].green = true;
       if(this.tiles[rightPoint]) this.tiles[rightPoint].green = true;
       if(this.tiles[upperPoint]) this.tiles[upperPoint].green = true;

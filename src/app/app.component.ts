@@ -27,7 +27,12 @@ export class AppComponent implements OnInit  {
   ngOnInit(){
     this.playerManager.getGlobalMessages().subscribe(res => {
       console.log('in global! res is ', res);
-      
+      this.showInfo = false;
+      if(res.item){
+        this.showInfo = true;
+      } else {
+        // this.showInfo = false;
+      }
       // this.handlePlayerServiceSubscription(res)
     })
 
