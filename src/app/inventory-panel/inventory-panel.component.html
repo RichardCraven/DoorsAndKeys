@@ -1,7 +1,13 @@
 <div class="container">
   <div class="board">
     <div class="inventory-panel">
-      <tile  *ngFor='let tile of tiles' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
+      <tile  *ngFor='let tile of tiles' (click)='click(tile)'
+       [overlay]='tile.overlay' 
+       [duration3]='tile.duration3'
+       [duration5]='tile.duration5' 
+       [duration6]='tile.duration6' 
+       [duration8]='tile.duration8'  
+       [ngClass]='{
        inventory: true,
 
        scimitar: tile.scimitar,
@@ -49,7 +55,13 @@
       
     </div>
     <div class="item-row1">
-      <tile *ngFor='let tile of row1' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
+      <tile *ngFor='let tile of row1' (click)='click(tile)' 
+      [overlay]='tile.overlay' 
+      [duration3]='tile.duration3'
+      [duration5]='tile.duration5' 
+      [duration6]='tile.duration6' 
+      [duration8]='tile.duration8' 
+      [ngClass]='{
         inventory: true,
 
        scimitar: tile.scimitar,
@@ -64,7 +76,13 @@
       }'></tile>
     </div>
     <div class="item-row2">
-      <tile *ngFor='let tile of row2' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
+      <tile *ngFor='let tile of row2' (click)='click(tile)' 
+      [overlay]='tile.overlay' 
+      [duration3]='tile.duration3'
+      [duration5]='tile.duration5' 
+      [duration6]='tile.duration6' 
+      [duration8]='tile.duration8' 
+      [ngClass]='{
         inventory: true,
 
        scimitar: tile.scimitar,
@@ -79,7 +97,13 @@
       }'></tile>
     </div>
     <div class="item-row3">
-      <tile *ngFor='let tile of row3' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
+      <tile *ngFor='let tile of row3' (click)='click(tile)' 
+      [overlay]='tile.overlay' 
+      [duration3]='tile.duration3'
+      [duration5]='tile.duration5' 
+      [duration6]='tile.duration6' 
+      [duration8]='tile.duration8' 
+      [ngClass]='{
         inventory: true,
 
        scimitar: tile.scimitar,
