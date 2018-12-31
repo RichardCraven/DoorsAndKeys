@@ -384,7 +384,7 @@ export class MainBoardComponent implements OnInit {
           tile.contains = charm;
         }
         //populate monsters
-        let numOfMonsters = Math.floor(Math.random() * 10 + 4)
+        let numOfMonsters = Math.floor(Math.random() * 14 + 5)
         while(numOfMonsters > 0){
           // const monster = monstersArr[Math.floor(Math.random()*monstersArr.length)]
           let okToContinue = true;
@@ -470,17 +470,11 @@ export class MainBoardComponent implements OnInit {
     }
     if(res.item){
       if(res.item.selected){
-        console.log('ITEM SELECTED is ', res.item);
-        console.log(this.playerManager.activePlayer.inventory);
         this.playerManager.gainItem(res.item.contains)
         this.itemPickup = res.item;
         this.itemPickup[this.itemPickup.contains] = false;
         this.itemPickup.highlight = this.itemPickup.selected = false;
-        this.itemPickup.contains = ''
-        // this.delayed500.next('gainItem')
-        // this.engagedMonster = this.monstersService.library[res.monster.contains] 
-        // this.engagedMonster['location'] = res.monster.id;
-        // this.showCombatBoard = true;
+        this.itemPickup.contains = '';
       }
       if(res.item.highlight){
         res.item.selected = true;

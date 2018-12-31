@@ -47,12 +47,15 @@ export class CombatBoardComponent implements OnInit {
   windowOpen = false;
   playerLocked = false;
   showBar = true;
+  wandAvailable = true;
   sub1;
   sub2;
   sub3;
   sub4;
   playerInventoryTiles = [];
   weapon;
+  wand;
+  amulet;
   monsterWeapon;
   monsterIcon = {};
   monsterMovementZoneStartpoint;
@@ -80,7 +83,8 @@ export class CombatBoardComponent implements OnInit {
   ngOnInit() {
     const inventory = this.playerManager.activePlayer.inventory;
     
-    
+    // ****** ! None of this is currently used
+
     for(let i = 0; i < inventory.weapons.length; i++){
       let tile = {};
       tile[inventory.weapons[i].type] = true;
@@ -123,12 +127,16 @@ export class CombatBoardComponent implements OnInit {
         case 'ArrowRight':
           this.movePlayer('right')
         break
+        case 'z':
+        this.addCastSpell();
+        break
         case ' ':
           this.addAttack()
+          
         break
         case 'Meta':
-          console.log('casting spell');
-          this.spellCasting = true;
+        this.spellCasting = true;
+          // this.addCastSpell()
         break
       }
     });
@@ -136,7 +144,6 @@ export class CombatBoardComponent implements OnInit {
     window.addEventListener('keyup', (event) => {
       switch(event.key){
         case 'Meta':
-          console.log('releasing spell');
           this.spellCasting = false;
         break
       }
@@ -190,6 +197,7 @@ export class CombatBoardComponent implements OnInit {
     this.monsterIcon[this.monster.type] = true
     
     this.weapon = this.playerManager.activePlayer.inventory.weapons[0];
+    this.wand = this.playerManager.activePlayer.inventory.wands[0]
 
     this.weaponCount = this.weapon.attack;
     this.weaponDamage = this.weapon.damage;
@@ -257,12 +265,18 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   clickTile(tile){
-    console.log(tile);
-    
-    if(tile.placementZone && this.weaponCount && !tile[this.weapon.type] && !this.playerLocked){
+    if(this.spellCasting && !this.playerLocked && tile.placementZone && this.wandAvailable){
+      tile.visible = true;
+      tile[this.wand.type] = true;
+      this.wandAvailable = false;
+      this.playerManager.attackPing.next({wand:this.wand})
+    } else if(this.spellCasting && !this.wandAvailable){
+      return
+    } else if(tile.placementZone && this.weaponCount && !tile[this.weapon.type] && !this.playerLocked){
       tile.visible = true;
       tile[this.weapon.type] = true;
       this.weaponCount--
+      this.playerManager.attackPing.next({weapon:this.weapon})
     }
   }
   clearMonsterRows(){
@@ -280,7 +294,7 @@ export class CombatBoardComponent implements OnInit {
   }
   clearGridRows(){
     for(let t in this.gridTiles){
-      this.gridTiles[t][this.monsterWeapon] = this.gridTiles[t][this.weapon.type] = this.gridTiles[t].visible = false;
+      this.gridTiles[t][this.monsterWeapon] = this.gridTiles[t][this.wand.type] = this.gridTiles[t][this.weapon.type] = this.gridTiles[t].visible = false;
     }
   }
   openWindow(){
@@ -325,6 +339,7 @@ export class CombatBoardComponent implements OnInit {
     
     
     this.weaponCount = this.weapon.attack;
+    this.wandAvailable = true;
     this.openGate();
     return 'openWindow'
   }
@@ -368,6 +383,9 @@ export class CombatBoardComponent implements OnInit {
       if(this.gridTiles[g][this.weapon.type]){
         this.fireWeapon(this.gridTiles[g])
       }
+      if(this.gridTiles[g][this.wand.type]){
+        this.castSpells(this.gridTiles[g])
+      }
     }
     this.delayed500.next('revealBar')
     this.delayed750.next('showMovementZone')
@@ -375,7 +393,7 @@ export class CombatBoardComponent implements OnInit {
     this.delayed2000.next('openWindow')
     return 'closeWindow'
   }
-
+  
   hideMonster(){
     for(let tile of this.topTiles){
       if(tile){
@@ -414,13 +432,7 @@ export class CombatBoardComponent implements OnInit {
   showMovementZone(){
     const max = this.topTiles.length
     this.monsterMovementZoneStartpoint = (this.monsterEndpoint - this.monster.agility) >= 0 ? (this.monsterEndpoint - this.monster.agility) : 0
-    // this.monsterMovementZoneStartpoint = this.monsterEndpoint - this.monster.agility
     this.monsterMovementZoneEndpoint = (this.monsterEndpoint + this.monster.agility) <= max ? (this.monsterEndpoint + this.monster.agility) : max
-    // this.monsterMovementZoneEndpoint = this.monsterEndpoint + this.monster.agility
-    if(this.monsterMovementZoneStartpoint === 10){
-      console.log('ERROR!! monster movement zone start point is 10');
-      
-    }
     if(this.monsterMovementZoneEndpoint === 10){
       console.log('ERROR!! monster movement zone end point is 10');
       
@@ -440,6 +452,13 @@ export class CombatBoardComponent implements OnInit {
         this.topTiles[i].monsterMovementMiddle = true;
       }
     }
+  }
+
+  castSpells(tile){
+    const that = this;
+    const id = tile.id
+    const tiles = this.gridTiles;
+    tile[this.wand.type] = false;
   }
 
   fireWeapon(tile){
@@ -469,11 +488,8 @@ export class CombatBoardComponent implements OnInit {
           tiles[newTileId][that.weapon.type] = true
           tiles[newTileId].monsterZone = false;
 
-          // handle previous tile
           const oldTileId = id - (counter - 10)
           if(tiles[oldTileId]){
-            // console.log('here: ', tiles[oldTileId]);
-            
             tiles[oldTileId][that.weapon] = false;
             tiles[oldTileId].visible = false;
             if(oldTileId <= 29){
@@ -548,16 +564,37 @@ export class CombatBoardComponent implements OnInit {
   }
   addAttack(){
     if(!this.weaponCount || this.playerLocked) return
-    
-    if(!this.gridTiles[this.playerPosition + 70][this.weapon.type]){
+    const wand = this.wand
+    if(!this.gridTiles[this.playerPosition + 70][this.weapon.type] && !this.gridTiles[this.playerPosition + 70][wand.type]){
       this.gridTiles[this.playerPosition + 70][this.weapon.type] = this.gridTiles[this.playerPosition + 70].visible = true;
+      this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
-    } else if(!this.gridTiles[this.playerPosition + 60][this.weapon.type]){
+    } else if(!this.gridTiles[this.playerPosition + 60][this.weapon.type] && !this.gridTiles[this.playerPosition + 60][wand.type]){
       this.gridTiles[this.playerPosition + 60][this.weapon.type] = this.gridTiles[this.playerPosition + 60].visible = true;
+      this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
-    } else if(!this.gridTiles[this.playerPosition + 50][this.weapon.type]){
+    } else if(!this.gridTiles[this.playerPosition + 50][this.weapon.type] && !this.gridTiles[this.playerPosition + 50][wand.type]){
       this.gridTiles[this.playerPosition + 50][this.weapon.type] = this.gridTiles[this.playerPosition + 50].visible = true;
+      this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
+    }
+  }
+  addCastSpell(){
+    
+    if(!this.wandAvailable || this.playerLocked) return
+    const wand = this.wand
+    if(!this.gridTiles[this.playerPosition + 70][wand.type] && !this.gridTiles[this.playerPosition + 70][this.weapon.type]){
+      this.gridTiles[this.playerPosition + 70][wand.type] = this.gridTiles[this.playerPosition + 70].visible = true;
+      this.playerManager.attackPing.next({wand:wand})
+      this.wandAvailable = false;
+    } else if(!this.gridTiles[this.playerPosition + 60][wand.type] && !this.gridTiles[this.playerPosition + 60][this.weapon.type]){
+      this.gridTiles[this.playerPosition + 60][wand.type] = this.gridTiles[this.playerPosition + 60].visible = true;
+      this.playerManager.attackPing.next({wand:wand})
+      this.wandAvailable = false;
+    } else if(!this.gridTiles[this.playerPosition + 50][wand.type] && !this.gridTiles[this.playerPosition + 50][this.weapon.type]){
+      this.gridTiles[this.playerPosition + 50][wand.type] = this.gridTiles[this.playerPosition + 50].visible = true;
+      this.playerManager.attackPing.next({wand:wand})
+      this.wandAvailable = false;
     }
   }
   checkContact(tile){
@@ -591,7 +628,6 @@ export class CombatBoardComponent implements OnInit {
     const percentage = (100 - (this.monsterHealth / this.monsterHealthInitial * 100))
     this.monsterBar.style.height = percentage+'%'
     if(this.monsterHealth < 1){
-      console.log('monster dead!!!!');
       this.monsterDefeated = true;
       this.delayed2000.next('endCombat-monsterDead')
     }
@@ -624,7 +660,6 @@ export class CombatBoardComponent implements OnInit {
     const percentage = (100 - (this.playerHealth / this.playerHealthInitial * 100))
     this.playerBar.style.height = percentage+'%'
     if(this.playerHealth < 1){
-      console.log('player dead!!!!');
       this.delayed2000.next('endCombat-playerDead')
     }
   }

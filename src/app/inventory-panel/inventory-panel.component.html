@@ -11,6 +11,10 @@
        axe: tile.axe,
        scepter: tile.scepter,
  
+       vardas_wand: tile.vardas_wand,
+       maerlyns_rod: tile.maerlyns_rod,
+       glindas_wand: tile.glindas_wand,
+
        basic_shield: tile.basic_shield,
        seeing_shield: tile.seeing_shield,
  
@@ -45,7 +49,7 @@
       
     </div>
     <div class="item-row1">
-      <tile *ngFor='let tile of row1' [ngClass]='{
+      <tile *ngFor='let tile of row1' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
         inventory: true,
 
        scimitar: tile.scimitar,
@@ -60,7 +64,7 @@
       }'></tile>
     </div>
     <div class="item-row2">
-      <tile *ngFor='let tile of row2' [ngClass]='{
+      <tile *ngFor='let tile of row2' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
         inventory: true,
 
        scimitar: tile.scimitar,
@@ -75,7 +79,7 @@
       }'></tile>
     </div>
     <div class="item-row3">
-      <tile *ngFor='let tile of row3' [ngClass]='{
+      <tile *ngFor='let tile of row3' (click)='click(tile)' [overlay]='tile.overlay' [begin]='tile.begin' [ngClass]='{
         inventory: true,
 
        scimitar: tile.scimitar,

@@ -10,6 +10,7 @@ export class PlayerManagerService{
   public messageSubject = new Subject<any>();
   public itemRequestSubject = new Subject<any>();
   public globalSubject = new Subject<any>();
+  public attackPing = new Subject<any>();
   public currentMap;
   public counter = 1;
   public empties = [];
@@ -72,27 +73,17 @@ export class PlayerManagerService{
       moves: 2,
       coordinates: [0,0]
     }
-    console.log('AMULET IS ', amulet);
-    console.log(this.itemsService.library.amulets[amulet]);
-    
     if(Math.random()) newPlayer.inventory.headgear.push(this.itemsService.library.headgear[headgear])
     if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
     if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
-    console.log('YOOO', newPlayer);
-    
     this.activePlayer = newPlayer;
 
   }
   
   initiateCombat(){
     this.inCombat = true;
-    // window.removeEventListener('keydown', (event) => {
-    //   console.log('removing window.event listener');
-      
-    // });
   }
   requestItem(item){
-    // this.globalSubject.next({showInfo: true})
     if(item === 'clear'){
       this.itemRequestSubject.next({clear : true})
     }else {
@@ -100,8 +91,6 @@ export class PlayerManagerService{
     }
   }
   endCombat(whoDied = null){
-    console.log('in player service endCombat ', whoDied, ' died.');
-    
     if(whoDied === 'playerDead'){
       this.subject.next({endCombat : true, playerDied : true})
     } else if(whoDied === 'monsterDead') {
@@ -110,25 +99,14 @@ export class PlayerManagerService{
     this.inCombat = false;
   }
   gainItem(item){
-    // console.log('in gain item, item is ', item);
-    // console.log(this.itemsService)
     for(let itemArr in this.itemsService.library){
-      // console.log('sukka',this.itemsService.library[itemArr]);
-      
       for(let itemInstance in this.itemsService.library[itemArr]){
-        // console.log(i);
-        // console.log(this.itemsService.library[itemArr][i]);
         if(item === this.itemsService.library[itemArr][itemInstance].type){
-          console.log('item is ', this.itemsService.library[itemArr][itemInstance].type);
           this.activePlayer.inventory[itemArr].push(this.itemsService.library[itemArr][itemInstance])
         }
-        // console.log(this.itemsService.library[itemArr][itemInstance]);
-        
       }
     }
-    console.log(this.activePlayer);
     this.globalSubject.next({update: true})
-    
   }
   ping(){
   }
@@ -146,22 +124,13 @@ export class PlayerManagerService{
   getGlobalMessages(): Observable<any>{
     return this.globalSubject.asObservable()
   }
+  getAttackNotification(): Observable<any>{
+    return this.attackPing.asObservable()
+  }
   newPlayer(location){
     
     const map = this.currentMap;
-    // for(let a in map){
-      //   if(map[a].empty){
-        //     this.empties.push(map[a].id)
-        //   }
-        // }
-        // this.empties = [0, 14, 210,224]
-        // for(let a )
-        // var num = Math.floor(Math.random() * this.empties.length) 
-        // const location = this.empties[num];
-        // const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
-        // const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)]
-
-        const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+    const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
     const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
     const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
     const charm = charmsArr[Math.floor(Math.random()* weaponsArr.length)];
@@ -199,21 +168,7 @@ export class PlayerManagerService{
     if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
     if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
     this.activePlayer = newPlayer;
-
-
-        // const newPlayer = {
-        //   name: 'player'+this.counter,
-        //   inventory: {
-        //     weapon: this.itemsService.library.weapons[weapon]
-        //   },
-        //   location: location,
-        //   visibility: 2,
-        //   moves: 2,
-        //   coordinates: [0,0]
-        // }
-        // this.activePlayer = newPlayer;
-        
-        const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility);
+    const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility);
     this.subject.next({location, visibility: visible});
   }
 
@@ -222,7 +177,6 @@ export class PlayerManagerService{
     const location = player.location;
     const visible = this.checkVisibility(player.location, player.visibility)
     this.subject.next({location, visibility: visible, startTurn : true});
-    // let leftOrRight = this.leftOrRight(player.location)
   }
 
   leftOrRight(location){
