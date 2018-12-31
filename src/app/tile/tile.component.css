@@ -14,9 +14,9 @@
       to right,  white 0%, white 50%, rgba(245, 112, 112, 0.598) 60%, yellow 67.5%, rgba(82, 222, 82, 0.516) 75%
     );
     background-size: 400% 400%;
-    -webkit-animation: selectionTimer 5s ;
-    -moz-animation: selectionTimer 5s ;
-    animation: selectionTimer 5s ;
+    -webkit-animation: selectionTimer 3s ;
+    -moz-animation: selectionTimer 3s ;
+    animation: selectionTimer 3s ;
 
     animation-fill-mode: forwards;
 }

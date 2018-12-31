@@ -12,7 +12,6 @@
 .board{
     width: 1500px;
     height: 410px;
-    border: 1px solid black;
     display: flex;
     flex-flow: row wrap;
     align-content: flex-end;
@@ -26,7 +25,6 @@
     align-content: flex-end;
 }
 .item-row1{
-    border: 1px solid blue;
     height: 101px;
     width: 1200px;
     display: flex;
@@ -34,7 +32,6 @@
     align-content: flex-end;
 }
 .item-row2{
-    border: 1px solid green;
     height: 101px;
     width: 1200px;
     display: flex;
@@ -42,7 +39,6 @@
     align-content: flex-end;
 }
 .item-row3{
-    border: 1px solid orange;
     height: 101px;
     width: 1200px;
     display: flex;

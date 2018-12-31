@@ -25,7 +25,6 @@ export class InfoPanelComponent implements OnInit {
       }
     })
     this.playerManager.getItem().subscribe(res => {
-      console.log('in get item');
       if(!res.clear){
         this.showItemOption = true;
         
@@ -47,11 +46,7 @@ export class InfoPanelComponent implements OnInit {
   displayItem(item){
     this.item = item
   }
-  // getButtonPresses(): Observable<any>{
-  //   return this.buttonSubject.asObservable()
-  // }
   startButton(){
     this.playerManager.startTurn()
-    // this.buttonSubject.next('start')
   }
 }
