@@ -32,22 +32,25 @@ export class InventoryPanelComponent implements OnInit {
         this.updateInventory();
         this.startCombat()
       }
+      if(res.stopCombat){
+        this.combatStarted = false;
+        this.updateInventory();
+      }
     })
     this.playerManager.getAttackNotification().subscribe(res => {
-      // console.log('res is ', res);
       if(res.weapon){
         this.attackWith(res.weapon.type)
       }
       if(res.wand){
-      console.log('RES WAND');
-      
         this.castWith(res.wand.type)
       }
     })
   }
   delayed500 = new Subject<any>();
   delayed3000 = new Subject<any>();
+  delayed5000 = new Subject<any>();
   delayed6000 = new Subject<any>();
+  delayed8000 = new Subject<any>();
   tiles = [];
   row1 = [];
   row2 = [];
@@ -56,6 +59,8 @@ export class InventoryPanelComponent implements OnInit {
   sub1: Subscription;
   sub2: Subscription;
   sub3: Subscription;
+  sub4: Subscription;
+  sub5: Subscription;
   combatStarted = false;
   ngOnInit() {
     this.sub1 = this.getDelayed500().subscribe( res => {
@@ -63,42 +68,80 @@ export class InventoryPanelComponent implements OnInit {
         this.functionRouter(res);
         return
       }
-      console.log('tile is ', res.tile);
-      
       const tile = res.tile
-      tile.begin = true;
       if(tile.weapon){
+        tile.duration3 = true;
         this.delayed3000.next({tile})
       }
       if(tile.wand){
-        this.delayed6000.next({tile})
+        tile.duration8 = true;
+        this.delayed8000.next({tile})
       }
     })
     this.sub2 = this.getDelayed3000().subscribe( res => {
       const tile = res.tile
       tile.available = true;
+
+      if(tile.weapon){
+        this.playerManager.globalSubject.next({weaponAvailable: true})
+      }
+      if(tile.wand){
+        this.playerManager.globalSubject.next({wandAvailable: true})
+      }
     })
-    this.sub3 = this.getDelayed6000().subscribe( res => {
-      console.log('calling 6000');
+    this.sub3 = this.getDelayed5000().subscribe( res => {
       const tile = res.tile
       tile.available = true;
+      if(typeof res === 'string'){
+        this.functionRouter(res);
+        return
+      }
+      if(tile.weapon){
+        this.playerManager.globalSubject.next({weaponAvailable: true})
+      }
+      if(tile.wand){
+        this.playerManager.globalSubject.next({wandAvailable: true})
+      }
+    })
+    this.sub4 = this.getDelayed6000().subscribe( res => {
+      const tile = res.tile
+      tile.available = true;
+      if(tile.weapon){
+        this.playerManager.globalSubject.next({weaponAvailable: true})
+      }
+      if(tile.wand){
+        this.playerManager.globalSubject.next({wandAvailable: true})
+      }
       
       if(typeof res === 'string'){
         this.functionRouter(res);
         return
       }
-      // this.delayed3000.next({tile})
+    })
+    this.sub5 = this.getDelayed8000().subscribe( res => {
+      const tile = res.tile
+      tile.available = true;
+      if(tile.weapon){
+        this.playerManager.globalSubject.next({weaponAvailable: true})
+      }
+      if(tile.wand){
+        this.playerManager.globalSubject.next({wandAvailable: true})
+      }
+      if(typeof res === 'string'){
+        this.functionRouter(res);
+        return
+      }
     })
 
     this.updateInventory();
 
-    this.startCombat();
+    // this.startCombat();
     // this.beginTimers();
   }
   functionRouter(functionName : string){
     switch (functionName){
       case 'wandBlast':
-      console.log('wand blast');
+      // console.log('wand blast');
       
       break
     }
@@ -182,16 +225,14 @@ export class InventoryPanelComponent implements OnInit {
   useItem(tile){
     if(tile.available){
       tile.available = false;
-      tile.begin = false;
+      tile.duration3 = tile.duration5 = tile.duration6 = tile.duration8 = false;
       this.delayed500.next({tile})
     }
   }
   castItem(tile){
     if(tile.available){
       tile.available = false;
-      tile.begin = false;
-      console.log('casting ', tile);
-      
+      tile.duration3 = tile.duration5 = tile.duration6 = tile.duration8 = false;
       this.delayed500.next({tile})
     }
   }
@@ -281,9 +322,19 @@ export class InventoryPanelComponent implements OnInit {
       delay(2500)
     )
   }
+  getDelayed5000(): Observable<any>{
+    return this.delayed5000.pipe(
+      delay(4500)
+    )
+  }
   getDelayed6000(): Observable<any>{
     return this.delayed6000.pipe(
       delay(5500)
+    )
+  }
+  getDelayed8000(): Observable<any>{
+    return this.delayed8000.pipe(
+      delay(7500)
     )
   }
 }

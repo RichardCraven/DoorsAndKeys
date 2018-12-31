@@ -453,6 +453,7 @@ export class MainBoardComponent implements OnInit {
         this.delayed500.next('removeMonster')
       }
       this.showCombatBoard = false;
+      this.playerManager.globalSubject.next({stopCombat: true})
       return
     }
     if(res.monster){

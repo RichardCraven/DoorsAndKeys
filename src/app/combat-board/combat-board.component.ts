@@ -77,7 +77,14 @@ export class CombatBoardComponent implements OnInit {
   @Input()monster
 
   constructor(public playerManager: PlayerManagerService, public itemsService: ItemsService) { 
-
+    this.playerManager.getGlobalMessages().subscribe(res => {
+      if(res.wandAvailable){
+        this.wandAvailable = true;
+      }
+      if(res.weaponAvailable){
+        this.weaponCount++
+      }
+    })
   }
 
   ngOnInit() {
@@ -85,31 +92,31 @@ export class CombatBoardComponent implements OnInit {
     
     // ****** ! None of this is currently used
 
-    for(let i = 0; i < inventory.weapons.length; i++){
-      let tile = {};
-      tile[inventory.weapons[i].type] = true;
-      this.playerInventoryTiles.push(tile)
-    }
-    for(let w = 0; w < inventory.wands.length; w++){
-      let tile = {};
-      tile[inventory.wands[w].type] = true;
-      this.playerInventoryTiles.push(tile)
-    }
-    for(let s = 0; s < inventory.shields.length; s++){
-      let tile = {};
-      tile[inventory.shields[s].type] = true;
-      this.playerInventoryTiles.push(tile)
-    }
-    for(let h = 0; h < inventory.headgear.length; h++){
-      let tile = {};
-      tile[inventory.headgear[h].type] = true;
-      this.playerInventoryTiles.push(tile)
-    }
-    for(let c = 0; c < inventory.charms.length; c++){
-      let tile = {};
-      tile[inventory.charms[c].type] = true;
-      this.playerInventoryTiles.push(tile)
-    };
+    // for(let i = 0; i < inventory.weapons.length; i++){
+    //   let tile = {};
+    //   tile[inventory.weapons[i].type] = true;
+    //   this.playerInventoryTiles.push(tile)
+    // }
+    // for(let w = 0; w < inventory.wands.length; w++){
+    //   let tile = {};
+    //   tile[inventory.wands[w].type] = true;
+    //   this.playerInventoryTiles.push(tile)
+    // }
+    // for(let s = 0; s < inventory.shields.length; s++){
+    //   let tile = {};
+    //   tile[inventory.shields[s].type] = true;
+    //   this.playerInventoryTiles.push(tile)
+    // }
+    // for(let h = 0; h < inventory.headgear.length; h++){
+    //   let tile = {};
+    //   tile[inventory.headgear[h].type] = true;
+    //   this.playerInventoryTiles.push(tile)
+    // }
+    // for(let c = 0; c < inventory.charms.length; c++){
+    //   let tile = {};
+    //   tile[inventory.charms[c].type] = true;
+    //   this.playerInventoryTiles.push(tile)
+    // };
     this.monsterHealthInitial = this.monster.health;
     this.monsterHealth = this.monster.health;
 
@@ -338,11 +345,14 @@ export class CombatBoardComponent implements OnInit {
     this.clearGridRows();
     
     
-    this.weaponCount = this.weapon.attack;
-    this.wandAvailable = true;
+    // this.weaponCount = this.weapon.attack;
+    // this.wandAvailable = true;
+    //this is where you need to listen to weapon recharge
+
     this.openGate();
     return 'openWindow'
   }
+  
   openGate(){
     
     let that = this;
