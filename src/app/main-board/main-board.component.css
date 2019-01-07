@@ -17,12 +17,8 @@
     align-content: flex-end;
 }
 #myCanvas{
-    /* height: 752px; */
     height: 1504px; 
     width: 1504px;
-    /* width: 752px; */
-    /* height: 100%;
-    width: 100%; */
     position: absolute;
     z-index: -1;
 }

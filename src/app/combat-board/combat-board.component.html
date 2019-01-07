@@ -1,4 +1,5 @@
 <div class='combat-board'>
+  <canvas #combatCanvas  id="combat-canvas" width="1000" height="1000"></canvas>
   <div class="corner"></div>
   <div class="monster-row">
       <tile *ngFor='let tile of topTiles; index as m' 

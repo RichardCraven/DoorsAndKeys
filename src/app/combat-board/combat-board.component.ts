@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
@@ -19,7 +19,7 @@ import {
   templateUrl: './combat-board.component.html',
   styleUrls: ['./combat-board.component.css']
 })
-export class CombatBoardComponent implements OnInit {
+export class CombatBoardComponent implements OnInit, AfterViewInit {
   subject = new Subject<any>();
   delayed2000 = new Subject<any>();
   delayed1000 = new Subject<any>();
@@ -48,6 +48,7 @@ export class CombatBoardComponent implements OnInit {
   playerLocked = false;
   showBar = true;
   wandAvailable = true;
+  canvas;
   sub1;
   sub2;
   sub3;
@@ -74,7 +75,11 @@ export class CombatBoardComponent implements OnInit {
   monsterBar;
   playerBar;
   spellCasting = false;
+
   @Input()monster
+
+  @ViewChild('combatCanvas') combatCanvas: ElementRef;
+  public context: CanvasRenderingContext2D;
 
   constructor(public playerManager: PlayerManagerService, public itemsService: ItemsService) { 
     this.playerManager.getGlobalMessages().subscribe(res => {
@@ -87,9 +92,20 @@ export class CombatBoardComponent implements OnInit {
     })
   }
 
+  ngAfterViewInit(): void{
+    // this.context = 
+    console.log('this.combat canas is ', this.combatCanvas);
+    this.context = (<HTMLCanvasElement>this.combatCanvas.nativeElement).getContext('2d');
+    // this.context.scale(16,16);
+
+
+    // this.context = this.combatCanvas.getContext('2d');
+  }
+
   ngOnInit() {
     const inventory = this.playerManager.activePlayer.inventory;
     
+
     // ****** ! None of this is currently used
 
     // for(let i = 0; i < inventory.weapons.length; i++){
@@ -136,6 +152,10 @@ export class CombatBoardComponent implements OnInit {
         break
         case 'z':
         this.addCastSpell();
+        break
+        case 'q':
+          console.log('q')
+          this.canvasLine(1,2)
         break
         case ' ':
           this.addAttack()
@@ -235,6 +255,26 @@ export class CombatBoardComponent implements OnInit {
     })
 
     this.delayed1000.next('openWindow')
+  }
+  canvasLine(coordinates1, coordinates2){
+    console.log('in canvas line');
+    
+    // let newX = coordinates1[0] - coordinates2[0]
+    // let newY = coordinates1[1] - coordinates2[1]
+
+    // console.log('distance is ', Math.hypot((coordinates1[0] - coordinates2[0]),(coordinates1[1] - coordinates2[1])))
+    
+    //CANVAS PLAY
+    this.context.fillStyle = 'blue'
+    this.context.fillRect(0, 0, 100, 100);
+    // this.context.strokeRect(coordinates1[0]*6.66, coordinates1[1]*6.66, 10, 10);
+    
+    this.context.lineWidth = 0.1;
+    this.context.beginPath();
+    this.context.moveTo(coordinates1[0]*3.33,coordinates1[1]*3.33);
+    this.context.lineTo(coordinates2[0]*3.33, coordinates2[1]*3.33);
+    this.context.stroke();
+    
   }
   functionRouter(string){
     switch (string){
