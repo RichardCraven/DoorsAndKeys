@@ -70,7 +70,7 @@ export class MainBoardComponent implements OnInit {
     cloud: 1
   }
   @ViewChild('myCanvas') myCanvas: ElementRef;
-  public context: CanvasRenderingContext2D;
+  // public context: CanvasRenderingContext2D;
 
 
   constructor(public playerManager: PlayerManagerService, public mapsService: MapsService, public monstersService: MonstersService) { }
@@ -80,8 +80,8 @@ export class MainBoardComponent implements OnInit {
     
     window.focus();
 
-    this.context = (<HTMLCanvasElement>this.myCanvas.nativeElement).getContext('2d');
-    this.context.scale(16,16);
+    // this.context = (<HTMLCanvasElement>this.myCanvas.nativeElement).getContext('2d');
+    // this.context.scale(16,16);
     // this.context = this.canvas.getContext('2d');
 
     //Subdscribe to timers
@@ -618,9 +618,7 @@ export class MainBoardComponent implements OnInit {
   }
   isLeft(coordinates){
     if(coordinates[0] > this.rowLength/2) return false
-
     return true
-    
   }
   paintMoveZone(coords = this.playerManager.activePlayer.coordinates){
     // const coords = this.playerManager.activePlayer.coordinates

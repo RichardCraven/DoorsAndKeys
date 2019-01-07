@@ -195,3 +195,16 @@
     box-sizing: border-box;
     font-size: 2em;
 }
+/* #myCanvas{
+    height: 1504px; 
+    width: 1504px;
+    position: absolute;
+    z-index: -1;
+} */
+#combat-canvas{
+    /* height: 1504px; 
+    width: 1504px; */
+    position: absolute;
+    z-index: 1;
+    background-color: green;
+}
