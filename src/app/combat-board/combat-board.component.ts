@@ -237,6 +237,57 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.botTiles[5].occupied = true;
     this.playerPosition = 5;
 
+
+    // let newCanvas = document.createElement('canvas');
+    //   let board = document.getElementById('combat-board'); 
+    //   newCanvas.id     = "PlayerLayer";
+    //   newCanvas.width  = 1000;
+    //   newCanvas.height = 1000;
+    //   newCanvas.style.position = "absolute";
+    //   newCanvas.style.zIndex = '20'
+    //   // newCanvas.style.zIndex   = this.layer;
+    //   newCanvas.style.border   = "5px solid red";
+
+    //   let imgTag = new Image();
+    //   // imgTag.src = '../../assets/scavenger.png'
+    //   // imgTag.src = '../../assets/icons/items/weapons/spear_white.png'
+    //   imgTag.src = '../../assets/icons/avatar_white.png'
+    //   imgTag.height = 100
+    //   imgTag.width = 100
+    //   let newContext = newCanvas.getContext("2d");
+
+    //   newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);
+    //   newContext.drawImage(imgTag, 200, 400);  
+    //   board.appendChild(newCanvas)
+
+
+    this.canvasClicked(100)
+
+
+
+
+
+
+    ///
+    // let newCanvas = document.createElement('canvas');
+    // newCanvas.style.position = "absolute";
+    // newCanvas.style.zIndex = "100";
+    // newCanvas.id  = "playerCanvas";
+    //   newCanvas.width  = 1000;
+    //   newCanvas.height = 1000;
+    //   let board = document.getElementById('combat-board'); 
+    // let imgTag = new Image();
+    // // imgTag.onload = animate;
+    // // imgTag.src = '../../assets/scavenger.png'
+    // imgTag.src = '../../assets/icons/avatar_white.png'
+    // imgTag.height = 100
+    // imgTag.width = 100
+    // let newContext = newCanvas.getContext("2d");
+    // newContext.drawImage(imgTag, 50, 50);  
+    // board.appendChild(newCanvas)
+
+    ///
+
     this.monsterIcon[this.monster.type] = true
     
     this.weapon = this.playerManager.activePlayer.inventory.weapons[0];
@@ -307,28 +358,27 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       newCanvas.id     = "CursorLayer"+id;
       newCanvas.width  = 1000;
       newCanvas.height = 1000;
+      newCanvas.style.position = "absolute";
       newCanvas.style.zIndex = this.layer.toString()
       // newCanvas.style.zIndex   = this.layer;
-      newCanvas.style.position = "absolute";
       newCanvas.style.border   = "1px solid red";
 
       let imgTag = new Image();
-      // imgTag.onload = animate;
-      imgTag.src = '../../assets/scavenger.png'
+      // imgTag.src = '../../assets/scavenger.png'
+      // imgTag.src = '../../assets/icons/items/weapons/spear_white.png'
+      imgTag.src = '../../assets/icons/avatar_white.png'
       imgTag.height = 100
       imgTag.width = 100
       let newContext = newCanvas.getContext("2d");
 
-      console.log(event.offsetX, event.offsetY )
-
-      // console.log(imgTag.width, event);
-      // console.log(event.offsetX - imgTag.width);
-      
-      let x = event.offsetX - imgTag.width
-      let y = event.offsetY - imgTag.height
+      // let x = event.offsetX - imgTag.width
+      // let y = event.offsetY - imgTag.height
+      let x = 600
+      let y = 600
       
       newContext.drawImage(imgTag, x, y);  
       
+      // console.log(event.offsetX, event.offsetY )
       board.appendChild(newCanvas)
       this.tick++
       this.layer++
@@ -339,9 +389,9 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       function animate() {
         newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  // clear canvas
         newContext.drawImage(imgTag, x, y);                       // draw image at current position
-        x -= 6;
-        if (x > -11) requestAnimationFrame(animate)
-          else console.log('done')
+        y -= 20;
+        if (y > 0) requestAnimationFrame(animate)
+          else board.removeChild(newCanvas)
       }
 
       
