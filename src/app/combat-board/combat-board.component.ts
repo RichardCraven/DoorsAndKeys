@@ -29,6 +29,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   botTilesCount = 10;
   gridTilesCount = 80;
   round = 0;
+  tick = 0;
   differential = 0;
   monsterDefeated;
   monsterInfoLine1;
@@ -38,6 +39,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   botTiles = [];
   gridTiles = [];
   roundNumTiles = [];
+  layer = 5;
   numbers = ['zero','one','two','three','four','five','six','seven','eight','nine',];
   monsterAttackOrigins = [];
   monsterHealthInitial = 0;
@@ -74,6 +76,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   playerPosition;
   monsterBar;
   playerBar;
+  canvasLeft;
+  canvasTop;
   spellCasting = false;
 
   @Input()monster
@@ -97,12 +101,24 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     console.log('this.combat canas is ', this.combatCanvas);
     this.context = (<HTMLCanvasElement>this.combatCanvas.nativeElement).getContext('2d');
     // this.context.scale(16,16);
-
-
+    
+    
+    
+    
     // this.context = this.combatCanvas.getContext('2d');
   }
-
+  
   ngOnInit() {
+    // <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this, event))
+    const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement;
+    this.canvasLeft = canvas.offsetLeft;
+    this.canvasTop = canvas.offsetTop;
+
+    console.log('teft is ', this.canvasLeft);
+    console.log('top is ', this.canvasTop);
+    
+    
+    <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this), event )
     const inventory = this.playerManager.activePlayer.inventory;
     
 
@@ -256,6 +272,95 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
 
     this.delayed1000.next('openWindow')
   }
+  degreesToRadians(degrees){
+    return degrees * Math.PI /180
+  }
+  canvasClicked(event){
+    // console.log('coords: ', event.offsetX, event.offsetY, this)
+    // const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement
+    // const head = <HTMLCanvasElement>document.getElementById('head')
+
+    // console.log('viggo ', head.width, head.height);
+    
+
+    
+    // const context = this.context;
+
+    // let x = event.offsetX - head.width
+    // let y = event.offsetY - head.height
+
+
+    // animate.bind(this)()
+    // function animate() {
+    //   context.clearRect(0, 0, canvas.width, canvas.height);  // clear canvas
+    //   context.drawImage(head, x, y);                       // draw image at current position
+    //   x -= 6;
+    //   if (x > -11) requestAnimationFrame(animate)
+    // }
+
+
+
+    loadCanvas.bind(this)(this.tick)
+    function loadCanvas(id) {
+      let newCanvas = document.createElement('canvas');
+      let board = document.getElementById('combat-board'); 
+      newCanvas.id     = "CursorLayer"+id;
+      newCanvas.width  = 1000;
+      newCanvas.height = 1000;
+      newCanvas.style.zIndex = this.layer.toString()
+      // newCanvas.style.zIndex   = this.layer;
+      newCanvas.style.position = "absolute";
+      newCanvas.style.border   = "1px solid red";
+
+      let imgTag = new Image();
+      // imgTag.onload = animate;
+      imgTag.src = '../../assets/scavenger.png'
+      imgTag.height = 100
+      imgTag.width = 100
+      let newContext = newCanvas.getContext("2d");
+
+      console.log(event.offsetX, event.offsetY )
+
+      // console.log(imgTag.width, event);
+      // console.log(event.offsetX - imgTag.width);
+      
+      let x = event.offsetX - imgTag.width
+      let y = event.offsetY - imgTag.height
+      
+      newContext.drawImage(imgTag, x, y);  
+      
+      board.appendChild(newCanvas)
+      this.tick++
+      this.layer++
+      
+      console.log('whew. canvas is ', newCanvas, 'tick and layer: ', this.tick, this.layer);
+
+      animate.bind(this)()
+      function animate() {
+        newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  // clear canvas
+        newContext.drawImage(imgTag, x, y);                       // draw image at current position
+        x -= 6;
+        if (x > -11) requestAnimationFrame(animate)
+          else console.log('done')
+      }
+
+      
+      newCanvas.addEventListener('click', this.canvasClicked.bind(this), event )
+    }
+
+
+
+
+
+
+
+
+    // console.log('canvas clicked, coords are ', event.pageX, event.pageY)
+    // let x = event.pageX - 251,
+    //     y = event.pageY - 251;
+        // console.log('canvas coords are ', x, ' ,', y);
+        
+  }
   canvasLine(coordinates1, coordinates2){
     console.log('in canvas line');
     
@@ -265,16 +370,58 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     // console.log('distance is ', Math.hypot((coordinates1[0] - coordinates2[0]),(coordinates1[1] - coordinates2[1])))
     
     //CANVAS PLAY
-    this.context.fillStyle = 'blue'
-    this.context.fillRect(0, 0, 100, 100);
+    // this.context.fillStyle = 'blue'
+    // this.context.fillRect(0, 0, 100, 100);
     // this.context.strokeRect(coordinates1[0]*6.66, coordinates1[1]*6.66, 10, 10);
+    // this.context.drawImage(head, 0, 0, 1000, 1000, 80, 80, 1000, 1000)
+
+
+    // var imgTag = new Image();
+    // imgTag.onload = animate;
+    // imgTag.src = "http://i.stack.imgur.com/Rk0DW.png";
+
+  
+      console.log(this.tick);
+      const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement
+      let x = canvas.width/2;
+      let y = canvas.height/2;
+      // let width = head.width;
+      // let height = head.height;
+  
+      // this.context.clearRect(0,0,1000,1000)
+      // this.context.translate(x,y);
+      // this.context.rotate(this.degreesToRadians(90))
+      // this.context.drawImage(head, -width/2, -height/2, width+this.tick, height)
+      // this.context.translate(-x, -y)
+      
+      // this.tick ++
+      // if(this.tick > 5000){
+      //   console.log('clear');
+        
+      
+      //   clearInterval(animation)
+      // }
+      const head = <HTMLCanvasElement>document.getElementById('head')
+      console.log(head);
+      const context = this.context;
+      animate.bind(this)()
+      function animate() {
+        context.clearRect(0, 0, canvas.width, canvas.height);  // clear canvas
+        context.drawImage(head, x, y);                       // draw image at current position
+        x -= 6;
+        if (x > -11) requestAnimationFrame(animate)
+      }
+
+   
+    // this.context.lineWidth = 0.1;
+    // this.context.beginPath();
+    // this.context.moveTo(coordinates1[0]*3.33,coordinates1[1]*3.33);
+    // this.context.lineTo(coordinates2[0]*3.33, coordinates2[1]*3.33);
+    // this.context.stroke();
     
-    this.context.lineWidth = 0.1;
-    this.context.beginPath();
-    this.context.moveTo(coordinates1[0]*3.33,coordinates1[1]*3.33);
-    this.context.lineTo(coordinates2[0]*3.33, coordinates2[1]*3.33);
-    this.context.stroke();
-    
+  }
+  rotateAndPaintImage(context, image, angleInRad, positionX, positionY, axisX, axisY){
+
   }
   functionRouter(string){
     switch (string){
