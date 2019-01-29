@@ -1,5 +1,11 @@
-<div class='combat-board'>
+<div id='combat-board' class='combat-board'>
   <canvas #combatCanvas  id="combat-canvas" width="1000" height="1000"></canvas>
+  <!-- <div style='display:none'> -->
+    <!-- <img style='display:none' id='eye' src="../../assets/icons/misc/eye.png" alt="" height='100' width='100'> -->
+    <img style='display:none'  id='head' src="../../assets/scavenger.png" alt="" height='100' width='100'>
+
+    <!-- </div> -->
+
   <div class="corner"></div>
   <div class="monster-row">
       <tile *ngFor='let tile of topTiles; index as m' 
