@@ -332,7 +332,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   placePlayer(){
     // this.botTiles[5].visible = true;
-    // this.botTiles[5].occupied = true;
+    // this.botTiles[5].occupied = true; 
 
     let newCanvas = document.createElement('canvas');
       let board = document.getElementById('combat-board'); 
