@@ -46,6 +46,10 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   monsterHealth = 0;
   playerHealth = 100;
   playerHealthInitial = 100;
+  playerX;
+  playerX_destination;
+  playerY;
+  playerY_destination;
   windowOpen = false;
   playerLocked = false;
   showBar = true;
@@ -156,7 +160,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.monsterBar.style.height = 0+'%'
 
     this.monsterInfoLine1 = this.monster.combatMessages.greeting
-    this.playerManager.initiateCombat()
+    // this.playerManager.initiateCombat()
 
     window.addEventListener('keydown', (event) => {
       switch(event.key){
@@ -233,8 +237,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.topTiles[4][this.monster.type] = true;
     this.topTiles[4].visible = true;
     this.monsterEndpoint = 4;
-    this.botTiles[5].visible = true;
-    this.botTiles[5].occupied = true;
+    // this.botTiles[5].visible = true;
+    // this.botTiles[5].occupied = true;
     this.playerPosition = 5;
 
 
@@ -261,7 +265,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     //   board.appendChild(newCanvas)
 
 
-    this.canvasClicked(100)
+    this.placePlayer()
 
 
 
@@ -325,6 +329,52 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   degreesToRadians(degrees){
     return degrees * Math.PI /180
+  }
+  placePlayer(){
+    // this.botTiles[5].visible = true;
+    // this.botTiles[5].occupied = true;
+
+    let newCanvas = document.createElement('canvas');
+      let board = document.getElementById('combat-board'); 
+      newCanvas.id = "PlayerLayer";
+      newCanvas.width  = 1000;
+      newCanvas.height = 1000;
+      newCanvas.style.position = "absolute";
+      newCanvas.style.zIndex = '1'
+      newCanvas.style.border   = "1px solid red";
+
+      let imgTag = new Image();
+      imgTag.src = '../../assets/icons/avatar_white.png'
+      imgTag.height = 100
+      imgTag.width = 100
+      let newContext = newCanvas.getContext("2d");
+
+      let x = 500
+      let y = 1000-100
+      this.playerX_destination = 500;
+      this.playerX = 500;
+      this.playerY_destination = 900;
+      this.playerY = 900;
+      
+      newContext.drawImage(imgTag, x, y);  
+      board.appendChild(newCanvas)
+
+      animate.bind(this)()
+      function animate() {
+        if(this.playerX === this.playerX_destination){
+          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  
+          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+        } else if(this.playerX_destination > this.playerX){
+          this.playerX += 25
+          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
+          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+        } else if(this.playerX_destination < this.playerX){
+          this.playerX -= 25
+          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
+          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+        }
+        requestAnimationFrame(animate.bind(this))
+      }
   }
   canvasClicked(event){
     // console.log('coords: ', event.offsetX, event.offsetY, this)
@@ -950,20 +1000,22 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     if(this.playerLocked) return
     const tiles = this.botTiles;
     let endPoint = this.playerPosition;
-
+    if(this.playerX !== this.playerX_destination) return
     switch (direction){
       case 'left':
         if(tiles[endPoint - 1] && !tiles[endPoint-1][this.monsterWeapon]){
-          tiles[endPoint].occupied = tiles[endPoint].visible = false;
-          tiles[endPoint - 1].occupied = tiles[endPoint - 1].visible = true;
+          // tiles[endPoint].occupied = tiles[endPoint].visible = false;
+          // tiles[endPoint - 1].occupied = tiles[endPoint - 1].visible = true;
           this.playerPosition = this.playerPosition - 1
+          this.playerX_destination = this.playerPosition*100;
         } 
       break
       case 'right':
       if(tiles[endPoint + 1] && !tiles[endPoint+1][this.monsterWeapon]){
-        tiles[endPoint].occupied = tiles[endPoint].visible = false;
-        tiles[endPoint + 1].occupied = tiles[endPoint + 1].visible = true;
+        // tiles[endPoint].occupied = tiles[endPoint].visible = false;
+        // tiles[endPoint + 1].occupied = tiles[endPoint + 1].visible = true;
         this.playerPosition = this.playerPosition + 1
+        this.playerX_destination = this.playerPosition*100;
       } 
       break
     }
