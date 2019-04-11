@@ -351,6 +351,11 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     })
 
     this.delayed1000.next('openWindow')
+
+
+    this.collisionManagerService.detectCollision().subscribe(res => {
+      !this.playerLocked && this.playerHit();
+    })
   }
   degreesToRadians(degrees){
     return degrees * Math.PI /180
@@ -660,7 +665,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         if (width >= 100) {
           clearInterval(id);
           that.revealMonster();
-          that.playerLocked = true;
+          // that.playerLocked = true;
           that.delayed500.next('closeWindow')
           that.delayed500.next('monsterAttack')
         } else {
@@ -701,7 +706,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.delayed750.next('closeGate')
     this.delayed2000.next('openWindow')
 
-    
     return 'closeWindow'
   }
   
@@ -711,6 +715,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         tile[this.monster.type] = tile.visible = tile.monsterMovementLeftEnd = tile.monsterMovementMiddle = tile.monsterMovementRightEnd = false;
       } 
     }
+    this.collisionManagerService.playerHit = false;
     this.projectileManagerService.clearProjectiles()
   }
 
@@ -817,51 +822,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  testAnimation(x, y, id){
-    console.log('WINDOW IS ', window)
-    let newCanvas = document.createElement('canvas');
-      let board = document.getElementById('combat-board'); 
-      console.log(board)
-      newCanvas.id = id;
-      newCanvas.width  = 1000;
-      newCanvas.height = 1000;
-      newCanvas.style.position = "absolute";
-      newCanvas.style.zIndex = '10'
-      newCanvas.style.border   = "1px solid green";
-
-      // imgTag.src = '../../assets/icons/misc/down.png'
-      // console.log(imgTag)
-      let imgTag = new Image();
-      imgTag.src = '../../assets/scavenger.png'
-      imgTag.height = 100
-      imgTag.width = 100
-      let newContext = newCanvas.getContext("2d");
-
-      this.monster_attack_positionX = x;
-      // this.monster_attack_destinationX = x;
-      this.monster_attack_positionY = 100;
-      this.monster_attack_destinationY = 100;
-      
-      newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY);  
-      board.appendChild(newCanvas)
-
-      animate.bind(this)()
-      function animate() {
-        if(this.monster_attack_positionX === this.monster_attack_positionX_destination){
-          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  
-          newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY); 
-        } else if(this.monster_attack_destinationY > this.monster_attack_positionY){
-          this.monster_attack_positionY += 25
-          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
-          newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY); 
-        } else if(this.monster_attack_destinationY < this.monster_attack_positionY){
-          this.monster_attack_destinationY -= 25
-          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
-          newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY); 
-        }
-        requestAnimationFrame(animate.bind(this))
-      }
-  }
   fireMonsterWeapon(tile){
     const id = tile.id;
     const tiles = this.gridTiles;
@@ -901,7 +861,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   monsterAttack(){
     this.monsterAttackOrigins = [];
-    let attacks = this.monster.attack; //to be replaced with monster attack from json
+    // let attacks = this.monster.attack; 
+    //to be replaced with monster attack from json
     this.monsterInfoLine1 = this.monster.combatMessages.attack[Math.floor(Math.random()*this.monster.combatMessages.attack.length)]
     
     let num = Math.floor(Math.random()* 30)
@@ -913,52 +874,23 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
 
     
     
-    
+    let attacks = 6
     while(attacks > 0){
-      let num = Math.floor(Math.random()* 10)
-      if(this.monsterAttackOrigins.indexOf(num) < 0){
+      let numX = Math.floor(Math.random()* 10)
+      let numY = Math.floor(Math.random()* 275)
+      let delay = Math.floor(Math.random()*300)
+      if(this.monsterAttackOrigins.indexOf(numX) < 0){
         attacks--
-        this.monsterAttackOrigins.push(num)
+        this.monsterAttackOrigins.push(numX)
+        let projectile = new Projectile(canvas, 'downWhite', numX*100, numY, this.collisionManagerService, this.projectileManagerService)
+        const that = this;
+        setTimeout(function(){
+          that.projectileManagerService.projectiles.push(projectile)
+        }, delay)
         
-        let projectile = new Projectile(canvas, 'downWhite', num*100, this.collisionManagerService, this.projectileManagerService)
-        
-        this.projectileManagerService.projectiles.push(projectile)
-
-        // let tile = tiles[num];
-        // tile[this.monsterWeapon] = true;
-        // this.fireMonsterWeapon(tile);
       }
     }
-    this.projectileManagerService.beginSequence()
-    return
-
-    const tiles = this.gridTiles;
-
-    
-    //NEED TO ACCOUNT FOR STACKING OF ATTACKS
-    //PROBABLY BY ASSIGNING A 'STACKED' PROPERTY TO PAIRS OF STACKS
-    this.testAnimation(500,100, 'monster-attack'+this.monster_attack_iteration);
-    let counter = 10;
-    const that = this;
-
-    this.monster_attack_destinationY = 100;
-    
-    const launch = setInterval(travel, 100);
-    function travel() {
-      if (counter >= 80) {
-        // that.checkMonsterHit(tiles[final]);
-        clearInterval(launch);
-        var element = document.getElementById('monster-attack'+that.monster_attack_iteration); 
-        
-        element.parentNode.removeChild(element);
-        that.monster_attack_iteration++
-        console.log(that.monster_attack_iteration)
-      } else {
-        that.monster_attack_destinationY += 100
-        counter += 10
-      }
-    }
-
+    this.projectileManagerService.beginSequence();
   }
   addAttack(){
     if(!this.weaponCount || this.playerLocked) return
@@ -1052,6 +984,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
       counter++
     }
+    console.log('health is ', this.playerHealth)
     this.playerHealth -= this.monster.damage;
     this.playerInfo = 'Hit you for ' + this.monster.damage + ' damage!'
     this.playerBar = document.getElementById("player-health-bar");
