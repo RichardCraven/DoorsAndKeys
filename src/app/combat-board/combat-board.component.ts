@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
+import {MonsterAttack} from '../canvas-components/monster-attack.component'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
 import {
   delay,
@@ -25,6 +26,9 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   delayed1000 = new Subject<any>();
   delayed750 = new Subject<any>();
   delayed500 = new Subject<any>();
+
+  tempBool = true;
+
   topTilesCount = 10;
   botTilesCount = 10;
   gridTilesCount = 80;
@@ -70,8 +74,13 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   monsterMovementLeftEnd;
   monsterMovementRightEnd;
   monsterMovementMiddle;
+
   monster_attack_positionX;
   monster_attack_destinationX;
+  monster_attack_positionY;
+  monster_attack_destinationY;
+  monster_attack_iteration = 0;
+
   weaponCount;
   weaponDamage;
   initialOpenWindow;
@@ -673,6 +682,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
   }
   closeWindow(){
+    if(!this.tempBool) return
     this.round++
     this.showBar = false;
     for(let g in this.gridTiles){
@@ -801,46 +811,47 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  testAnimation(){
+  testAnimation(x, y, id){
+    console.log('WINDOW IS ', window)
     let newCanvas = document.createElement('canvas');
       let board = document.getElementById('combat-board'); 
-      // newCanvas.id = "monsterAttackLayer";
+      console.log(board)
+      newCanvas.id = id;
       newCanvas.width  = 1000;
       newCanvas.height = 1000;
       newCanvas.style.position = "absolute";
-      newCanvas.style.zIndex = '1'
+      newCanvas.style.zIndex = '10'
       newCanvas.style.border   = "1px solid green";
 
+      // imgTag.src = '../../assets/icons/misc/down.png'
+      // console.log(imgTag)
       let imgTag = new Image();
-      imgTag.src = '../../assets/misc/down.png'
+      imgTag.src = '../../assets/scavenger.png'
       imgTag.height = 100
       imgTag.width = 100
       let newContext = newCanvas.getContext("2d");
 
-      let x = 500
-      let y = 100
-      this.monster_attack_positionX = 500;
-      this.monster_attack_destinationX = 500;
-      this.playerX = 500;
-      this.playerY_destination = 900;
-      this.playerY = 900;
+      this.monster_attack_positionX = x;
+      // this.monster_attack_destinationX = x;
+      this.monster_attack_positionY = 100;
+      this.monster_attack_destinationY = 100;
       
-      newContext.drawImage(imgTag, x, y);  
+      newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY);  
       board.appendChild(newCanvas)
 
       animate.bind(this)()
       function animate() {
-        if(this.playerX === this.playerX_destination){
+        if(this.monster_attack_positionX === this.monster_attack_positionX_destination){
           newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  
-          newContext.drawImage(imgTag, this.playerX, this.playerY); 
-        } else if(this.playerX_destination > this.playerX){
-          this.playerX += 25
+          newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY); 
+        } else if(this.monster_attack_destinationY > this.monster_attack_positionY){
+          this.monster_attack_positionY += 25
           newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
-          newContext.drawImage(imgTag, this.playerX, this.playerY); 
-        } else if(this.playerX_destination < this.playerX){
-          this.playerX -= 25
+          newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY); 
+        } else if(this.monster_attack_destinationY < this.monster_attack_positionY){
+          this.monster_attack_destinationY -= 25
           newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
-          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+          newContext.drawImage(imgTag, this.monster_attack_positionX, this.monster_attack_positionY); 
         }
         requestAnimationFrame(animate.bind(this))
       }
@@ -883,6 +894,26 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     }
   }
   monsterAttack(){
+    let newCanvas = document.createElement('canvas');
+    newCanvas.id = 'monster-attack-canvas';
+    newCanvas.width  = 1000;
+    newCanvas.height = 1000;
+    newCanvas.style.position = "absolute";
+    newCanvas.style.zIndex = '10'
+    newCanvas.style.border   = "1px dashed green";
+
+    let board = document.getElementById('combat-board'); 
+    board.appendChild(newCanvas)
+    const canvas = <HTMLCanvasElement>document.getElementById('monster-attack-canvas');
+
+    this.tempBool = false;
+
+    const attack = new MonsterAttack(canvas)
+
+
+
+    return
+
     this.monsterAttackOrigins = [];
     let attacks = this.monster.attack; //to be replaced with monster attack from json
     const tiles = this.gridTiles;
@@ -891,16 +922,38 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     
     //NEED TO ACCOUNT FOR STACKING OF ATTACKS
     //PROBABLY BY ASSIGNING A 'STACKED' PROPERTY TO PAIRS OF STACKS
-    while(attacks > 0){
-      let num = Math.floor(Math.random()* 30)
-      if(this.monsterAttackOrigins.indexOf(num) < 0){
-        attacks--
-        this.monsterAttackOrigins.push(num)
-        let tile = tiles[num];
-        tile[this.monsterWeapon] = true;
-        this.fireMonsterWeapon(tile);
+    // while(attacks > 0){
+    //   let num = Math.floor(Math.random()* 30)
+    //   if(this.monsterAttackOrigins.indexOf(num) < 0){
+    //     attacks--
+    //     this.monsterAttackOrigins.push(num)
+    //     let tile = tiles[num];
+    //     tile[this.monsterWeapon] = true;
+    //     this.fireMonsterWeapon(tile);
+    //   }
+    // }
+    this.testAnimation(500,100, 'monster-attack'+this.monster_attack_iteration);
+    let counter = 10;
+    const that = this;
+
+    this.monster_attack_destinationY = 100;
+    
+    const launch = setInterval(travel, 100);
+    function travel() {
+      if (counter >= 80) {
+        // that.checkMonsterHit(tiles[final]);
+        clearInterval(launch);
+        var element = document.getElementById('monster-attack'+that.monster_attack_iteration); 
+        
+        element.parentNode.removeChild(element);
+        that.monster_attack_iteration++
+        console.log(that.monster_attack_iteration)
+      } else {
+        that.monster_attack_destinationY += 100
+        counter += 10
       }
     }
+
   }
   addAttack(){
     if(!this.weaponCount || this.playerLocked) return
