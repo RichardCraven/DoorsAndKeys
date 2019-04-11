@@ -13,24 +13,33 @@
     
 }
 .scepter{
-    /* background-image: url('../assets/icons/items/weapons/scepter.png'); */
+    background-image: url('../assets/icons/items/weapons/scepter.png');
+}
+.scepter-white{
     background-image: url('../assets/icons/items/weapons/scepter_white.png');
-    
 }
 .flail{
-    /* background-image: url('../assets/icons/items/weapons/flail.png'); */
+    background-image: url('../assets/icons/items/weapons/flail.png');
+}
+.flail-white{
     background-image: url('../assets/icons/items/weapons/flail_white.png');
 }
 .axe{
-    /* background-image: url('../assets/icons/items/weapons/axe.png'); */
+    background-image: url('../assets/icons/items/weapons/axe.png');
+}
+.axe-white{
     background-image: url('../assets/icons/items/weapons/axe_white.png');
 }
 .spear{
-    /* background-image: url('../assets/icons/items/weapons/spear.png'); */
+    background-image: url('../assets/icons/items/weapons/spear.png');
+}
+.spear-white{
     background-image: url('../assets/icons/items/weapons/spear_white.png');
 }
 .sword{
-    /* background-image: url('../assets/icons/items/weapons/sword.png'); */
+    background-image: url('../assets/icons/items/weapons/sword.png');
+}
+.sword-white{
     background-image: url('../assets/icons/items/weapons/sword_white.png');
 }
 

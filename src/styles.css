@@ -11,6 +11,9 @@
     justify-content:center; 
     align-items:center; 
 } */
+body,html{
+    overflow: hidden;
+}
 *{
     overflow-x: hidden;
 }
@@ -127,12 +130,11 @@ tile.crown:hover{
 .occupied{
     background-image: url('assets/icons/avatar.png');
     background-position: center;
-    background-attachment: white;
 }
 .down{
     background-image: url('assets/icons/misc/down.png');
     background-position: center;
-    background-attachment: white;
+    /* background-attachment: white; */
 }
 .green{
     background-color: aquamarine;

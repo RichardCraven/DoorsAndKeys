@@ -70,6 +70,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   monsterMovementLeftEnd;
   monsterMovementRightEnd;
   monsterMovementMiddle;
+  monster_attack_positionX;
+  monster_attack_destinationX;
   weaponCount;
   weaponDamage;
   initialOpenWindow;
@@ -331,10 +333,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     return degrees * Math.PI /180
   }
   placePlayer(){
-    // this.botTiles[5].visible = true;
-    // this.botTiles[5].occupied = true; 
-    console.log('testing 123 wtf')
-
     let newCanvas = document.createElement('canvas');
       let board = document.getElementById('combat-board'); 
       newCanvas.id = "PlayerLayer";
@@ -802,6 +800,50 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         counter += 10
       }
     }
+  }
+  testAnimation(){
+    let newCanvas = document.createElement('canvas');
+      let board = document.getElementById('combat-board'); 
+      // newCanvas.id = "monsterAttackLayer";
+      newCanvas.width  = 1000;
+      newCanvas.height = 1000;
+      newCanvas.style.position = "absolute";
+      newCanvas.style.zIndex = '1'
+      newCanvas.style.border   = "1px solid green";
+
+      let imgTag = new Image();
+      imgTag.src = '../../assets/misc/down.png'
+      imgTag.height = 100
+      imgTag.width = 100
+      let newContext = newCanvas.getContext("2d");
+
+      let x = 500
+      let y = 100
+      this.monster_attack_positionX = 500;
+      this.monster_attack_destinationX = 500;
+      this.playerX = 500;
+      this.playerY_destination = 900;
+      this.playerY = 900;
+      
+      newContext.drawImage(imgTag, x, y);  
+      board.appendChild(newCanvas)
+
+      animate.bind(this)()
+      function animate() {
+        if(this.playerX === this.playerX_destination){
+          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  
+          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+        } else if(this.playerX_destination > this.playerX){
+          this.playerX += 25
+          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
+          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+        } else if(this.playerX_destination < this.playerX){
+          this.playerX -= 25
+          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
+          newContext.drawImage(imgTag, this.playerX, this.playerY); 
+        }
+        requestAnimationFrame(animate.bind(this))
+      }
   }
   fireMonsterWeapon(tile){
     const id = tile.id;
