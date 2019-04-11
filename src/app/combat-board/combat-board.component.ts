@@ -88,7 +88,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   showTimer;
   fadeTimer;
   monsterEndpoint;
-  playerPosition;
+  playerPositionX;
   monsterBar;
   playerBar;
   canvasLeft;
@@ -195,6 +195,12 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         case 'ArrowRight':
           this.movePlayer('right')
         break
+        case 'ArrowUp':
+          this.movePlayer('up')
+        break
+        case 'ArrowDown':
+          this.movePlayer('down')
+        break
         case 'z':
         this.addCastSpell();
         break
@@ -264,7 +270,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.monsterEndpoint = 4;
     // this.botTiles[5].visible = true;
     // this.botTiles[5].occupied = true;
-    this.playerPosition = 5;
+    this.playerPositionX = 5;
 
 
     // let newCanvas = document.createElement('canvas');
@@ -385,7 +391,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       
       newContext.drawImage(imgTag, x, y);  
       board.appendChild(newCanvas)
-      // this.collisionManagerService.updatePlayerPosition()
+
       animate.bind(this)()
       function animate() {
         if(this.playerX === this.playerX_destination){
@@ -877,8 +883,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     let attacks = 6
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
-      let numY = Math.floor(Math.random()* 275)
-      let delay = Math.floor(Math.random()*300)
+      let numY = Math.floor(Math.random()* 300)
+      let delay = Math.floor(Math.random()*400)
       if(this.monsterAttackOrigins.indexOf(numX) < 0){
         attacks--
         this.monsterAttackOrigins.push(numX)
@@ -895,16 +901,16 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   addAttack(){
     if(!this.weaponCount || this.playerLocked) return
     const wand = this.wand
-    if(!this.gridTiles[this.playerPosition + 70][this.weapon.type] && !this.gridTiles[this.playerPosition + 70][wand.type]){
-      this.gridTiles[this.playerPosition + 70][this.weapon.type] = this.gridTiles[this.playerPosition + 70].visible = true;
+    if(!this.gridTiles[this.playerPositionX + 70][this.weapon.type] && !this.gridTiles[this.playerPositionX + 70][wand.type]){
+      this.gridTiles[this.playerPositionX + 70][this.weapon.type] = this.gridTiles[this.playerPositionX + 70].visible = true;
       this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
-    } else if(!this.gridTiles[this.playerPosition + 60][this.weapon.type] && !this.gridTiles[this.playerPosition + 60][wand.type]){
-      this.gridTiles[this.playerPosition + 60][this.weapon.type] = this.gridTiles[this.playerPosition + 60].visible = true;
+    } else if(!this.gridTiles[this.playerPositionX + 60][this.weapon.type] && !this.gridTiles[this.playerPositionX + 60][wand.type]){
+      this.gridTiles[this.playerPositionX + 60][this.weapon.type] = this.gridTiles[this.playerPositionX + 60].visible = true;
       this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
-    } else if(!this.gridTiles[this.playerPosition + 50][this.weapon.type] && !this.gridTiles[this.playerPosition + 50][wand.type]){
-      this.gridTiles[this.playerPosition + 50][this.weapon.type] = this.gridTiles[this.playerPosition + 50].visible = true;
+    } else if(!this.gridTiles[this.playerPositionX + 50][this.weapon.type] && !this.gridTiles[this.playerPositionX + 50][wand.type]){
+      this.gridTiles[this.playerPositionX + 50][this.weapon.type] = this.gridTiles[this.playerPositionX + 50].visible = true;
       this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
     }
@@ -913,16 +919,16 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     
     if(!this.wandAvailable || this.playerLocked) return
     const wand = this.wand
-    if(!this.gridTiles[this.playerPosition + 70][wand.type] && !this.gridTiles[this.playerPosition + 70][this.weapon.type]){
-      this.gridTiles[this.playerPosition + 70][wand.type] = this.gridTiles[this.playerPosition + 70].visible = true;
+    if(!this.gridTiles[this.playerPositionX + 70][wand.type] && !this.gridTiles[this.playerPositionX + 70][this.weapon.type]){
+      this.gridTiles[this.playerPositionX + 70][wand.type] = this.gridTiles[this.playerPositionX + 70].visible = true;
       this.playerManager.attackPing.next({wand:wand})
       this.wandAvailable = false;
-    } else if(!this.gridTiles[this.playerPosition + 60][wand.type] && !this.gridTiles[this.playerPosition + 60][this.weapon.type]){
-      this.gridTiles[this.playerPosition + 60][wand.type] = this.gridTiles[this.playerPosition + 60].visible = true;
+    } else if(!this.gridTiles[this.playerPositionX + 60][wand.type] && !this.gridTiles[this.playerPositionX + 60][this.weapon.type]){
+      this.gridTiles[this.playerPositionX + 60][wand.type] = this.gridTiles[this.playerPositionX + 60].visible = true;
       this.playerManager.attackPing.next({wand:wand})
       this.wandAvailable = false;
-    } else if(!this.gridTiles[this.playerPosition + 50][wand.type] && !this.gridTiles[this.playerPosition + 50][this.weapon.type]){
-      this.gridTiles[this.playerPosition + 50][wand.type] = this.gridTiles[this.playerPosition + 50].visible = true;
+    } else if(!this.gridTiles[this.playerPositionX + 50][wand.type] && !this.gridTiles[this.playerPositionX + 50][this.weapon.type]){
+      this.gridTiles[this.playerPositionX + 50][wand.type] = this.gridTiles[this.playerPositionX + 50].visible = true;
       this.playerManager.attackPing.next({wand:wand})
       this.wandAvailable = false;
     }
@@ -934,7 +940,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   checkMonsterHit(tile){
     if (!tile) return
-    if(tile.id % 10 === this.playerPosition) this.playerHit()
+    if(tile.id % 10 === this.playerPositionX) this.playerHit()
       else this.playerMiss(tile);
   }
 
@@ -977,7 +983,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     function flash(){
       
       if(counter < 10){
-        that.botTiles[that.playerPosition].flash = !that.botTiles[that.playerPosition].flash
+        that.botTiles[that.playerPositionX].flash = !that.botTiles[that.playerPositionX].flash
       } else {
         that.handlePlayerHit();
         clearInterval(flashInterval)
@@ -1002,7 +1008,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     for(let t in this.botTiles){
       this.botTiles[t].flash = false;
     }
-    // this.botTiles[this.playerPosition].flash = false;
+    // this.botTiles[this.playerPositionX].flash = false;
     for(let y = 50; y <= 79; y++){
       const tile = this.gridTiles[y]
       if(tile[this.monsterWeapon]) tile[this.monsterWeapon] = null;
@@ -1032,25 +1038,29 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   movePlayer(direction){
     if(this.playerLocked) return
+    console.log('DIRECTION: ', direction);
+    
     const tiles = this.botTiles;
-    let endPoint = this.playerPosition;
-    if(this.playerX !== this.playerX_destination) return
+    let endPoint = this.playerPositionX;
+    
     switch (direction){
       case 'left':
+        if(this.playerX !== this.playerX_destination) return
         if(tiles[endPoint - 1] && !tiles[endPoint-1][this.monsterWeapon]){
           // tiles[endPoint].occupied = tiles[endPoint].visible = false;
           // tiles[endPoint - 1].occupied = tiles[endPoint - 1].visible = true;
-          this.playerPosition = this.playerPosition - 1
-          this.playerX_destination = this.playerPosition*100;
+          this.playerPositionX = this.playerPositionX - 1
+          this.playerX_destination = this.playerPositionX*100;
         } 
       break
       case 'right':
-      if(tiles[endPoint + 1] && !tiles[endPoint+1][this.monsterWeapon]){
+        if(this.playerX !== this.playerX_destination) return
+        if(tiles[endPoint + 1] && !tiles[endPoint+1][this.monsterWeapon]){
         // tiles[endPoint].occupied = tiles[endPoint].visible = false;
         // tiles[endPoint + 1].occupied = tiles[endPoint + 1].visible = true;
-        this.playerPosition = this.playerPosition + 1
-        this.playerX_destination = this.playerPosition*100;
-      } 
+        this.playerPositionX = this.playerPositionX + 1
+        this.playerX_destination = this.playerPositionX*100;
+        } 
       break
     }
   }
