@@ -457,19 +457,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       
       newCanvas.addEventListener('click', this.canvasClicked.bind(this), event )
     }
-
-
-
-
-
-
-
-
-    // console.log('canvas clicked, coords are ', event.pageX, event.pageY)
-    // let x = event.pageX - 251,
-    //     y = event.pageY - 251;
-        // console.log('canvas coords are ', x, ' ,', y);
-        
   }
   canvasLine(coordinates1, coordinates2){
     console.log('in canvas line');
@@ -684,7 +671,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
   }
   closeWindow(){
-    if(!this.tempBool) return
     this.round++
     this.showBar = false;
     for(let g in this.gridTiles){
@@ -907,9 +893,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     let board = document.getElementById('combat-board'); 
     board.appendChild(newCanvas)
     const canvas = <HTMLCanvasElement>document.getElementById('monster-attack-canvas');
-
-    this.tempBool = false;
-
+    
     const attack = new Projectile(canvas, 'downWhite', 15, this.collisionManagerService)
 
 
