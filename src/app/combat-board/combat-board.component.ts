@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
-import {MonsterAttack} from '../canvas-components/monster-attack.component'
+import {Projectile} from '../canvas-components/projectile.component'
+import {CollisionManagerService} from '../services/collision-manager.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
 import {
   delay,
@@ -100,7 +101,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   @ViewChild('combatCanvas') combatCanvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
-  constructor(public playerManager: PlayerManagerService, public itemsService: ItemsService) { 
+  constructor(public playerManager: PlayerManagerService, public itemsService: ItemsService, public collisionManagerService : CollisionManagerService) { 
     this.playerManager.getGlobalMessages().subscribe(res => {
       if(res.wandAvailable){
         this.wandAvailable = true;
@@ -366,7 +367,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       
       newContext.drawImage(imgTag, x, y);  
       board.appendChild(newCanvas)
-
+      // this.collisionManagerService.updatePlayerPosition()
       animate.bind(this)()
       function animate() {
         if(this.playerX === this.playerX_destination){
@@ -381,6 +382,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
           newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
           newContext.drawImage(imgTag, this.playerX, this.playerY); 
         }
+        this.collisionManagerService.updatePlayerPosition(this.playerX, this.playerY)
         requestAnimationFrame(animate.bind(this))
       }
   }
@@ -908,7 +910,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
 
     this.tempBool = false;
 
-    const attack = new MonsterAttack(canvas)
+    const attack = new Projectile(canvas, 'downWhite', 15, this.collisionManagerService)
 
 
 
