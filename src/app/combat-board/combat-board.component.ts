@@ -3,6 +3,7 @@ import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
 import {Projectile} from '../canvas-components/projectile.component'
 import {CollisionManagerService} from '../services/collision-manager.service'
+import {ProjectileManagerService} from '../services/projectile-manager.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
 import {
   delay,
@@ -27,8 +28,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   delayed1000 = new Subject<any>();
   delayed750 = new Subject<any>();
   delayed500 = new Subject<any>();
-
-  tempBool = true;
 
   topTilesCount = 10;
   botTilesCount = 10;
@@ -101,7 +100,12 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   @ViewChild('combatCanvas') combatCanvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
-  constructor(public playerManager: PlayerManagerService, public itemsService: ItemsService, public collisionManagerService : CollisionManagerService) { 
+  constructor(
+    public playerManager: PlayerManagerService, 
+    public itemsService: ItemsService, 
+    public collisionManagerService : CollisionManagerService,
+    public projectileManagerService : ProjectileManagerService
+    ) { 
     this.playerManager.getGlobalMessages().subscribe(res => {
       if(res.wandAvailable){
         this.wandAvailable = true;
@@ -130,14 +134,23 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.canvasLeft = canvas.offsetLeft;
     this.canvasTop = canvas.offsetTop;
 
-    console.log('teft is ', this.canvasLeft);
-    console.log('top is ', this.canvasTop);
-    
-    
     <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this), event )
     const inventory = this.playerManager.activePlayer.inventory;
     
+    //CREATE PROJECTILE CANVAS
+    let board = document.getElementById('combat-board'); 
+    let newCanvas = document.createElement('canvas');
+    newCanvas.id = 'projectile-canvas';
+    newCanvas.width  = 1000;
+    newCanvas.height = 1000;
+    newCanvas.style.position = "absolute";
+    newCanvas.style.zIndex = '10'
+    newCanvas.style.border = "1px dashed green";
+    board.appendChild(newCanvas)
 
+    const projectileCanvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
+    this.projectileManagerService.receiveCanvas(projectileCanvas)
+    
     // ****** ! None of this is currently used
 
     // for(let i = 0; i < inventory.weapons.length; i++){
@@ -669,6 +682,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
           elem.style.width = width + '%'; 
         }
       }
+    
+    
   }
   closeWindow(){
     this.round++
@@ -685,6 +700,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.delayed750.next('showMovementZone')
     this.delayed750.next('closeGate')
     this.delayed2000.next('openWindow')
+
+    
     return 'closeWindow'
   }
   
@@ -694,6 +711,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         tile[this.monster.type] = tile.visible = tile.monsterMovementLeftEnd = tile.monsterMovementMiddle = tile.monsterMovementRightEnd = false;
       } 
     }
+    this.projectileManagerService.clearProjectiles()
   }
 
   revealMonster(){
@@ -882,42 +900,43 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     }
   }
   monsterAttack(){
-    let newCanvas = document.createElement('canvas');
-    newCanvas.id = 'monster-attack-canvas';
-    newCanvas.width  = 1000;
-    newCanvas.height = 1000;
-    newCanvas.style.position = "absolute";
-    newCanvas.style.zIndex = '10'
-    newCanvas.style.border   = "1px dashed green";
-
-    let board = document.getElementById('combat-board'); 
-    board.appendChild(newCanvas)
-    const canvas = <HTMLCanvasElement>document.getElementById('monster-attack-canvas');
-    
-    const attack = new Projectile(canvas, 'downWhite', 15, this.collisionManagerService)
-
-
-
-    return
-
     this.monsterAttackOrigins = [];
     let attacks = this.monster.attack; //to be replaced with monster attack from json
+    this.monsterInfoLine1 = this.monster.combatMessages.attack[Math.floor(Math.random()*this.monster.combatMessages.attack.length)]
+    
+    let num = Math.floor(Math.random()* 30)
+    console.log('num is ', num)
+    console.log('origins is ', this.monsterAttackOrigins)
+
+
+    const canvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
+
+    
+    
+    
+    while(attacks > 0){
+      let num = Math.floor(Math.random()* 10)
+      if(this.monsterAttackOrigins.indexOf(num) < 0){
+        attacks--
+        this.monsterAttackOrigins.push(num)
+        
+        let projectile = new Projectile(canvas, 'downWhite', num*100, this.collisionManagerService, this.projectileManagerService)
+        
+        this.projectileManagerService.projectiles.push(projectile)
+
+        // let tile = tiles[num];
+        // tile[this.monsterWeapon] = true;
+        // this.fireMonsterWeapon(tile);
+      }
+    }
+    this.projectileManagerService.beginSequence()
+    return
+
     const tiles = this.gridTiles;
 
-    this.monsterInfoLine1 = this.monster.combatMessages.attack[Math.floor(Math.random()*this.monster.combatMessages.attack.length)]
     
     //NEED TO ACCOUNT FOR STACKING OF ATTACKS
     //PROBABLY BY ASSIGNING A 'STACKED' PROPERTY TO PAIRS OF STACKS
-    // while(attacks > 0){
-    //   let num = Math.floor(Math.random()* 30)
-    //   if(this.monsterAttackOrigins.indexOf(num) < 0){
-    //     attacks--
-    //     this.monsterAttackOrigins.push(num)
-    //     let tile = tiles[num];
-    //     tile[this.monsterWeapon] = true;
-    //     this.fireMonsterWeapon(tile);
-    //   }
-    // }
     this.testAnimation(500,100, 'monster-attack'+this.monster_attack_iteration);
     let counter = 10;
     const that = this;
