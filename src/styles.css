@@ -134,7 +134,7 @@ tile.crown:hover{
 .down{
     background-image: url('assets/icons/misc/down.png');
     background-position: center;
-    /* background-attachment: white; */
+    background-color: white;
 }
 .green{
     background-color: aquamarine;
