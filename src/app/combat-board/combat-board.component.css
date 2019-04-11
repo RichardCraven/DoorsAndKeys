@@ -38,14 +38,15 @@
     height: 200px;
     width: 200px;
 }
-#myProgress {
-  width: 1000px;
+#gateContainer {
+  width: 999px;
+  margin-left: 1px;
   position: absolute;
   left: 250px;
   height: 200px;
   background-color: grey;
 }
-#myBar {
+#midGate {
   width: 0%;
   height: 200px;
   background-color: black;

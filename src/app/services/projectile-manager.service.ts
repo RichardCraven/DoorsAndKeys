@@ -27,8 +27,6 @@ export class ProjectileManagerService {
     
   }
   clearProjectiles(){
-    console.log('CLEARING PROJECTILES');
-    
     this.projectiles = [];
     this.start = false;
   }

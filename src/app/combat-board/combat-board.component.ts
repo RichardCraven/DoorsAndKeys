@@ -679,9 +679,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   
   openGate(){
-    
     let that = this;
-    var elem = document.getElementById("myBar"); 
+    var elem = document.getElementById("midGate"); 
       var width = 1;
       var id = setInterval(frame, 25);
       function frame() {
@@ -699,7 +698,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   closeGate(){
     let that = this;
-      var elem = document.getElementById("myBar"); 
+      var elem = document.getElementById("midGate"); 
       var width = 100;
       var id = setInterval(frame, 10);
       function frame() {
@@ -845,43 +844,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  fireMonsterWeapon(tile){
-    const id = tile.id;
-    const tiles = this.gridTiles;
-    tile[this.monsterWeapon] = false;
-    const that = this;
-    const launch = setInterval(travel, 80);
-    let counter = 10;
-    let final = null;
-    function travel() {
-      // tile[that.weapon] = false;
-      if (counter >= 80) {
-        that.checkMonsterHit(tiles[final]);
-        clearInterval(launch);
-      } else {
-        const newTileId = id+counter;
-        if(tiles[newTileId]){
-          tiles[newTileId].visible = tiles[newTileId][that.monsterWeapon] = true;
-          tiles[newTileId].monsterZone = false;
-
-          // tiles[newTileId].placementZone = false;
-          final = newTileId;
-          const oldTileId = id + (counter - 10)
-          if(tiles[oldTileId] ){
-            tiles[oldTileId][that.monsterWeapon] = false;
-            tiles[oldTileId].visible = false;
-            if(oldTileId <= 29){
-              tiles[oldTileId].monsterZone = true;
-            }
-          } 
-        } else {
-          //if newTile is at the last row, process checkContact
-            that.checkMonsterHit(tiles[id + (counter - 10)]);
-        }
-        counter += 10
-      }
-    }
-  }
   monsterAttack(){
     this.monsterAttackOrigins = [];
     // let attacks = this.monster.attack; 
@@ -1001,7 +963,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       }
       counter++
     }
-    console.log('health is ', this.playerHealth)
     this.playerHealth -= this.monster.damage;
     this.playerInfo = 'Hit you for ' + this.monster.damage + ' damage!'
     this.playerBar = document.getElementById("player-health-bar");
@@ -1049,16 +1010,17 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   movePlayer(direction){
     if(this.playerLocked) return
-    console.log('DIRECTION: ', direction);
+    // console.log('DIRECTION: ', direction);
     
-    const tiles = this.botTiles;
+    const botTiles = this.botTiles;
+    const mainTiles = this.gridTiles;
     let endPointX = this.playerTilePositionX;
     let endPointY = this.playerTilePositionY;
-    
+
     switch (direction){
       case 'left':
         if(this.playerX !== this.playerX_destination) return
-        if(tiles[endPointX - 1] && !tiles[endPointX-1][this.monsterWeapon]){
+        if(botTiles[endPointX - 1] && !botTiles[endPointX-1][this.monsterWeapon]){
           // tiles[endPointX].occupied = tiles[endPointX].visible = false;
           // tiles[endPointX - 1].occupied = tiles[endPointX - 1].visible = true;
           // this.playerTilePositionX = this.playerTilePositionX - 1
@@ -1070,7 +1032,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       break
       case 'right':
         if(this.playerX !== this.playerX_destination) return
-        if(tiles[endPointX + 1] && !tiles[endPointX+1][this.monsterWeapon]){
+        if(botTiles[endPointX + 1] && !botTiles[endPointX+1][this.monsterWeapon]){
         // tiles[endPointX].occupied = tiles[endPointX].visible = false;
         // tiles[endPointX + 1].occupied = tiles[endPointX + 1].visible = true;
         this.playerTilePositionX = this.playerTilePositionX + 1
@@ -1079,17 +1041,17 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       break
       case 'up':
         // if(this.playerY !== this.playerY_destination) return
-        // if(tiles[endPointY + 1] && !tiles[endPointY+1][this.monsterWeapon]){
+        if(endPointY > 1){
         this.playerTilePositionY = this.playerTilePositionY - 1
         this.avatar.destinationY = this.playerTilePositionY*100;
-        // } 
+        } 
       break
       case 'down':
         // if(this.playerY !== this.playerY_destination) return
-        // if(tiles[endPointY + 1] && !tiles[endPointY+1][this.monsterWeapon]){
+        if(endPointY < 9){
         this.playerTilePositionY = this.playerTilePositionY + 1
         this.avatar.destinationY = this.playerTilePositionY*100;
-        // } 
+        } 
       break
     }
   }
