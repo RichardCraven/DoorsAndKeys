@@ -11,6 +11,8 @@ export class CollisionManagerService {
   private playerY;
   public monsterX;
   public monsterY;
+  public midGateX = 0;
+  public midGateY;
 
   constructor() { }
   updatePlayerPosition(x, y){
@@ -18,7 +20,6 @@ export class CollisionManagerService {
     this.playerY = y;
   }
   updateMonsterPosition(x, y){
-    console.log('monster is at ', x,y)
     this.monsterX = x;
     this.monsterY = y;
   }
@@ -28,6 +29,18 @@ export class CollisionManagerService {
     } else {
       return false
     }
+  }
+  checkForGate(direction){
+    if(direction === 'up'){
+      if(this.playerY === 600 && this.playerX > this.midGateX){
+        return false
+      }
+    } else if(direction === 'down'){
+      if(this.playerY === 300 && this.playerX > this.midGateX){
+        return false
+      }
+    }
+    return true
   }
   updateProjectilePosition(x, y, iconHeight){
     if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight){

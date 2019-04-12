@@ -686,6 +686,8 @@ export class CombatBoardComponent implements OnInit {
         } else {
           width++; 
           elem.style.width = width + '%'; 
+          // console.log('width: ', width * 10)
+          that.collisionManagerService.midGateX = width*10
         }
       }
   }
@@ -700,6 +702,7 @@ export class CombatBoardComponent implements OnInit {
         } else {
           width--; 
           elem.style.width = width + '%'; 
+          that.collisionManagerService.midGateX = width*10
         }
       }
     
@@ -989,14 +992,14 @@ export class CombatBoardComponent implements OnInit {
       break
       case 'up':
         // if(this.playerY !== this.playerY_destination) return
-        if(endPointY > 1){
+        if(endPointY > 1 && this.collisionManagerService.checkForGate('up')){
         this.playerTilePositionY = this.playerTilePositionY - 1
         this.avatar.destinationY = this.playerTilePositionY*100;
         } 
       break
       case 'down':
         // if(this.playerY !== this.playerY_destination) return
-        if(endPointY < 9){
+        if(endPointY < 9 && this.collisionManagerService.checkForGate('down')){
         this.playerTilePositionY = this.playerTilePositionY + 1
         this.avatar.destinationY = this.playerTilePositionY*100;
         } 
