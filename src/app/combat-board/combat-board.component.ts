@@ -122,6 +122,9 @@ export class CombatBoardComponent implements OnInit {
       if(res.weaponAvailable){
         this.weaponCount++
       }
+      if(res === 'monster-struck'){
+        this.monsterHit()
+      }
     })
   }
   
@@ -333,7 +336,6 @@ export class CombatBoardComponent implements OnInit {
     this.monsterIcon[this.monster.type] = true
     
     this.weapon = this.playerManager.activePlayer.inventory.weapons[0];
-    console.log('this.weapon is ', this.weapon)
     this.wand = this.playerManager.activePlayer.inventory.wands[0]
 
     this.weaponCount = this.weapon.attack;
@@ -389,8 +391,8 @@ export class CombatBoardComponent implements OnInit {
     this.playerX = 500;
     this.playerY_destination = 900;
     this.playerY = 900;
-    
-    this.avatar = new Avatar(playerCanvas, this.playerX, this.playerY, this.weapon.type , this.collisionManagerService, this.projectileManagerService)
+
+    this.avatar = new Avatar(playerCanvas, this.playerX, this.playerY, this.weapon.type , this.collisionManagerService, this.projectileManagerService, this.playerManager)
 
     this.avatar.destinationX = 500;
     this.avatar.destinationY = 900;
@@ -730,6 +732,7 @@ export class CombatBoardComponent implements OnInit {
     }
     this.collisionManagerService.playerHit = false;
     this.projectileManagerService.clearProjectiles()
+    this.collisionManagerService.updateMonsterPosition(null, null)
   }
 
   revealMonster(){
@@ -753,6 +756,8 @@ export class CombatBoardComponent implements OnInit {
     }
     if (index > 9) index = 9;
     if (index < 0 ) index = 0
+
+    this.collisionManagerService.updateMonsterPosition(index*100, 50)
 
     let tile = this.topTiles[index];
     tile[this.monster.type] = tile.visible = true;
@@ -799,7 +804,7 @@ export class CombatBoardComponent implements OnInit {
     let num = Math.floor(Math.random()* 30)
     const canvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
 
-    let attacks = 6
+    let attacks = 1
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
       let numY = Math.floor(Math.random()* 300)
@@ -875,6 +880,8 @@ export class CombatBoardComponent implements OnInit {
         that.topTiles[that.monsterEndpoint].flash = !that.topTiles[that.monsterEndpoint].flash
       } else {
         clearInterval(flashInterval)
+        that.avatar.monsterStruck = false;
+        that.avatar.upDownNum = 0;
       }
       counter++
     }

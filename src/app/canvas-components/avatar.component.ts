@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CollisionManagerService } from '../services/collision-manager.service';
 import { ProjectileManagerService } from '../services/projectile-manager.service';
+import {PlayerManagerService} from '../services/player-manager.service'
 
 export class Avatar{
     private readonly context: CanvasRenderingContext2D;
@@ -14,7 +15,9 @@ export class Avatar{
     private weapons : any;
     private activeWeapon : any;
     private degrees = 310;
-    private upDownNum = 100;
+    public upDownNum = 0;
+    public monsterStruck = false;
+    // private playerManagerService : PlayerManagerService;
 
     public direction;
     constructor(
@@ -23,24 +26,29 @@ export class Avatar{
         private originY : number,
         public weapon : any,
         public collisionManager : CollisionManagerService,
-        public projectileManager : ProjectileManagerService
+        public projectileManager : ProjectileManagerService,
+        public playerManagerService : PlayerManagerService
         ) {
         this.weapons = {
             spear: {
-                imgSrc : '../../assets/icons/items/weapons/spear_white.png',
-                strikeType : 'thrust'
+                imgSrc : '../../assets/icons/items/weapons/spear_upright_white.png',
+                strikeType : 'thrust',
+                range: 180
             },
             sword : {
-                imgSrc : '../../assets/icons/items/weapons/sword_white.png',
-                strikeType : 'thrust'
+                imgSrc : '../../assets/icons/items/weapons/sword_upright_white.png',
+                strikeType : 'thrust',
+                range: 100
             },
             flail : {
-                imgSrc : '../../assets/icons/items/weapons/flail_white.png',
-                strikeType : 'arc'
+                imgSrc : '../../assets/icons/items/weapons/flail_upright_white.png',
+                strikeType : 'thrust',
+                range: 130
             },
             axe : {
-                imgSrc : '../../assets/icons/items/weapons/axe_white.png',
-                strikeType : 'arc'
+                imgSrc : '../../assets/icons/items/weapons/axe_upright_white.png',
+                strikeType : 'thrust',
+                range: 120
             }
         }
 
@@ -58,6 +66,8 @@ export class Avatar{
     }
     draw(){
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        const attackPositionY = this.positionY - this.upDownNum
         
         if(this.destinationX > this.positionX){
             this.positionX += 25
@@ -70,17 +80,9 @@ export class Avatar{
             this.positionY -= 25
         }
         
-        this.context.save();
-        this.context.translate(this.positionX +35, this.positionY + 50);
-        this.context.translate(0, -50);
-        
-        // this.isAttacking === false ? this.context.rotate(310 * Math.PI / 180) : null
         // this.context.save();
         // this.context.translate(this.positionX +35, this.positionY + 50);
-        
         // this.context.translate(0, -50);
-        // console.log(this.degrees)
-
 
         if(this.isAttacking && this.weapons[this.activeWeapon].strikeType === 'arc'){ 
             this.context.rotate(this.degrees * Math.PI / 180);
@@ -106,26 +108,49 @@ export class Avatar{
 
             
         } else if(this.isAttacking && this.weapons[this.activeWeapon].strikeType === 'thrust') {
-            this.context.rotate(310 * Math.PI / 180)
-            this.context.drawImage(this.weaponImage,-50,50, 100, 100)
-            this.context.restore();
-        } else {
-            this.context.rotate(310 * Math.PI / 180)
-            this.context.drawImage(this.weaponImage,-50,50, 100, 100)
-            this.context.restore();
+            // this.context.rotate(310 * Math.PI / 180)
+            const monsterStruck = false;
+            
+            const attackPositionX = this.positionX+65
+            this.context.drawImage(this.weaponImage,this.positionX+65, attackPositionY, 100, 100)
+            // this.context.restore();
+            if(Math.abs(attackPositionY - this.collisionManager.monsterY) < 50 && Math.abs(attackPositionX - this.collisionManager.monsterX) < 100 )
+            if(this.collisionManager.checkMonsterCollision(attackPositionX, attackPositionY)){
+                this.isAttacking = false;
+                this.monsterStruck = true;
+                this.playerManagerService.globalSubject.next('monster-struck')
+            }
 
+            // if(attackPositionY)
+            if(this.upDownNum < this.weapons[this.activeWeapon].range && !this.monsterStruck){
+                this.upDownNum+= 10
+            } else if(this.monsterStruck){
+                // this.
+            } else {
+                this.isAttacking = false;
+                this.upDownNum = 0;
+            }
+            this.context.drawImage(this.imgTag, this.positionX, this.positionY);
+
+        } else if(this.monsterStruck){
+            this.context.drawImage(this.weaponImage, this.positionX+65,attackPositionY, 100, 100)
+
+            this.context.drawImage(this.imgTag, this.positionX, this.positionY);
+             this.collisionManager.updatePlayerPosition(this.positionX, this.positionY)
+        }
+         else {
+            // this.context.rotate(310 * Math.PI / 180)
+            // this.context.restore();
+
+            this.context.drawImage(this.weaponImage, this.positionX+65,this.positionY, 100, 100)
 
             this.context.drawImage(this.imgTag, this.positionX, this.positionY);
              this.collisionManager.updatePlayerPosition(this.positionX, this.positionY)
         }
         requestAnimationFrame(() => this.draw());  
     }
-    attack(weapon){
-        console.log('ATTACKING')
-        
-        
+    attack(){
         this.isAttacking = true;
-        
     }
     endAttack(){
         

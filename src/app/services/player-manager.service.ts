@@ -1,4 +1,4 @@
-import { Injectable, HostListener } from '@angular/core';
+import { Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import { ItemsService } from './items.service';
 
@@ -20,7 +20,7 @@ export class PlayerManagerService{
   constructor(public itemsService: ItemsService) {
     window.addEventListener("focus", (event) => {
     }, false);
-    
+
     window.addEventListener('keydown', (event) => {
       switch(event.key){
         case 'ArrowUp':
@@ -40,6 +40,7 @@ export class PlayerManagerService{
           break
         }
       }, true);
+
     window.focus();
     const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
     const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
@@ -81,46 +82,50 @@ export class PlayerManagerService{
 
   }
   addListeners(){
-    window.addEventListener('keydown', (event) => {
-      switch(event.key){
-        case 'ArrowUp':
-        this.movePlayer('up')
-        break
-        case 'ArrowDown':
-        this.movePlayer('down')
-        break
-        case 'ArrowLeft':
-        this.movePlayer('left')
-        break
-        case 'ArrowRight':
-        this.movePlayer('right')
-        break
-        case 'Enter':
-          this.startTurn();
-          break
-        }
-      }, true);
+    console.log('adding listeners');
+    
+    // window.addEventListener('keydown', (event) => {
+    //   switch(event.key){
+    //     case 'ArrowUp':
+    //     this.movePlayer('up')
+    //     break
+    //     case 'ArrowDown':
+    //     this.movePlayer('down')
+    //     break
+    //     case 'ArrowLeft':
+    //     this.movePlayer('left')
+    //     break
+    //     case 'ArrowRight':
+    //     this.movePlayer('right')
+    //     break
+    //     case 'Enter':
+    //       this.startTurn();
+    //       break
+    //     }
+    //   }, true);
   }
   removeListeners(){
-    window.removeEventListener('keydown', (event) => {
-      switch(event.key){
-        case 'ArrowUp':
-        this.movePlayer('up')
+    console.log('removing listeners');
+    // window.removeEventListener('keydown', this.handleKeydown, true);
+  }
+  handleKeydown(event){
+    switch(event.key){
+      case 'ArrowUp':
+      this.movePlayer('up')
+      break
+      case 'ArrowDown':
+      this.movePlayer('down')
+      break
+      case 'ArrowLeft':
+      this.movePlayer('left')
+      break
+      case 'ArrowRight':
+      this.movePlayer('right')
+      break
+      case 'Enter':
+        this.startTurn();
         break
-        case 'ArrowDown':
-        this.movePlayer('down')
-        break
-        case 'ArrowLeft':
-        this.movePlayer('left')
-        break
-        case 'ArrowRight':
-        this.movePlayer('right')
-        break
-        case 'Enter':
-          this.startTurn();
-          break
-        }
-      }, true);
+    }
   }
   initiateCombat(){
     this.inCombat = true;

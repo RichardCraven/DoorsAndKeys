@@ -452,8 +452,9 @@ export class MainBoardComponent implements OnInit {
       } else {
         this.delayed500.next('removeMonster')
       }
-      this.playerManager.addListeners()
+      // this.playerManager.addListeners()
       this.showCombatBoard = false;
+      this.playerManager.endCombat()
       this.playerManager.globalSubject.next({stopCombat: true})
       return
     }
@@ -463,7 +464,7 @@ export class MainBoardComponent implements OnInit {
         this.engagedMonster['location'] = res.monster.id;
         this.playerManager.requestItem('clear')
         this.playerManager.globalSubject.next({startCombat: true})
-        this.playerManager.removeListeners()
+        this.playerManager.initiateCombat()
         this.showCombatBoard = true;
       }
       if(res.monster.highlight){
