@@ -11,6 +11,7 @@ export class Projectile {
     private trueHeight;
     private size;
     private speed;
+    private connectedDetected = false;
 
     public direction;
     constructor(
@@ -41,9 +42,20 @@ export class Projectile {
         this.imgTag.src = this.imgArr[image].imgSrc;
     }
     update(){
+        console.log(this.projectile_positionY);
+        
         if(this.collisionManager.updateProjectilePosition(this.projectile_positionX, this.projectile_positionY, this.trueHeight)){
+            // this.collisionManager.pushBackAvatar(this.projectile_positionY)
+            // console.log('Y is ...',this.projectile_positionY)
             return
+            if(this.projectile_positionY > 810){
+                console.log('wtf');
+                
+                return
+            }
+            // this.projectile_positionY += this.speed;
+        } else {
+            this.projectile_positionY += this.speed;
         }
-        this.projectile_positionY += this.speed;
     }
 }

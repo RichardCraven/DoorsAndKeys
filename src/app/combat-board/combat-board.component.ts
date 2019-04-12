@@ -374,6 +374,7 @@ export class CombatBoardComponent implements OnInit {
 
     this.collisionManagerService.detectCollision().subscribe(res => {
       !this.playerLocked && this.playerHit();
+      this.playerTilePositionY = 9
     })
   }
   degreesToRadians(degrees){
@@ -809,7 +810,9 @@ export class CombatBoardComponent implements OnInit {
 
     let attacks = 1
     while(attacks > 0){
-      let numX = Math.floor(Math.random()* 10)
+      // let numX = Math.floor(Math.random()* 10)
+      let numX = 4
+
       let numY = Math.floor(Math.random()* 300)
       let delay = Math.floor(Math.random()*400)
       if(this.monsterAttackOrigins.indexOf(numX) < 0){

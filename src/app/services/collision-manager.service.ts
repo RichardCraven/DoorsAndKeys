@@ -44,11 +44,14 @@ export class CollisionManagerService {
   }
   updateProjectilePosition(x, y, iconHeight){
     if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight){
-      if(!this.playerHit){
-        console.log('COLLISION');
-        this.playerHit = true;
-        this.subject.next(true)
-      }
+      
+      this.subject.next({y_value : y})
+      // console.log('COLLISION, y is ', y);
+      // if(!this.playerHit){
+      //   console.log('COLLISION, y is ', y);
+      //   this.playerHit = true;
+      //   this.subject.next({y_value : y})
+      // }
       return true
     } else {
       return false
@@ -57,4 +60,10 @@ export class CollisionManagerService {
   detectCollision(): Observable<any>{
     return this.subject.asObservable()
   }
+  pushBackAvatar(projectileY_value){
+
+  }
+  // sendDataToAvatar(): Observable<any>{
+  //   return this.subject.asObservable()
+  // }
 }

@@ -17,6 +17,8 @@ export class Avatar{
     private degrees = 310;
     public upDownNum = 0;
     public monsterStruck = false;
+    public isBeingPushedBack = false;
+    private lastStep = 0;
     // private playerManagerService : PlayerManagerService;
 
     public direction;
@@ -62,22 +64,43 @@ export class Avatar{
         this.imgTag.src = '../../assets/icons/avatar_white.png';
     }
     init(){
-        this.draw()
+        this.collisionManager.detectCollision().subscribe(res => {
+            // !this.playerLocked && this.playerHit();
+            this.isBeingPushedBack = true;
+            console.log('value is ', res.y_value)
+            if(res.y_value && res.y_value < 810){
+                this.positionY  = res.y_value + 100
+            }
+        })
+        requestAnimationFrame((milliseconds) => this.draw(milliseconds));
     }
-    draw(){
+    animationFrame(milliseconds) {
+        var elapsed = milliseconds - this.lastStep;
+        this.lastStep = milliseconds;
+      
+        this.draw(elapsed);
+        
+        window.requestAnimationFrame(this.animationFrame);
+    }
+    draw(elapsed){
+        // let elapsed = milliseconds - this.lastStep;
+        // this.lastStep = milliseconds;
+        // console.log('milliseconds :', milliseconds)
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         const attackPositionY = this.positionY - this.upDownNum
         
-        if(this.destinationX > this.positionX){
-            this.positionX += 25
-        } else if(this.destinationX < this.positionX){
-            this.positionX -= 25
-        }
-        if(this.destinationY > this.positionY){
-            this.positionY += 25
-        } else if(this.destinationY < this.positionY){
-            this.positionY -= 25
+        if(!this.isBeingPushedBack){
+            if(this.destinationX > this.positionX){
+                this.positionX += 25
+            } else if(this.destinationX < this.positionX){
+                this.positionX -= 25
+            }
+            if(this.destinationY > this.positionY){
+                this.positionY += 25
+            } else if(this.destinationY < this.positionY){
+                this.positionY -= 25
+            }
         }
         
         // this.context.save();
@@ -147,7 +170,7 @@ export class Avatar{
             this.context.drawImage(this.imgTag, this.positionX, this.positionY);
              this.collisionManager.updatePlayerPosition(this.positionX, this.positionY)
         }
-        requestAnimationFrame(() => this.draw());  
+        requestAnimationFrame((milliseconds) => this.draw(milliseconds));  
     }
     attack(){
         this.isAttacking = true;
