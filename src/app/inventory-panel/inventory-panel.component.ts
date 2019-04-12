@@ -68,7 +68,7 @@ export class InventoryPanelComponent implements OnInit {
         this.functionRouter(res);
         return
       }
-      const tile = res.tile
+      let tile = res.tile
       if(tile.weapon){
         tile.duration3 = true;
         this.delayed3000.next({tile})
@@ -79,9 +79,8 @@ export class InventoryPanelComponent implements OnInit {
       }
     })
     this.sub2 = this.getDelayed3000().subscribe( res => {
-      const tile = res.tile
+      let tile = res.tile
       tile.available = true;
-
       if(tile.weapon){
         this.playerManager.globalSubject.next({weaponAvailable: true})
       }
@@ -90,7 +89,7 @@ export class InventoryPanelComponent implements OnInit {
       }
     })
     this.sub3 = this.getDelayed5000().subscribe( res => {
-      const tile = res.tile
+      let tile = res.tile
       tile.available = true;
       if(typeof res === 'string'){
         this.functionRouter(res);
@@ -104,7 +103,7 @@ export class InventoryPanelComponent implements OnInit {
       }
     })
     this.sub4 = this.getDelayed6000().subscribe( res => {
-      const tile = res.tile
+      let tile = res.tile
       tile.available = true;
       if(tile.weapon){
         this.playerManager.globalSubject.next({weaponAvailable: true})
@@ -119,7 +118,7 @@ export class InventoryPanelComponent implements OnInit {
       }
     })
     this.sub5 = this.getDelayed8000().subscribe( res => {
-      const tile = res.tile
+      let tile = res.tile
       tile.available = true;
       if(tile.weapon){
         this.playerManager.globalSubject.next({weaponAvailable: true})
@@ -149,6 +148,7 @@ export class InventoryPanelComponent implements OnInit {
   updateInventory(){
     this.counter = 0;
     const inventory = this.playerManager.activePlayer.inventory;
+
     this.tiles = [];
     this.row1 = [];
     this.row2 = [];

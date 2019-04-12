@@ -2,6 +2,7 @@ import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestr
 import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
 import {Projectile} from '../canvas-components/projectile.component'
+import {Avatar} from '../canvas-components/avatar.component'
 import {CollisionManagerService} from '../services/collision-manager.service'
 import {ProjectileManagerService} from '../services/projectile-manager.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
@@ -22,12 +23,14 @@ import {
   templateUrl: './combat-board.component.html',
   styleUrls: ['./combat-board.component.css']
 })
-export class CombatBoardComponent implements OnInit, AfterViewInit {
+export class CombatBoardComponent implements OnInit {
   subject = new Subject<any>();
   delayed2000 = new Subject<any>();
   delayed1000 = new Subject<any>();
   delayed750 = new Subject<any>();
   delayed500 = new Subject<any>();
+
+  avatar;
 
   topTilesCount = 10;
   botTilesCount = 10;
@@ -50,10 +53,28 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   monsterHealth = 0;
   playerHealth = 100;
   playerHealthInitial = 100;
+
   playerX;
   playerX_destination;
   playerY;
   playerY_destination;
+  
+  playerTilePositionX;
+  playerTilePositionY;
+  
+  monster_attack_positionX;
+  monster_attack_destinationX;
+  monster_attack_positionY;
+  monster_attack_destinationY;
+  monster_attack_iteration = 0;
+  monsterWeapon;
+  monsterIcon = {};
+  monsterMovementZoneStartpoint;
+  monsterMovementZoneEndpoint;
+  monsterMovementLeftEnd;
+  monsterMovementRightEnd;
+  monsterMovementMiddle;
+
   windowOpen = false;
   playerLocked = false;
   showBar = true;
@@ -63,23 +84,12 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   sub2;
   sub3;
   sub4;
+  playerManagerSubscription;
   playerInventoryTiles = [];
   weapon;
   wand;
   amulet;
-  monsterWeapon;
-  monsterIcon = {};
-  monsterMovementZoneStartpoint;
-  monsterMovementZoneEndpoint;
-  monsterMovementLeftEnd;
-  monsterMovementRightEnd;
-  monsterMovementMiddle;
 
-  monster_attack_positionX;
-  monster_attack_destinationX;
-  monster_attack_positionY;
-  monster_attack_destinationY;
-  monster_attack_iteration = 0;
 
   weaponCount;
   weaponDamage;
@@ -88,7 +98,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   showTimer;
   fadeTimer;
   monsterEndpoint;
-  playerPosition;
   monsterBar;
   playerBar;
   canvasLeft;
@@ -106,31 +115,24 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     public collisionManagerService : CollisionManagerService,
     public projectileManagerService : ProjectileManagerService
     ) { 
-    this.playerManager.getGlobalMessages().subscribe(res => {
+    this.playerManagerSubscription = this.playerManager.getGlobalMessages().subscribe(res => {
       if(res.wandAvailable){
         this.wandAvailable = true;
       }
       if(res.weaponAvailable){
         this.weaponCount++
       }
+      if(res === 'monster-struck'){
+        this.monsterHit()
+      }
     })
-  }
-
-  ngAfterViewInit(): void{
-    // this.context = 
-    console.log('this.combat canas is ', this.combatCanvas);
-    this.context = (<HTMLCanvasElement>this.combatCanvas.nativeElement).getContext('2d');
-    // this.context.scale(16,16);
-    
-    
-    
-    
-    // this.context = this.combatCanvas.getContext('2d');
   }
   
   ngOnInit() {
     // <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this, event))
     const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement;
+    const board = document.getElementById('combat-board'); 
+
     this.canvasLeft = canvas.offsetLeft;
     this.canvasTop = canvas.offsetTop;
 
@@ -138,18 +140,25 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     const inventory = this.playerManager.activePlayer.inventory;
     
     //CREATE PROJECTILE CANVAS
-    let board = document.getElementById('combat-board'); 
-    let newCanvas = document.createElement('canvas');
-    newCanvas.id = 'projectile-canvas';
-    newCanvas.width  = 1000;
-    newCanvas.height = 1000;
-    newCanvas.style.position = "absolute";
-    newCanvas.style.zIndex = '10'
-    newCanvas.style.border = "1px dashed green";
-    board.appendChild(newCanvas)
-
-    const projectileCanvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
+    let projectileCanvas = <HTMLCanvasElement>document.createElement('canvas');
+    projectileCanvas.id = 'projectile-canvas';
+    projectileCanvas.width  = 1000;
+    projectileCanvas.height = 1000;
+    projectileCanvas.style.position = "absolute";
+    projectileCanvas.style.zIndex = '10'
+    board.appendChild(projectileCanvas)
+    // const projectileCanvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
     this.projectileManagerService.receiveCanvas(projectileCanvas)
+
+    //CREATE PLAYER CANVAS
+    let playerCanvas = <HTMLCanvasElement>document.createElement('canvas');
+    playerCanvas.id = 'player-canvas';
+    playerCanvas.width  = 1000;
+    playerCanvas.height = 1000;
+    playerCanvas.style.position = "absolute";
+    playerCanvas.style.zIndex = '11'
+    // playerCanvas.style.border = '1px solid yellow'
+    board.appendChild(playerCanvas)
     
     // ****** ! None of this is currently used
 
@@ -195,6 +204,12 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         case 'ArrowRight':
           this.movePlayer('right')
         break
+        case 'ArrowUp':
+          this.movePlayer('up')
+        break
+        case 'ArrowDown':
+          this.movePlayer('down')
+        break
         case 'z':
         this.addCastSpell();
         break
@@ -211,7 +226,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
           // this.addCastSpell()
         break
       }
-    });
+    }, false);
 
     window.addEventListener('keyup', (event) => {
       switch(event.key){
@@ -264,7 +279,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.monsterEndpoint = 4;
     // this.botTiles[5].visible = true;
     // this.botTiles[5].occupied = true;
-    this.playerPosition = 5;
+    this.playerTilePositionX = 5;
+    this.playerTilePositionY = 9;
 
 
     // let newCanvas = document.createElement('canvas');
@@ -290,7 +306,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     //   board.appendChild(newCanvas)
 
 
-    this.placePlayer()
+    
 
 
 
@@ -330,6 +346,9 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.monsterMovementZoneStartpoint = this.monsterEndpoint - this.monster.agility >= 0 ? this.monsterEndpoint - this.monster.agility : 0
     this.monsterMovementZoneEndpoint = this.monsterEndpoint + this.monster.agility <= max ? this.monsterEndpoint + this.monster.agility : max
 
+    this.placePlayer()
+
+
     //subscribe
 
     this.sub1 = this.getDelayed2000().subscribe( res => {
@@ -361,48 +380,47 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     return degrees * Math.PI /180
   }
   placePlayer(){
-    let newCanvas = document.createElement('canvas');
-      let board = document.getElementById('combat-board'); 
-      newCanvas.id = "PlayerLayer";
-      newCanvas.width  = 1000;
-      newCanvas.height = 1000;
-      newCanvas.style.position = "absolute";
-      newCanvas.style.zIndex = '1'
-      newCanvas.style.border   = "1px solid red";
+    const playerCanvas = <HTMLCanvasElement>document.getElementById('player-canvas');
+    // const context = playerCanvas.getContext("2d");
+    // const board = document.getElementById('combat-board'); 
+    // playerCanvas.style.border   = "1px solid red";
+    let imgTag = new Image();
+    imgTag.src = '../../assets/icons/avatar_white.png'
 
-      let imgTag = new Image();
-      imgTag.src = '../../assets/icons/avatar_white.png'
-      imgTag.height = 100
-      imgTag.width = 100
-      let newContext = newCanvas.getContext("2d");
+    this.playerX_destination = 500;
+    this.playerX = 500;
+    this.playerY_destination = 900;
+    this.playerY = 900;
 
-      let x = 500
-      let y = 1000-100
-      this.playerX_destination = 500;
-      this.playerX = 500;
-      this.playerY_destination = 900;
-      this.playerY = 900;
+    this.avatar = new Avatar(playerCanvas, this.playerX, this.playerY, this.weapon.type , this.collisionManagerService, this.projectileManagerService, this.playerManager)
+
+    this.avatar.destinationX = 500;
+    this.avatar.destinationY = 900;
+
+    this.avatar.init()
+    // let x = 500
+    // let y = 1000-100
       
-      newContext.drawImage(imgTag, x, y);  
-      board.appendChild(newCanvas)
-      // this.collisionManagerService.updatePlayerPosition()
-      animate.bind(this)()
-      function animate() {
-        if(this.playerX === this.playerX_destination){
-          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  
-          newContext.drawImage(imgTag, this.playerX, this.playerY); 
-        } else if(this.playerX_destination > this.playerX){
-          this.playerX += 25
-          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
-          newContext.drawImage(imgTag, this.playerX, this.playerY); 
-        } else if(this.playerX_destination < this.playerX){
-          this.playerX -= 25
-          newContext.clearRect(0, 0, newCanvas.width, newCanvas.height); 
-          newContext.drawImage(imgTag, this.playerX, this.playerY); 
-        }
-        this.collisionManagerService.updatePlayerPosition(this.playerX, this.playerY)
-        requestAnimationFrame(animate.bind(this))
-      }
+    // context.drawImage(imgTag, this.playerX, this.playerY, 250, 250);  
+    // board.appendChild(playerCanvas)
+
+    // animate.bind(this)()
+    // function animate() {
+    //   if(this.playerX === this.playerX_destination){
+    //     context.clearRect(0, 0, playerCanvas.width, playerCanvas.height);  
+    //     context.drawImage(imgTag, this.playerX, this.playerY); 
+    //   } else if(this.playerX_destination > this.playerX){
+    //     this.playerX += 25
+    //     context.clearRect(0, 0, playerCanvas.width, playerCanvas.height); 
+    //     context.drawImage(imgTag, this.playerX, this.playerY); 
+    //   } else if(this.playerX_destination < this.playerX){
+    //     this.playerX -= 25
+    //     context.clearRect(0, 0, playerCanvas.width, playerCanvas.height); 
+    //     context.drawImage(imgTag, this.playerX, this.playerY); 
+    //   }
+    //   this.collisionManagerService.updatePlayerPosition(this.playerX, this.playerY)
+    //   requestAnimationFrame(animate.bind(this))
+    // }
   }
   canvasClicked(event){
     // console.log('coords: ', event.offsetX, event.offsetY, this)
@@ -461,8 +479,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       this.tick++
       this.layer++
       
-      console.log('whew. canvas is ', newCanvas, 'tick and layer: ', this.tick, this.layer);
-
       animate.bind(this)()
       function animate() {
         newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);  // clear canvas
@@ -656,9 +672,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   
   openGate(){
-    
     let that = this;
-    var elem = document.getElementById("myBar"); 
+    var elem = document.getElementById("midGate"); 
       var width = 1;
       var id = setInterval(frame, 25);
       function frame() {
@@ -676,7 +691,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   closeGate(){
     let that = this;
-      var elem = document.getElementById("myBar"); 
+      var elem = document.getElementById("midGate"); 
       var width = 100;
       var id = setInterval(frame, 10);
       function frame() {
@@ -695,7 +710,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.showBar = false;
     for(let g in this.gridTiles){
       if(this.gridTiles[g][this.weapon.type]){
-        this.fireWeapon(this.gridTiles[g])
+        // this.fireWeapon(this.gridTiles[g])
       }
       if(this.gridTiles[g][this.wand.type]){
         this.castSpells(this.gridTiles[g])
@@ -717,6 +732,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     }
     this.collisionManagerService.playerHit = false;
     this.projectileManagerService.clearProjectiles()
+    this.collisionManagerService.updateMonsterPosition(null, null)
   }
 
   revealMonster(){
@@ -740,6 +756,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     }
     if (index > 9) index = 9;
     if (index < 0 ) index = 0
+
+    this.collisionManagerService.updateMonsterPosition(index*100, 50)
 
     let tile = this.topTiles[index];
     tile[this.monster.type] = tile.visible = true;
@@ -777,88 +795,6 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     const tiles = this.gridTiles;
     tile[this.wand.type] = false;
   }
-
-  fireWeapon(tile){
-    const that = this;
-    const id = tile.id
-    const tiles = this.gridTiles;
-    tile[this.weapon.type] = false;
-
-    //need to handle monster being hit so this part doesn't break
-    if(!tiles[id -10]) return
-    tiles[id -10][this.weapon.type] = true;
-
-    const launch = setInterval(travel, 80);
-    let counter = 10;
-    let final = null;
-    function travel() {
-      tile[that.weapon] = false;
-      
-      if (counter >= 80) {
-        that.checkContact(tiles[id - (counter - 10)]);
-        clearInterval(launch);
-      } else {
-        const newTileId = id-counter;
-        
-        if(tiles[newTileId]){
-          tiles[newTileId].visible = true
-          tiles[newTileId][that.weapon.type] = true
-          tiles[newTileId].monsterZone = false;
-
-          const oldTileId = id - (counter - 10)
-          if(tiles[oldTileId]){
-            tiles[oldTileId][that.weapon] = false;
-            tiles[oldTileId].visible = false;
-            if(oldTileId <= 29){
-              tiles[oldTileId].monsterZone = true;
-            }
-          }
-          
-        } else {
-          //if newTile is at the last row, process checkContact
-            that.checkContact(tiles[id - (counter - 10)]);
-        }
-        counter += 10
-      }
-    }
-  }
-  fireMonsterWeapon(tile){
-    const id = tile.id;
-    const tiles = this.gridTiles;
-    tile[this.monsterWeapon] = false;
-    const that = this;
-    const launch = setInterval(travel, 80);
-    let counter = 10;
-    let final = null;
-    function travel() {
-      // tile[that.weapon] = false;
-      if (counter >= 80) {
-        that.checkMonsterHit(tiles[final]);
-        clearInterval(launch);
-      } else {
-        const newTileId = id+counter;
-        if(tiles[newTileId]){
-          tiles[newTileId].visible = tiles[newTileId][that.monsterWeapon] = true;
-          tiles[newTileId].monsterZone = false;
-
-          // tiles[newTileId].placementZone = false;
-          final = newTileId;
-          const oldTileId = id + (counter - 10)
-          if(tiles[oldTileId] ){
-            tiles[oldTileId][that.monsterWeapon] = false;
-            tiles[oldTileId].visible = false;
-            if(oldTileId <= 29){
-              tiles[oldTileId].monsterZone = true;
-            }
-          } 
-        } else {
-          //if newTile is at the last row, process checkContact
-            that.checkMonsterHit(tiles[id + (counter - 10)]);
-        }
-        counter += 10
-      }
-    }
-  }
   monsterAttack(){
     this.monsterAttackOrigins = [];
     // let attacks = this.monster.attack; 
@@ -866,19 +802,13 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     this.monsterInfoLine1 = this.monster.combatMessages.attack[Math.floor(Math.random()*this.monster.combatMessages.attack.length)]
     
     let num = Math.floor(Math.random()* 30)
-    console.log('num is ', num)
-    console.log('origins is ', this.monsterAttackOrigins)
-
-
     const canvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
 
-    
-    
-    let attacks = 6
+    let attacks = 1
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
-      let numY = Math.floor(Math.random()* 275)
-      let delay = Math.floor(Math.random()*300)
+      let numY = Math.floor(Math.random()* 300)
+      let delay = Math.floor(Math.random()*400)
       if(this.monsterAttackOrigins.indexOf(numX) < 0){
         attacks--
         this.monsterAttackOrigins.push(numX)
@@ -895,16 +825,23 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   addAttack(){
     if(!this.weaponCount || this.playerLocked) return
     const wand = this.wand
-    if(!this.gridTiles[this.playerPosition + 70][this.weapon.type] && !this.gridTiles[this.playerPosition + 70][wand.type]){
-      this.gridTiles[this.playerPosition + 70][this.weapon.type] = this.gridTiles[this.playerPosition + 70].visible = true;
+    this.avatar.attack(this.weapon.type)
+    this.playerManager.attackPing.next({weapon:this.weapon})
+    this.weaponCount--
+    
+
+    return
+
+    if(!this.gridTiles[this.playerTilePositionX + 70][this.weapon.type] && !this.gridTiles[this.playerTilePositionX + 70][wand.type]){
+      this.gridTiles[this.playerTilePositionX + 70][this.weapon.type] = this.gridTiles[this.playerTilePositionX + 70].visible = true;
       this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
-    } else if(!this.gridTiles[this.playerPosition + 60][this.weapon.type] && !this.gridTiles[this.playerPosition + 60][wand.type]){
-      this.gridTiles[this.playerPosition + 60][this.weapon.type] = this.gridTiles[this.playerPosition + 60].visible = true;
+    } else if(!this.gridTiles[this.playerTilePositionX + 60][this.weapon.type] && !this.gridTiles[this.playerTilePositionX + 60][wand.type]){
+      this.gridTiles[this.playerTilePositionX + 60][this.weapon.type] = this.gridTiles[this.playerTilePositionX + 60].visible = true;
       this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
-    } else if(!this.gridTiles[this.playerPosition + 50][this.weapon.type] && !this.gridTiles[this.playerPosition + 50][wand.type]){
-      this.gridTiles[this.playerPosition + 50][this.weapon.type] = this.gridTiles[this.playerPosition + 50].visible = true;
+    } else if(!this.gridTiles[this.playerTilePositionX + 50][this.weapon.type] && !this.gridTiles[this.playerTilePositionX + 50][wand.type]){
+      this.gridTiles[this.playerTilePositionX + 50][this.weapon.type] = this.gridTiles[this.playerTilePositionX + 50].visible = true;
       this.playerManager.attackPing.next({weapon:this.weapon})
       this.weaponCount --
     }
@@ -913,28 +850,23 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     
     if(!this.wandAvailable || this.playerLocked) return
     const wand = this.wand
-    if(!this.gridTiles[this.playerPosition + 70][wand.type] && !this.gridTiles[this.playerPosition + 70][this.weapon.type]){
-      this.gridTiles[this.playerPosition + 70][wand.type] = this.gridTiles[this.playerPosition + 70].visible = true;
+    if(!this.gridTiles[this.playerTilePositionX + 70][wand.type] && !this.gridTiles[this.playerTilePositionX + 70][this.weapon.type]){
+      this.gridTiles[this.playerTilePositionX + 70][wand.type] = this.gridTiles[this.playerTilePositionX + 70].visible = true;
       this.playerManager.attackPing.next({wand:wand})
       this.wandAvailable = false;
-    } else if(!this.gridTiles[this.playerPosition + 60][wand.type] && !this.gridTiles[this.playerPosition + 60][this.weapon.type]){
-      this.gridTiles[this.playerPosition + 60][wand.type] = this.gridTiles[this.playerPosition + 60].visible = true;
+    } else if(!this.gridTiles[this.playerTilePositionX + 60][wand.type] && !this.gridTiles[this.playerTilePositionX + 60][this.weapon.type]){
+      this.gridTiles[this.playerTilePositionX + 60][wand.type] = this.gridTiles[this.playerTilePositionX + 60].visible = true;
       this.playerManager.attackPing.next({wand:wand})
       this.wandAvailable = false;
-    } else if(!this.gridTiles[this.playerPosition + 50][wand.type] && !this.gridTiles[this.playerPosition + 50][this.weapon.type]){
-      this.gridTiles[this.playerPosition + 50][wand.type] = this.gridTiles[this.playerPosition + 50].visible = true;
+    } else if(!this.gridTiles[this.playerTilePositionX + 50][wand.type] && !this.gridTiles[this.playerTilePositionX + 50][this.weapon.type]){
+      this.gridTiles[this.playerTilePositionX + 50][wand.type] = this.gridTiles[this.playerTilePositionX + 50].visible = true;
       this.playerManager.attackPing.next({wand:wand})
       this.wandAvailable = false;
     }
   }
-  checkContact(tile){
-    if (!tile) return
-    if(tile.id === this.monsterEndpoint) this.monsterHit();
-      else this.monsterMiss(tile)
-  }
   checkMonsterHit(tile){
     if (!tile) return
-    if(tile.id % 10 === this.playerPosition) this.playerHit()
+    if(tile.id % 10 === this.playerTilePositionX) this.playerHit()
       else this.playerMiss(tile);
   }
 
@@ -948,6 +880,8 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
         that.topTiles[that.monsterEndpoint].flash = !that.topTiles[that.monsterEndpoint].flash
       } else {
         clearInterval(flashInterval)
+        that.avatar.monsterStruck = false;
+        that.avatar.upDownNum = 0;
       }
       counter++
     }
@@ -962,13 +896,13 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
       this.delayed2000.next('endCombat-monsterDead')
     }
   }
-  monsterMiss(tile){
-    tile.visible = tile[this.weapon.type] = false;
-    tile.monsterZone = true;
-    const monsterRowTile = this.topTiles[tile.id];
-    if(monsterRowTile) monsterRowTile[this.weapon.type] = monsterRowTile.visible = monsterRowTile.slowFade = true;
-    this.delayed750.next(monsterRowTile)
-  }
+  // monsterMiss(tile){
+  //   tile.visible = tile[this.weapon.type] = false;
+  //   tile.monsterZone = true;
+  //   const monsterRowTile = this.topTiles[tile.id];
+  //   if(monsterRowTile) monsterRowTile[this.weapon.type] = monsterRowTile.visible = monsterRowTile.slowFade = true;
+  //   this.delayed750.next(monsterRowTile)
+  // }
   playerHit(){
     this.playerLocked = true;
     const that = this;
@@ -977,14 +911,13 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     function flash(){
       
       if(counter < 10){
-        that.botTiles[that.playerPosition].flash = !that.botTiles[that.playerPosition].flash
+        that.botTiles[that.playerTilePositionX].flash = !that.botTiles[that.playerTilePositionX].flash
       } else {
         that.handlePlayerHit();
         clearInterval(flashInterval)
       }
       counter++
     }
-    console.log('health is ', this.playerHealth)
     this.playerHealth -= this.monster.damage;
     this.playerInfo = 'Hit you for ' + this.monster.damage + ' damage!'
     this.playerBar = document.getElementById("player-health-bar");
@@ -1002,7 +935,7 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
     for(let t in this.botTiles){
       this.botTiles[t].flash = false;
     }
-    // this.botTiles[this.playerPosition].flash = false;
+    // this.botTiles[this.playerTilePositionX].flash = false;
     for(let y = 50; y <= 79; y++){
       const tile = this.gridTiles[y]
       if(tile[this.monsterWeapon]) tile[this.monsterWeapon] = null;
@@ -1032,25 +965,41 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
   movePlayer(direction){
     if(this.playerLocked) return
-    const tiles = this.botTiles;
-    let endPoint = this.playerPosition;
-    if(this.playerX !== this.playerX_destination) return
+    // console.log('DIRECTION: ', direction);
+    
+    const botTiles = this.botTiles;
+    const mainTiles = this.gridTiles;
+    let endPointX = this.playerTilePositionX;
+    let endPointY = this.playerTilePositionY;
+
     switch (direction){
       case 'left':
-        if(tiles[endPoint - 1] && !tiles[endPoint-1][this.monsterWeapon]){
-          // tiles[endPoint].occupied = tiles[endPoint].visible = false;
-          // tiles[endPoint - 1].occupied = tiles[endPoint - 1].visible = true;
-          this.playerPosition = this.playerPosition - 1
-          this.playerX_destination = this.playerPosition*100;
+        if(this.playerX !== this.playerX_destination) return
+        if(botTiles[endPointX - 1] && !botTiles[endPointX-1][this.monsterWeapon]){
+          this.playerTilePositionX = this.playerTilePositionX - 1
+          this.avatar.destinationX = this.playerTilePositionX*100;
         } 
       break
       case 'right':
-      if(tiles[endPoint + 1] && !tiles[endPoint+1][this.monsterWeapon]){
-        // tiles[endPoint].occupied = tiles[endPoint].visible = false;
-        // tiles[endPoint + 1].occupied = tiles[endPoint + 1].visible = true;
-        this.playerPosition = this.playerPosition + 1
-        this.playerX_destination = this.playerPosition*100;
-      } 
+        if(this.playerX !== this.playerX_destination) return
+        if(botTiles[endPointX + 1] && !botTiles[endPointX+1][this.monsterWeapon]){
+        this.playerTilePositionX = this.playerTilePositionX + 1
+        this.avatar.destinationX = this.playerTilePositionX*100;
+        } 
+      break
+      case 'up':
+        // if(this.playerY !== this.playerY_destination) return
+        if(endPointY > 1){
+        this.playerTilePositionY = this.playerTilePositionY - 1
+        this.avatar.destinationY = this.playerTilePositionY*100;
+        } 
+      break
+      case 'down':
+        // if(this.playerY !== this.playerY_destination) return
+        if(endPointY < 9){
+        this.playerTilePositionY = this.playerTilePositionY + 1
+        this.avatar.destinationY = this.playerTilePositionY*100;
+        } 
       break
     }
   }
@@ -1095,12 +1044,11 @@ export class CombatBoardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    console.log('calling UNSUBSCRIBE');
-    
     this.sub1.unsubscribe();
     this.sub2.unsubscribe();
     this.sub3.unsubscribe();
     this.sub4.unsubscribe();
   
+    this.playerManagerSubscription.unsubscribe();
   }
 }

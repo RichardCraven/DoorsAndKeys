@@ -1,4 +1,4 @@
-import { Injectable, HostListener } from '@angular/core';
+import { Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import { ItemsService } from './items.service';
 
@@ -20,7 +20,7 @@ export class PlayerManagerService{
   constructor(public itemsService: ItemsService) {
     window.addEventListener("focus", (event) => {
     }, false);
-    
+
     window.addEventListener('keydown', (event) => {
       switch(event.key){
         case 'ArrowUp':
@@ -39,7 +39,8 @@ export class PlayerManagerService{
           this.startTurn();
           break
         }
-      });
+      }, true);
+
     window.focus();
     const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
     const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
@@ -54,32 +55,78 @@ export class PlayerManagerService{
     const shieldsArr = ['seeing_shield','basic_shield'];
     const shield = shieldsArr[Math.floor(Math.random()* shieldsArr.length)];
 
-    const newPlayer = {
-      name: 'player1',
-      inventory: {
-        weapons: [
-          this.itemsService.library.weapons[weapon]
-        ],
-        amulets: [],
-        headgear: [],
-        wands: [
-          this.itemsService.library.wands[wand]
-        ],
-        shields: [],
-        misc: []
-      },
-      location: null,
-      visibility: 2,
-      moves: 2,
-      coordinates: [0,0]
-    }
-    if(Math.random()) newPlayer.inventory.headgear.push(this.itemsService.library.headgear[headgear])
-    if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
-    if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
-    this.activePlayer = newPlayer;
+    // const newPlayer = {
+    //   name: 'player1',
+    //   inventory: {
+    //     weapons: [
+    //       this.itemsService.library.weapons[weapon]
+    //     ],
+    //     amulets: [],
+    //     headgear: [],
+    //     wands: [
+    //       this.itemsService.library.wands[wand]
+    //     ],
+    //     shields: [],
+    //     misc: []
+    //   },
+    //   location: null,
+    //   visibility: 2,
+    //   moves: 2,
+    //   coordinates: [0,0]
+    // }
+
+    // if(Math.random()) newPlayer.inventory.headgear.push(this.itemsService.library.headgear[headgear])
+    // if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
+    // if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
+    // this.activePlayer = newPlayer;
 
   }
-  
+  addListeners(){
+    console.log('adding listeners');
+    
+    // window.addEventListener('keydown', (event) => {
+    //   switch(event.key){
+    //     case 'ArrowUp':
+    //     this.movePlayer('up')
+    //     break
+    //     case 'ArrowDown':
+    //     this.movePlayer('down')
+    //     break
+    //     case 'ArrowLeft':
+    //     this.movePlayer('left')
+    //     break
+    //     case 'ArrowRight':
+    //     this.movePlayer('right')
+    //     break
+    //     case 'Enter':
+    //       this.startTurn();
+    //       break
+    //     }
+    //   }, true);
+  }
+  removeListeners(){
+    console.log('removing listeners');
+    // window.removeEventListener('keydown', this.handleKeydown, true);
+  }
+  handleKeydown(event){
+    switch(event.key){
+      case 'ArrowUp':
+      this.movePlayer('up')
+      break
+      case 'ArrowDown':
+      this.movePlayer('down')
+      break
+      case 'ArrowLeft':
+      this.movePlayer('left')
+      break
+      case 'ArrowRight':
+      this.movePlayer('right')
+      break
+      case 'Enter':
+        this.startTurn();
+        break
+    }
+  }
   initiateCombat(){
     this.inCombat = true;
   }
@@ -102,7 +149,7 @@ export class PlayerManagerService{
     for(let itemArr in this.itemsService.library){
       for(let itemInstance in this.itemsService.library[itemArr]){
         if(item === this.itemsService.library[itemArr][itemInstance].type){
-          this.activePlayer.inventory[itemArr].push(this.itemsService.library[itemArr][itemInstance])
+          // this .activePlayer.inventory[itemArr].push(this.itemsService.library[itemArr][itemInstance])
         }
       }
     }
@@ -130,8 +177,12 @@ export class PlayerManagerService{
   newPlayer(location){
     
     const map = this.currentMap;
-    const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+    const weaponsArr = ['sword', 'axe', 'flail', 'spear'];
     const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
+    // const weapon = 'scepter'
+
+    // !TODO scepter was removed
+
     const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
     const charm = charmsArr[Math.floor(Math.random()* weaponsArr.length)];
     const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];

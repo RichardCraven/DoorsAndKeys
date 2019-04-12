@@ -27,8 +27,6 @@ export class ProjectileManagerService {
     
   }
   clearProjectiles(){
-    console.log('CLEARING PROJECTILES');
-    
     this.projectiles = [];
     this.start = false;
   }
@@ -47,7 +45,7 @@ export class ProjectileManagerService {
       this.context.drawImage(p.imgTag, p.projectile_positionX, p.projectile_positionY, p.size, p.size)
     }
     if(this.start){
-      window.requestAnimationFrame(() => this.drawProjectiles());
+      requestAnimationFrame(() => this.drawProjectiles());
     }
   }
 }
