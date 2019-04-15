@@ -11,6 +11,8 @@ export class CollisionManagerService {
   private playerY;
   public monsterX;
   public monsterY;
+  public midGateX = 0;
+  public midGateY;
 
   constructor() { }
   updatePlayerPosition(x, y){
@@ -18,7 +20,6 @@ export class CollisionManagerService {
     this.playerY = y;
   }
   updateMonsterPosition(x, y){
-    console.log('monster is at ', x,y)
     this.monsterX = x;
     this.monsterY = y;
   }
@@ -29,13 +30,37 @@ export class CollisionManagerService {
       return false
     }
   }
-  updateProjectilePosition(x, y, iconHeight){
-    if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight){
-      if(!this.playerHit){
-        console.log('COLLISION');
-        this.playerHit = true;
-        this.subject.next(true)
+  checkForGate(direction){
+    if(direction === 'up'){
+      if(this.playerY === 600 && this.playerX > this.midGateX){
+        return false
       }
+    } else if(direction === 'down'){
+      if(this.playerY === 300 && this.playerX > this.midGateX){
+        return false
+      }
+    }
+    return true
+  }
+  checkCollision(x, y, iconHeight){
+    if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight){
+      // console.log('COLLISION');
+      this.subject.next({y_value : y})
+      // return true;
+    } else {
+      return false;
+    }
+  }
+  updateProjectilePosition(x, y, iconHeight){
+    if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight && this.playerY < 810){
+      
+      this.subject.next({y_value : y})
+      // console.log('COLLISION, y is ', y);
+      // if(!this.playerHit){
+      //   console.log('COLLISION, y is ', y);
+      //   this.playerHit = true;
+      //   this.subject.next({y_value : y})
+      // }
       return true
     } else {
       return false
@@ -44,4 +69,10 @@ export class CollisionManagerService {
   detectCollision(): Observable<any>{
     return this.subject.asObservable()
   }
+  pushBackAvatar(projectileY_value){
+
+  }
+  // sendDataToAvatar(): Observable<any>{
+  //   return this.subject.asObservable()
+  // }
 }

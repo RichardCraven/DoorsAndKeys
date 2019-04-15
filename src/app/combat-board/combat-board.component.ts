@@ -31,6 +31,7 @@ export class CombatBoardComponent implements OnInit {
   delayed500 = new Subject<any>();
 
   avatar;
+  gateOpen = false;
 
   topTilesCount = 10;
   botTilesCount = 10;
@@ -374,6 +375,9 @@ export class CombatBoardComponent implements OnInit {
 
     this.collisionManagerService.detectCollision().subscribe(res => {
       !this.playerLocked && this.playerHit();
+      // console.log(res.y_value)
+      this.playerTilePositionY = 9
+      this.avatar.destinationY = 900
     })
   }
   degreesToRadians(degrees){
@@ -638,7 +642,9 @@ export class CombatBoardComponent implements OnInit {
       first[this.numbers[i]] = false;
       second[this.numbers[i]] = false;
     }
-    
+    if(round === 1){
+      // debugger
+    }
     if(round < 10){
       tiles[0][this.numbers[round]] = true;
       if(round > 0 && tiles[0][this.numbers[round -1]]){
@@ -667,27 +673,38 @@ export class CombatBoardComponent implements OnInit {
     // this.wandAvailable = true;
     //this is where you need to listen to weapon recharge
 
-    this.openGate();
+    this.openGate()
+    this.gateOpen = true;
+
     return 'openWindow'
   }
   
   openGate(){
     let that = this;
-    var elem = document.getElementById("midGate"); 
-      var width = 1;
-      var id = setInterval(frame, 25);
-      function frame() {
-        if (width >= 100) {
-          clearInterval(id);
-          that.revealMonster();
-          // that.playerLocked = true;
-          that.delayed500.next('closeWindow')
-          that.delayed500.next('monsterAttack')
-        } else {
-          width++; 
-          elem.style.width = width + '%'; 
-        }
-      }
+    if(!this.gateOpen){
+      var elem = document.getElementById("midGate"); 
+        var width = 1;
+        var id = setInterval(function(){
+          if (width >= 100) {
+            clearInterval(id);
+            that.revealMonster();
+            // that.playerLocked = true;
+            that.delayed500.next('closeWindow')
+            that.delayed500.next('monsterAttack')
+          } else {
+            width++; 
+            elem.style.width = width + '%'; 
+            // console.log('width: ', width * 10)
+            that.collisionManagerService.midGateX = width*10
+          }
+        }, 25);
+    } else {
+      setTimeout(function(){
+        that.revealMonster()
+        that.delayed500.next('closeWindow')
+        that.delayed500.next('monsterAttack')
+      }, 2000)
+    }
   }
   closeGate(){
     let that = this;
@@ -700,6 +717,7 @@ export class CombatBoardComponent implements OnInit {
         } else {
           width--; 
           elem.style.width = width + '%'; 
+          // that.collisionManagerService.midGateX = width*10
         }
       }
     
@@ -709,16 +727,16 @@ export class CombatBoardComponent implements OnInit {
     this.round++
     this.showBar = false;
     for(let g in this.gridTiles){
-      if(this.gridTiles[g][this.weapon.type]){
-        // this.fireWeapon(this.gridTiles[g])
-      }
-      if(this.gridTiles[g][this.wand.type]){
-        this.castSpells(this.gridTiles[g])
-      }
+      // if(this.gridTiles[g][this.weapon.type]){
+      //   this.fireWeapon(this.gridTiles[g])
+      // }
+      // if(this.gridTiles[g][this.wand.type]){
+      //   this.castSpells(this.gridTiles[g])
+      // }
     }
     this.delayed500.next('revealBar')
     this.delayed750.next('showMovementZone')
-    this.delayed750.next('closeGate')
+    // this.delayed750.next('closeGate')
     this.delayed2000.next('openWindow')
 
     return 'closeWindow'
@@ -736,6 +754,7 @@ export class CombatBoardComponent implements OnInit {
   }
 
   revealMonster(){
+    this.avatar.reset()
     let options = [];
     if(this.monsterEndpoint < 5){
       for(let i = this.monsterEndpoint; i<=(this.monsterEndpoint+this.monster.agility); i++){
@@ -804,9 +823,12 @@ export class CombatBoardComponent implements OnInit {
     let num = Math.floor(Math.random()* 30)
     const canvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
 
-    let attacks = 1
+    console.log(this.monster.attack)
+    let attacks = 3
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
+      // let numX = 4
+
       let numY = Math.floor(Math.random()* 300)
       let delay = Math.floor(Math.random()*400)
       if(this.monsterAttackOrigins.indexOf(numX) < 0){
@@ -965,8 +987,6 @@ export class CombatBoardComponent implements OnInit {
   }
   movePlayer(direction){
     if(this.playerLocked) return
-    // console.log('DIRECTION: ', direction);
-    
     const botTiles = this.botTiles;
     const mainTiles = this.gridTiles;
     let endPointX = this.playerTilePositionX;
@@ -989,14 +1009,14 @@ export class CombatBoardComponent implements OnInit {
       break
       case 'up':
         // if(this.playerY !== this.playerY_destination) return
-        if(endPointY > 1){
+        if(endPointY > 1 && this.collisionManagerService.checkForGate('up')){
         this.playerTilePositionY = this.playerTilePositionY - 1
         this.avatar.destinationY = this.playerTilePositionY*100;
         } 
       break
       case 'down':
         // if(this.playerY !== this.playerY_destination) return
-        if(endPointY < 9){
+        if(endPointY < 9 && this.collisionManagerService.checkForGate('down')){
         this.playerTilePositionY = this.playerTilePositionY + 1
         this.avatar.destinationY = this.playerTilePositionY*100;
         } 
