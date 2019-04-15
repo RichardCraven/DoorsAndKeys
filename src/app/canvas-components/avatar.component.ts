@@ -67,9 +67,10 @@ export class Avatar{
         this.collisionManager.detectCollision().subscribe(res => {
             // !this.playerLocked && this.playerHit();
             this.isBeingPushedBack = true;
-            console.log('value is ', res.y_value)
-            if(res.y_value && res.y_value < 810){
-                this.positionY  = res.y_value + 100
+            if(res.y_value && res.y_value < 850 && this.positionY < 900){
+                this.positionY  = res.y_value + 50
+            } else if (res.y_value > 850){
+                this.positionY = this.destinationY = 900
             }
         })
         requestAnimationFrame((milliseconds) => this.draw(milliseconds));
@@ -81,6 +82,12 @@ export class Avatar{
         this.draw(elapsed);
         
         window.requestAnimationFrame(this.animationFrame);
+    }
+    reset(){
+        if(this.positionY > 850){
+            this.positionY = 900
+            this.destinationY = 900
+        }
     }
     draw(elapsed){
         // let elapsed = milliseconds - this.lastStep;
@@ -169,6 +176,9 @@ export class Avatar{
 
             this.context.drawImage(this.imgTag, this.positionX, this.positionY);
              this.collisionManager.updatePlayerPosition(this.positionX, this.positionY)
+        }
+        if(this.positionY > 850){
+            this.isBeingPushedBack = false;
         }
         requestAnimationFrame((milliseconds) => this.draw(milliseconds));  
     }

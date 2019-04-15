@@ -42,8 +42,17 @@ export class CollisionManagerService {
     }
     return true
   }
-  updateProjectilePosition(x, y, iconHeight){
+  checkCollision(x, y, iconHeight){
     if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight){
+      // console.log('COLLISION');
+      this.subject.next({y_value : y})
+      // return true;
+    } else {
+      return false;
+    }
+  }
+  updateProjectilePosition(x, y, iconHeight){
+    if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight && this.playerY < 810){
       
       this.subject.next({y_value : y})
       // console.log('COLLISION, y is ', y);

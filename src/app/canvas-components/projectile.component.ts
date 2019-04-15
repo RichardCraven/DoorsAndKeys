@@ -42,8 +42,6 @@ export class Projectile {
         this.imgTag.src = this.imgArr[image].imgSrc;
     }
     update(){
-        console.log(this.projectile_positionY);
-        
         if(this.collisionManager.updateProjectilePosition(this.projectile_positionX, this.projectile_positionY, this.trueHeight)){
             // this.collisionManager.pushBackAvatar(this.projectile_positionY)
             // console.log('Y is ...',this.projectile_positionY)
