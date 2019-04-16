@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Subscription, Observable, Subject } from 'rxjs';
 import {PlayerManagerService} from '../services/player-manager.service'
 
@@ -7,11 +7,11 @@ import {PlayerManagerService} from '../services/player-manager.service'
   templateUrl: './info-panel.component.html',
   styleUrls: ['./info-panel.component.css']
 })
-export class InfoPanelComponent implements OnInit {
+export class InfoPanelComponent implements OnInit, AfterViewInit {
   private message : string;
   private adjacency = true;
   public item = '';
-  public showItemOption = false;
+  public showItemOption: boolean = false;;
   private buttonSubject = new Subject<any>();
   tile = {};
   messageSubscription: Subscription;
@@ -24,21 +24,26 @@ export class InfoPanelComponent implements OnInit {
       if(res.monster){
       }
     })
-    this.playerManager.getItem().subscribe(res => {
-      if(!res.clear){
-        this.showItemOption = true;
-        
-        this.item = res.item
-        this.tile = {}
-        this.tile[res.item] = true;
-      } else  {
-        this.showItemOption = false;
-      }
-    })
+    
    }
 
   ngOnInit() {
     this.message = 'Ahoy!'
+  }
+  ngAfterViewInit(){
+    this.playerManager.getItem().subscribe(res => {
+      if(!res.clear){
+        this.showItem(res.item)
+        // this.showItemOption = true;
+        
+        // this.item = res.item
+        // this.tile = {}
+        // this.tile[res.item] = true;
+      } else  {
+        // this.showItemOption = false;
+        this.hideItem();
+      }
+    })
   }
   displayMessage(msg, type = 'general'){
     this.message = msg
@@ -48,5 +53,19 @@ export class InfoPanelComponent implements OnInit {
   }
   startButton(){
     this.playerManager.startTurn()
+  }
+  showItem(item){
+    setTimeout(() => {
+      this.showItemOption = true;
+    });
+        
+    this.item = item
+    this.tile = {}
+    this.tile[item] = true;
+  }
+  hideItem(){
+    setTimeout(() => {
+      this.showItemOption = false;
+    });
   }
 }

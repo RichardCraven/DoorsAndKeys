@@ -25,6 +25,7 @@ export class Projectile {
         this.context = this.canvas.getContext('2d');
         this.projectile_positionX = this.originX;
         this.projectile_positionY = this.originY;
+        // console.log('in constructor.. origin Y is ', this.originY, 'position Y is ', this.projectile_positionY)
         this.imgArr = {
             downWhite : {
                 imgSrc : '../../assets/icons/misc/down-white.png',

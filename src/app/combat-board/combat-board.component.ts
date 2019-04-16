@@ -24,7 +24,7 @@ import {
   templateUrl: './combat-board.component.html',
   styleUrls: ['./combat-board.component.css']
 })
-export class CombatBoardComponent implements OnInit {
+export class CombatBoardComponent implements OnInit, OnDestroy {
   subject = new Subject<any>();
   delayed2000 = new Subject<any>();
   delayed1000 = new Subject<any>();
@@ -53,8 +53,8 @@ export class CombatBoardComponent implements OnInit {
   monsterAttackOrigins = [];
   monsterHealthInitial = 0;
   monsterHealth = 0;
-  playerHealth = 100;
-  playerHealthInitial = 100;
+  playerHealth = 1000;
+  playerHealthInitial = 1000;
 
   playerX;
   playerX_destination;
@@ -82,11 +82,15 @@ export class CombatBoardComponent implements OnInit {
   showBar = true;
   wandAvailable = true;
   canvas;
+
+  //Subscriptions
   sub1;
   sub2;
   sub3;
   sub4;
   playerManagerSubscription;
+  collisionManagerSubscription;
+
   playerInventoryTiles = [];
   weapon;
   wand;
@@ -108,7 +112,7 @@ export class CombatBoardComponent implements OnInit {
 
   @Input()monster
 
-  @ViewChild('combatCanvas') combatCanvas: ElementRef;
+  // @ViewChild('combatCanvas') combatCanvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
   constructor(
@@ -122,6 +126,8 @@ export class CombatBoardComponent implements OnInit {
         this.wandAvailable = true;
       }
       if(res.weaponAvailable){
+        console.log('received weapon avaiable +');
+        
         this.weaponCount++
       }
       if(res === 'monster-struck'){
@@ -131,14 +137,17 @@ export class CombatBoardComponent implements OnInit {
   }
   
   ngOnInit() {
+    console.log('COMBAT BOARD init');
+    
     // <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this, event))
-    const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement;
+    // const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement;
     const board = document.getElementById('combat-board'); 
 
-    this.canvasLeft = canvas.offsetLeft;
-    this.canvasTop = canvas.offsetTop;
+    // this.canvasLeft = canvas.offsetLeft;
+    // this.canvasTop = canvas.offsetTop;
 
-    <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this), event )
+    // <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this), event )
+
     const inventory = this.playerManager.activePlayer.inventory;
     
     //CREATE PROJECTILE CANVAS
@@ -212,14 +221,20 @@ export class CombatBoardComponent implements OnInit {
         case 'ArrowDown':
           this.movePlayer('down')
         break
+        // case 'z':
+        // this.addCastSpell();
+        // break
         case 'z':
         this.addCastSpell();
         break
         case 'q':
-          console.log('q')
-          this.canvasLine(1,2)
+        debugger
+          // console.log('q')
+          // this.canvasLine(1,2)
         break
         case ' ':
+        console.log('space');
+        
           this.addAttack()
           
         break
@@ -374,7 +389,7 @@ export class CombatBoardComponent implements OnInit {
     this.delayed1000.next('openWindow')
 
 
-    this.collisionManagerService.detectCollision().subscribe(res => {
+    this.collisionManagerSubscription = this.collisionManagerService.detectCollision().subscribe(res => {
       !this.playerLocked && this.playerHit();
       // console.log(res.y_value)
       this.playerTilePositionY = 9
@@ -498,62 +513,7 @@ export class CombatBoardComponent implements OnInit {
     }
   }
   canvasLine(coordinates1, coordinates2){
-    console.log('in canvas line');
-    
-    // let newX = coordinates1[0] - coordinates2[0]
-    // let newY = coordinates1[1] - coordinates2[1]
-
-    // console.log('distance is ', Math.hypot((coordinates1[0] - coordinates2[0]),(coordinates1[1] - coordinates2[1])))
-    
-    //CANVAS PLAY
-    // this.context.fillStyle = 'blue'
-    // this.context.fillRect(0, 0, 100, 100);
-    // this.context.strokeRect(coordinates1[0]*6.66, coordinates1[1]*6.66, 10, 10);
-    // this.context.drawImage(head, 0, 0, 1000, 1000, 80, 80, 1000, 1000)
-
-
-    // var imgTag = new Image();
-    // imgTag.onload = animate;
-    // imgTag.src = "http://i.stack.imgur.com/Rk0DW.png";
-
-  
-      console.log(this.tick);
-      const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement
-      let x = canvas.width/2;
-      let y = canvas.height/2;
-      // let width = head.width;
-      // let height = head.height;
-  
-      // this.context.clearRect(0,0,1000,1000)
-      // this.context.translate(x,y);
-      // this.context.rotate(this.degreesToRadians(90))
-      // this.context.drawImage(head, -width/2, -height/2, width+this.tick, height)
-      // this.context.translate(-x, -y)
-      
-      // this.tick ++
-      // if(this.tick > 5000){
-      //   console.log('clear');
-        
-      
-      //   clearInterval(animation)
-      // }
-      const head = <HTMLCanvasElement>document.getElementById('head')
-      console.log(head);
-      const context = this.context;
-      animate.bind(this)()
-      function animate() {
-        context.clearRect(0, 0, canvas.width, canvas.height);  // clear canvas
-        context.drawImage(head, x, y);                       // draw image at current position
-        x -= 6;
-        if (x > -11) requestAnimationFrame(animate)
-      }
-
-   
-    // this.context.lineWidth = 0.1;
-    // this.context.beginPath();
-    // this.context.moveTo(coordinates1[0]*3.33,coordinates1[1]*3.33);
-    // this.context.lineTo(coordinates2[0]*3.33, coordinates2[1]*3.33);
-    // this.context.stroke();
+ 
     
   }
   rotateAndPaintImage(context, image, angleInRad, positionX, positionY, axisX, axisY){
@@ -755,7 +715,8 @@ export class CombatBoardComponent implements OnInit {
   }
 
   revealMonster(){
-    this.avatar.reset()
+    this.avatar.reset();
+    this.projectileManagerService.endSequence();
     let options = [];
     if(this.monsterEndpoint < 5){
       for(let i = this.monsterEndpoint; i<=(this.monsterEndpoint+this.monster.agility); i++){
@@ -824,20 +785,31 @@ export class CombatBoardComponent implements OnInit {
     let num = Math.floor(Math.random()* 30)
     const canvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
 
-    // console.log(this.monster.attack)
+    console.log('cunning is ', this.monster.cunning)
+    const cunning = this.monster.cunning;
     let attacks = this.monster.attack
+
+    this.projectileManagerService.clearProjectiles();
+    // console.log('projectiles ar length is ', this.projectileManagerService.projectiles.length);
+    
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
       // let numX = 4
+      let cunning_offset = cunning * 100 < 500 ? cunning * 100 : 500
 
-      let numY = Math.floor(Math.random()* 300)
-      let delay = Math.floor(Math.random()*400)
+      let numY = Math.floor(Math.random() * cunning_offset)
+      let delay = Math.floor(Math.random()*(cunning+1))
       if(this.monsterAttackOrigins.indexOf(numX) < 0){
         attacks--
         this.monsterAttackOrigins.push(numX)
+        // console.log('go after ', delay);
+        console.log('Y: ', numY);
+        
         let projectile = new Projectile(canvas, 'downWhite', numX*100, numY, this.collisionManagerService, this.projectileManagerService)
         const that = this;
+        // console.log('fire ', numX*100, numY, projectile);
         setTimeout(function(){
+          
           that.projectileManagerService.projectiles.push(projectile)
         }, delay)
         
@@ -846,8 +818,12 @@ export class CombatBoardComponent implements OnInit {
     this.projectileManagerService.beginSequence();
   }
   addAttack(){
+    console.log('outside', this.weaponCount);
+    
     if(!this.weaponCount || this.playerLocked) return
     const wand = this.wand
+    // console.log('inside');
+    
     this.avatar.attack(this.weapon.type)
     this.playerManager.attackPing.next({weapon:this.weapon})
     this.weaponCount--
@@ -947,6 +923,7 @@ export class CombatBoardComponent implements OnInit {
     const percentage = (100 - (this.playerHealth / this.playerHealthInitial * 100))
     this.playerBar.style.height = percentage+'%'
     if(this.playerHealth < 1){
+      this.playerLocked = true;;
       this.delayed2000.next('endCombat-playerDead')
     }
   }
@@ -984,7 +961,7 @@ export class CombatBoardComponent implements OnInit {
   fade(tile){
     tile[this.monsterWeapon] = tile.visible = false;
     
-    this.sub1.unsubscribe()
+    // this.sub1.unsubscribe()
   }
   movePlayer(direction){
     if(this.playerLocked) return
@@ -1084,11 +1061,18 @@ export class CombatBoardComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+    console.log('in destroy');
+    
     this.sub1.unsubscribe();
     this.sub2.unsubscribe();
     this.sub3.unsubscribe();
     this.sub4.unsubscribe();
   
+    this.projectileManagerService.endSequence();
+    
     this.playerManagerSubscription.unsubscribe();
+    this.collisionManagerSubscription.unsubscribe();
+
+    
   }
 }

@@ -11,6 +11,7 @@ export class PlayerManagerService{
   public itemRequestSubject = new Subject<any>();
   public globalSubject = new Subject<any>();
   public attackPing = new Subject<any>();
+  public movementLocked : boolean = false;
   public currentMap;
   public counter = 1;
   public empties = [];
@@ -235,7 +236,7 @@ export class PlayerManagerService{
   }
 
   movePlayer(direction){
-    if(!this.activePlayer || !this.activePlayer.location || this.inCombat) return
+    if(!this.activePlayer || !this.activePlayer.location || this.inCombat || this.movementLocked) return
     this.messageSubject.next({msg : 'moving '+direction});
     const old_location = this.currentMap[this.activePlayer.location]
     let destination;

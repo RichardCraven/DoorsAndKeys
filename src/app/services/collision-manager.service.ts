@@ -5,7 +5,7 @@ import {Observable, Subject} from 'rxjs';
   providedIn: 'root'
 })
 export class CollisionManagerService {
-  private subject = new Subject<any>();
+  private collisionSubject = new Subject<any>();
   public playerHit = false;
   private playerX;
   private playerY;
@@ -44,8 +44,8 @@ export class CollisionManagerService {
   }
   checkCollision(x, y, iconHeight){
     if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight){
-      // console.log('COLLISION');
-      this.subject.next({y_value : y})
+      // console.log('COLLISION-- player xy: ', this.playerX, this.playerY, ' projectile xy: ', x,y, iconHeight);
+      this.collisionSubject.next({y_value : y})
       // return true;
     } else {
       return false;
@@ -54,12 +54,12 @@ export class CollisionManagerService {
   updateProjectilePosition(x, y, iconHeight){
     if(Math.abs(x - this.playerX) < iconHeight && Math.abs(y - this.playerY) < iconHeight && this.playerY < 810){
       
-      this.subject.next({y_value : y})
+      this.collisionSubject.next({y_value : y})
       // console.log('COLLISION, y is ', y);
       // if(!this.playerHit){
       //   console.log('COLLISION, y is ', y);
       //   this.playerHit = true;
-      //   this.subject.next({y_value : y})
+      //   this.collisionSubject.next({y_value : y})
       // }
       return true
     } else {
@@ -67,12 +67,12 @@ export class CollisionManagerService {
     }
   }
   detectCollision(): Observable<any>{
-    return this.subject.asObservable()
+    return this.collisionSubject.asObservable()
   }
   pushBackAvatar(projectileY_value){
 
   }
   // sendDataToAvatar(): Observable<any>{
-  //   return this.subject.asObservable()
+  //   return this.collisionSubject.asObservable()
   // }
 }

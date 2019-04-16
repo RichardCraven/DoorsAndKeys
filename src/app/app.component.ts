@@ -20,7 +20,7 @@ import {
 })
 export class AppComponent implements OnInit  {
   title = 'DoorsAndKeys';
-  showInfo = true;
+  showInfo :boolean;
   showMainBoard = true;
   showDeathScreen = false;
   constructor(public playerManager : PlayerManagerService){
@@ -28,7 +28,6 @@ export class AppComponent implements OnInit  {
   }
   ngOnInit(){
     this.playerManager.getGlobalMessages().subscribe(res => {
-      // this.showInfo = false;
       if(res.item){
         this.showInfo = true;
       } else {

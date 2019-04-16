@@ -161,6 +161,7 @@ export class Avatar{
                 this.upDownNum = 0;
             }
             this.context.drawImage(this.imgTag, this.positionX, this.positionY);
+            this.collisionManager.updatePlayerPosition(this.positionX, this.positionY)
 
         } else if(this.monsterStruck){
             this.context.drawImage(this.weaponImage, this.positionX+65,attackPositionY, 100, 100)
@@ -183,6 +184,8 @@ export class Avatar{
         requestAnimationFrame((milliseconds) => this.draw(milliseconds));  
     }
     attack(){
+        // console.log('attacking');
+        
         this.isAttacking = true;
     }
     endAttack(){

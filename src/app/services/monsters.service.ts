@@ -10,6 +10,7 @@ export class MonstersService {
       attack: 7,
       damage: 30,
       health: 180,
+      cunning: 8,
       type: 'beholder',
       combatMessages: {
         greeting: '"I see you..."',
@@ -23,6 +24,7 @@ export class MonstersService {
       attack: 4,
       damage: 15,
       health: 100,
+      cunning: 2,
       type: 'black_banshee',
       combatMessages: {
         greeting: '"I will make you scream!"',
@@ -36,6 +38,7 @@ export class MonstersService {
       attack: 6,
       damage: 21,
       health: 110,
+      cunning: 5,
       type: 'black_djinn',
       combatMessages: {
         greeting: '"Your fate is darkness"',
@@ -49,6 +52,7 @@ export class MonstersService {
       attack: 4,
       damage: 25,
       health: 150,
+      cunning: 3,
       type: 'black_gorgon',
       combatMessages: {
         greeting: '"Ah, another statue for my garden.."',
@@ -62,6 +66,7 @@ export class MonstersService {
       attack: 7,
       damage: 40,
       health: 220,
+      cunning: 6,
       type: 'black_kronos',
       combatMessages: {
         greeting: '"I will swallow you whole!"',
@@ -76,6 +81,8 @@ export class MonstersService {
       agility: 2,
       attack: 4,
       health: 80,
+      damage: 18,
+      cunning: 2,
       type: 'black_minotaur',
       combatMessages: {
         greeting: '"Time to die, weakling!"',
@@ -91,6 +98,7 @@ export class MonstersService {
       attack: 5,
       damage: 20,
       health: 140,
+      cunning: 5,
       type: 'black_vampire',
       combatMessages: {
         greeting: '"Kneel before me"',
@@ -105,6 +113,7 @@ export class MonstersService {
       attack: 4,
       damage: 17,
       health: 90,
+      cunning: 2,
       type: 'black_wraith',
       combatMessages: {
         greeting: '"Join me in eternal pain!"',
@@ -119,6 +128,7 @@ export class MonstersService {
       attack: 8,
       damage: 50,
       health: 240,
+      cunning: 7,
       type: 'dragon',
       combatMessages: {
         greeting: '"You look tasty.."',
@@ -137,6 +147,7 @@ export class MonstersService {
       attack: 3,
       damage: 15,
       health: 80,
+      cunning: 2,
       type: 'giant_scorpion',
       combatMessages: {
         greeting: '*Screeches*',
@@ -151,6 +162,7 @@ export class MonstersService {
       attack: 2,
       damage: 10,
       health: 40,
+      cunning: 2,
       type: 'goblin',
       combatMessages: {
         greeting: '"For the goblin king!"',
@@ -166,6 +178,7 @@ export class MonstersService {
       attack: 4,
       damage: 15,
       health: 60,
+      cunning: 3,
       type: 'horror',
       combatMessages: {
         greeting: '"The void awaits"',
@@ -179,6 +192,7 @@ export class MonstersService {
       attack: 2,
       damage: 15,
       health: 40,
+      cunning: 1,
       type: 'imp',
       combatMessages: {
         greeting: '"Master will be pleased!"',
@@ -192,6 +206,7 @@ export class MonstersService {
       attack: 3,
       damage: 15,
       health: 90,
+      cunning: 4,
       type: 'imp_overlord',
       combatMessages: {
         greeting: '"Submit!"',
@@ -205,6 +220,7 @@ export class MonstersService {
       attack: 3,
       damage: 20,
       health: 100,
+      cunning: 3,
       type: 'manticore',
       combatMessages: {
         greeting: '*growls*',
@@ -220,6 +236,7 @@ export class MonstersService {
       attack: 3,
       damage: 20,
       health: 90,
+      cunning: 2,
       type: 'mummy',
       combatMessages: {
         greeting: '"Enter my kingdom"',
@@ -234,6 +251,7 @@ export class MonstersService {
       attack: 4,
       damage: 20,
       health: 60,
+      cunning: 4,
       type: 'naiad',
       combatMessages: {
         greeting: '"Come forward.."',
@@ -249,6 +267,7 @@ export class MonstersService {
       attack: 3,
       damage: 28,
       health: 100,
+      cunning: 2,
       type: 'ogre',
       combatMessages: {
         greeting: '"Food!"',
@@ -264,6 +283,7 @@ export class MonstersService {
       attack: 2,
       damage: 13,
       health: 40,
+      cunning: 1,
       type: 'skeleton',
       combatMessages: {
         greeting: '*screeches*',
@@ -278,6 +298,7 @@ export class MonstersService {
       attack: 3,
       damage: 15,
       health: 50,
+      cunning: 2,
       type: 'slime_mold',
       combatMessages: {
         greeting: '*blurp*',
@@ -293,6 +314,7 @@ export class MonstersService {
       attack: 5,
       damage: 20,
       health: 140,
+      cunning: 9,
       type: 'sphinx',
       combatMessages: {
         greeting: '"Riddle me this.."',
@@ -308,6 +330,7 @@ export class MonstersService {
       attack: 5,
       damage: 22,
       health: 140,
+      cunning: 2,
       type: 'troll',
       combatMessages: {
         greeting: '"Zug zug"',
@@ -322,6 +345,7 @@ export class MonstersService {
       attack: 5,
       damage: 23,
       health: 160,
+      cunning: 3,
       type: 'wyvern',
       combatMessages: {
         greeting: '*screeches*',

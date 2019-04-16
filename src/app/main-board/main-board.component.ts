@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import {TileComponent} from '../tile/tile.component'
 import {PlayerManagerService} from '../services/player-manager.service'
 import {MapsService} from '../services/maps.service'
@@ -24,8 +24,10 @@ import {
   templateUrl: './main-board.component.html',
   styleUrls: ['./main-board.component.css']
 })
-export class MainBoardComponent implements OnInit {
+export class MainBoardComponent implements OnInit, OnDestroy {
   newPlayerSubscription: Subscription;
+  playerManagerSubscription: any;
+
   sub1;
   delayed500 = new Subject<any>();
   introVideo = false;
@@ -43,7 +45,7 @@ export class MainBoardComponent implements OnInit {
   monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre',
         'sphinx','troll','slime_mold','black_vampire','black_gorgon',
         'mummy','naiad','wyvern','skeleton','giant_scorpion','black_djinn','black_kronos',
-        'black_banshee','black_wraith'];
+        'black_banshee','black_wraith', 'manticore','black_minotaur'];
   tiles = [];
   items = [
     'skull',
@@ -130,7 +132,7 @@ export class MainBoardComponent implements OnInit {
 
     //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
     
-    this.playerManager.getPlayerActivity(this.tiles).subscribe(res => {
+    this.playerManagerSubscription = this.playerManager.getPlayerActivity(this.tiles).subscribe(res => {
       this.handlePlayerServiceSubscription(res)
     })
 
@@ -250,6 +252,11 @@ export class MainBoardComponent implements OnInit {
       case 'removeMonster':
         monsterTile.monster = monsterTile[monsterTile.contains] = monsterTile.selected = monsterTile.highlight = false;
         monsterTile.contains = '';
+        this.playerManager.movementLocked = false;
+        var highestTimeoutId = setTimeout(";");
+        for (var i = 0 ; i < highestTimeoutId ; i++) {
+            clearTimeout(i); 
+        }
       break
       case 'removePlayer':
         playerTile.occupied = false;
@@ -459,6 +466,7 @@ export class MainBoardComponent implements OnInit {
         this.delayed500.next('removeMonster')
       }
       // this.playerManager.addListeners()
+      this.playerManager.movementLocked = true;
       this.showCombatBoard = false;
       this.playerManager.endCombat()
       this.playerManager.globalSubject.next({stopCombat: true})
@@ -695,5 +703,8 @@ export class MainBoardComponent implements OnInit {
     console.log('showing death pane');
     this.showDeathScreen = true;
     
+  }
+  ngOnDestroy(){
+    this.playerManagerSubscription.unsubscribe();
   }
 }
