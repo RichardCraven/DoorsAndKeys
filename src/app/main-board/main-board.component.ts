@@ -36,6 +36,7 @@ export class MainBoardComponent implements OnInit {
   stopTimer = false;
   turnStarted = false;
   showCombatBoard = false;
+  showDeathScreen = false;
   engagedMonster = {};
   itemPickup;
   canvas;
@@ -253,11 +254,15 @@ export class MainBoardComponent implements OnInit {
       case 'removePlayer':
         playerTile.occupied = false;
         playerTile.contains = '';
+        this.delayed500.next('showDeathScreen')
       break
       case 'gainItem':
         this.itemPickup[this.itemPickup.contains] = false;
         this.itemPickup.highlight = this.itemPickup.selected = false;
         this.itemPickup.contains = '';
+      break
+      case 'showDeathScreen':
+        this.playerManager.globalSubject.next({showDeathScreen: true})
       break
     }
   }
@@ -449,6 +454,7 @@ export class MainBoardComponent implements OnInit {
     if(res.endCombat){
       if(res.playerDied){
         this.delayed500.next('removePlayer')
+        // this.showDeathPane()
       } else {
         this.delayed500.next('removeMonster')
       }
@@ -684,5 +690,10 @@ export class MainBoardComponent implements OnInit {
     return this.delayed500.pipe(
       delay(500)
     )
+  }
+  showDeathPane(){
+    console.log('showing death pane');
+    this.showDeathScreen = true;
+    
   }
 }

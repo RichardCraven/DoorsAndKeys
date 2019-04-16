@@ -1,5 +1,6 @@
 <!--The content below is only a placeholder and can be replaced.-->
 
-<info-panel ></info-panel>
-<main-board></main-board>
-<inventoryPanel></inventoryPanel>  
+<info-panel *ngIf="!showDeathScreen" ></info-panel>
+<main-board *ngIf=showMainBoard></main-board>
+<death-screen *ngIf="showDeathScreen"></death-screen>
+<inventoryPanel *ngIf="!showDeathScreen"></inventoryPanel>  

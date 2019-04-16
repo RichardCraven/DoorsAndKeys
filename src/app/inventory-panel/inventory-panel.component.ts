@@ -131,8 +131,9 @@ export class InventoryPanelComponent implements OnInit {
         return
       }
     })
-
-    this.updateInventory();
+    setTimeout(() => {
+      this.updateInventory();
+    })
 
     // this.startCombat();
     // this.beginTimers();

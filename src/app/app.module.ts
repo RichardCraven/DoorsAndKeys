@@ -10,6 +10,7 @@ import { InfoPanelComponent } from './info-panel/info-panel.component';
 import { CombatBoardComponent } from './combat-board/combat-board.component';
 import { InventoryPanelComponent } from './inventory-panel/inventory-panel.component';
 import { GameOverPanelComponent } from './game-over-panel/game-over-panel.component';
+import { DeathScreenComponent } from './death-screen/death-screen.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { GameOverPanelComponent } from './game-over-panel/game-over-panel.compon
     InfoPanelComponent,
     CombatBoardComponent,
     InventoryPanelComponent,
-    GameOverPanelComponent
+    GameOverPanelComponent,
+    DeathScreenComponent
   ],
   imports: [
     BrowserModule

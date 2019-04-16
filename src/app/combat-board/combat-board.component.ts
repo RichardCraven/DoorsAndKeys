@@ -15,7 +15,8 @@ import {
   count,
   scan,
   withLatestFrom,
-  share
+  share,
+  windowTime
 } from 'rxjs/operators';
 
 @Component({
@@ -823,8 +824,8 @@ export class CombatBoardComponent implements OnInit {
     let num = Math.floor(Math.random()* 30)
     const canvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
 
-    console.log(this.monster.attack)
-    let attacks = 3
+    // console.log(this.monster.attack)
+    let attacks = this.monster.attack
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
       // let numX = 4
@@ -998,6 +999,10 @@ export class CombatBoardComponent implements OnInit {
         if(botTiles[endPointX - 1] && !botTiles[endPointX-1][this.monsterWeapon]){
           this.playerTilePositionX = this.playerTilePositionX - 1
           this.avatar.destinationX = this.playerTilePositionX*100;
+          // let that = this;
+          // setTimeout(function(){
+          //   that.checkPlayerCoords()
+          // }, 500)
         } 
       break
       case 'right':
@@ -1005,6 +1010,10 @@ export class CombatBoardComponent implements OnInit {
         if(botTiles[endPointX + 1] && !botTiles[endPointX+1][this.monsterWeapon]){
         this.playerTilePositionX = this.playerTilePositionX + 1
         this.avatar.destinationX = this.playerTilePositionX*100;
+        // let that = this;
+        //   setTimeout(function(){
+        //     that.checkPlayerCoords()
+        //   }, 500)
         } 
       break
       case 'up':
@@ -1012,6 +1021,10 @@ export class CombatBoardComponent implements OnInit {
         if(endPointY > 1 && this.collisionManagerService.checkForGate('up')){
         this.playerTilePositionY = this.playerTilePositionY - 1
         this.avatar.destinationY = this.playerTilePositionY*100;
+        // let that = this;
+        //   setTimeout(function(){
+        //     that.checkPlayerCoords()
+        //   }, 500)
         } 
       break
       case 'down':
@@ -1019,9 +1032,16 @@ export class CombatBoardComponent implements OnInit {
         if(endPointY < 9 && this.collisionManagerService.checkForGate('down')){
         this.playerTilePositionY = this.playerTilePositionY + 1
         this.avatar.destinationY = this.playerTilePositionY*100;
+        // let that = this;
+        //   setTimeout(function(){
+        //     that.checkPlayerCoords()
+        //   }, 500)
         } 
       break
     }
+  }
+  checkPlayerCoords(){
+    console.log(this.avatar.positionX, this.avatar.positionY)
   }
 
 

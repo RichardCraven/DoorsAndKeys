@@ -1,0 +1,20 @@
+<div class="container">
+  <!-- <div class="text"></div> -->
+  <div class="content-row">
+    <img id='hikaron' src="../../assets/Hikaron.jpg" alt="">
+    <div class="typewriter-container">
+      <div class="typewriter">
+        <h1>You have died.</h1>
+        <h1 *ngIf="showLine1">Poor thing...</h1>
+        <h1 *ngIf="showLine2">Gather your strength and try once more</h1>
+        <h1 *ngIf="showLine3">You <i>must</i> find a way out of the pyramid!</h1>
+        <h1 *ngIf="showLine4">...lest your soul be lost for eternity</h1>
+      </div>
+    </div>
+  </div>
+  <div class="replay-container">
+    <div (click)="replay()" class="replay-button">
+      ENTER
+    </div>
+  </div>
+</div>

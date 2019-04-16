@@ -20,17 +20,23 @@ import {
 })
 export class AppComponent implements OnInit  {
   title = 'DoorsAndKeys';
-  showInfo = false;
+  showInfo = true;
+  showMainBoard = true;
+  showDeathScreen = false;
   constructor(public playerManager : PlayerManagerService){
 
   }
   ngOnInit(){
     this.playerManager.getGlobalMessages().subscribe(res => {
-      this.showInfo = false;
+      // this.showInfo = false;
       if(res.item){
         this.showInfo = true;
       } else {
         // this.showInfo = false;
+      }
+      if(res.showDeathScreen){
+        this.showMainBoard = false;
+        this.showDeathScreen = true;
       }
       // this.handlePlayerServiceSubscription(res)
     })
