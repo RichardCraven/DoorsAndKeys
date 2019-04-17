@@ -253,10 +253,10 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         monsterTile.monster = monsterTile[monsterTile.contains] = monsterTile.selected = monsterTile.highlight = false;
         monsterTile.contains = '';
         this.playerManager.movementLocked = false;
-        var highestTimeoutId = setTimeout(";");
-        for (var i = 0 ; i < highestTimeoutId ; i++) {
-            clearTimeout(i); 
-        }
+        // var highestTimeoutId = setTimeout(";");
+        // for (var i = 0 ; i < highestTimeoutId ; i++) {
+        //     clearTimeout(i); 
+        // }
       break
       case 'removePlayer':
         playerTile.occupied = false;
@@ -566,7 +566,6 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   startTurn(){
     this.turnStarted = true;
     this.playerManager.activePlayer.coordinates = this.pointToCoordinates(this.playerManager.activePlayer.location)
-    console.log('is left? ' , this.isLeft(this.playerManager.activePlayer.coordinates));
     for(var t in this.tiles){
       var tile = this.tiles[t]
       tile.visible = true;

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, HostListener  } from '@angular/core';
 import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
 import {Projectile} from '../canvas-components/projectile.component'
@@ -115,39 +115,54 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   // @ViewChild('combatCanvas') combatCanvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) { 
+    // console.log('yo ', event.key);
+    switch(event.key){
+      case 'ArrowLeft':
+        this.movePlayer('left')
+      break
+      case 'ArrowRight':
+        this.movePlayer('right')
+      break
+      case 'ArrowUp':
+        this.movePlayer('up')
+      break
+      case 'ArrowDown':
+        this.movePlayer('down')
+      break
+      // case 'z':
+      // this.addCastSpell();
+      // break
+      case 'z':
+      this.addCastSpell();
+      break
+      case 'q':
+      debugger
+      break
+      case ' ':
+        this.addAttack()
+        
+      break
+      case 'Meta':
+      this.spellCasting = true;
+        // this.addCastSpell()
+      break
+    }
+  }
+
+
   constructor(
     public playerManager: PlayerManagerService, 
     public itemsService: ItemsService, 
     public collisionManagerService : CollisionManagerService,
     public projectileManagerService : ProjectileManagerService
     ) { 
-    this.playerManagerSubscription = this.playerManager.getGlobalMessages().subscribe(res => {
-      if(res.wandAvailable){
-        this.wandAvailable = true;
-      }
-      if(res.weaponAvailable){
-        console.log('received weapon avaiable +');
-        
-        this.weaponCount++
-      }
-      if(res === 'monster-struck'){
-        this.monsterHit()
-      }
-    })
+    
   }
   
   ngOnInit() {
-    console.log('COMBAT BOARD init');
-    
-    // <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this, event))
-    // const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement;
     const board = document.getElementById('combat-board'); 
-
-    // this.canvasLeft = canvas.offsetLeft;
-    // this.canvasTop = canvas.offsetTop;
-
-    // <HTMLCanvasElement>this.combatCanvas.nativeElement.addEventListener('click', this.canvasClicked.bind(this), event )
-
     const inventory = this.playerManager.activePlayer.inventory;
     
     //CREATE PROJECTILE CANVAS
@@ -158,7 +173,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     projectileCanvas.style.position = "absolute";
     projectileCanvas.style.zIndex = '10'
     board.appendChild(projectileCanvas)
-    // const projectileCanvas = <HTMLCanvasElement>document.getElementById('projectile-canvas');
     this.projectileManagerService.receiveCanvas(projectileCanvas)
 
     //CREATE PLAYER CANVAS
@@ -170,34 +184,7 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     playerCanvas.style.zIndex = '11'
     // playerCanvas.style.border = '1px solid yellow'
     board.appendChild(playerCanvas)
-    
-    // ****** ! None of this is currently used
 
-    // for(let i = 0; i < inventory.weapons.length; i++){
-    //   let tile = {};
-    //   tile[inventory.weapons[i].type] = true;
-    //   this.playerInventoryTiles.push(tile)
-    // }
-    // for(let w = 0; w < inventory.wands.length; w++){
-    //   let tile = {};
-    //   tile[inventory.wands[w].type] = true;
-    //   this.playerInventoryTiles.push(tile)
-    // }
-    // for(let s = 0; s < inventory.shields.length; s++){
-    //   let tile = {};
-    //   tile[inventory.shields[s].type] = true;
-    //   this.playerInventoryTiles.push(tile)
-    // }
-    // for(let h = 0; h < inventory.headgear.length; h++){
-    //   let tile = {};
-    //   tile[inventory.headgear[h].type] = true;
-    //   this.playerInventoryTiles.push(tile)
-    // }
-    // for(let c = 0; c < inventory.charms.length; c++){
-    //   let tile = {};
-    //   tile[inventory.charms[c].type] = true;
-    //   this.playerInventoryTiles.push(tile)
-    // };
     this.monsterHealthInitial = this.monster.health;
     this.monsterHealth = this.monster.health;
 
@@ -205,53 +192,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.monsterBar.style.height = 0+'%'
 
     this.monsterInfoLine1 = this.monster.combatMessages.greeting
-    // this.playerManager.initiateCombat()
-
-    window.addEventListener('keydown', (event) => {
-      switch(event.key){
-        case 'ArrowLeft':
-          this.movePlayer('left')
-        break
-        case 'ArrowRight':
-          this.movePlayer('right')
-        break
-        case 'ArrowUp':
-          this.movePlayer('up')
-        break
-        case 'ArrowDown':
-          this.movePlayer('down')
-        break
-        // case 'z':
-        // this.addCastSpell();
-        // break
-        case 'z':
-        this.addCastSpell();
-        break
-        case 'q':
-        debugger
-          // console.log('q')
-          // this.canvasLine(1,2)
-        break
-        case ' ':
-        console.log('space');
-        
-          this.addAttack()
-          
-        break
-        case 'Meta':
-        this.spellCasting = true;
-          // this.addCastSpell()
-        break
-      }
-    }, false);
-
-    window.addEventListener('keyup', (event) => {
-      switch(event.key){
-        case 'Meta':
-          this.spellCasting = false;
-        break
-      }
-    })    
     for(let t = 0; t < this.topTilesCount; t++){
       let tile = {
         id : t,
@@ -299,57 +239,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.playerTilePositionX = 5;
     this.playerTilePositionY = 9;
 
-
-    // let newCanvas = document.createElement('canvas');
-    //   let board = document.getElementById('combat-board'); 
-    //   newCanvas.id     = "PlayerLayer";
-    //   newCanvas.width  = 1000;
-    //   newCanvas.height = 1000;
-    //   newCanvas.style.position = "absolute";
-    //   newCanvas.style.zIndex = '20'
-    //   // newCanvas.style.zIndex   = this.layer;
-    //   newCanvas.style.border   = "5px solid red";
-
-    //   let imgTag = new Image();
-    //   // imgTag.src = '../../assets/scavenger.png'
-    //   // imgTag.src = '../../assets/icons/items/weapons/spear_white.png'
-    //   imgTag.src = '../../assets/icons/avatar_white.png'
-    //   imgTag.height = 100
-    //   imgTag.width = 100
-    //   let newContext = newCanvas.getContext("2d");
-
-    //   newContext.clearRect(0, 0, newCanvas.width, newCanvas.height);
-    //   newContext.drawImage(imgTag, 200, 400);  
-    //   board.appendChild(newCanvas)
-
-
-    
-
-
-
-
-
-
-    ///
-    // let newCanvas = document.createElement('canvas');
-    // newCanvas.style.position = "absolute";
-    // newCanvas.style.zIndex = "100";
-    // newCanvas.id  = "playerCanvas";
-    //   newCanvas.width  = 1000;
-    //   newCanvas.height = 1000;
-    //   let board = document.getElementById('combat-board'); 
-    // let imgTag = new Image();
-    // // imgTag.onload = animate;
-    // // imgTag.src = '../../assets/scavenger.png'
-    // imgTag.src = '../../assets/icons/avatar_white.png'
-    // imgTag.height = 100
-    // imgTag.width = 100
-    // let newContext = newCanvas.getContext("2d");
-    // newContext.drawImage(imgTag, 50, 50);  
-    // board.appendChild(newCanvas)
-
-    ///
-
     this.monsterIcon[this.monster.type] = true
     
     this.weapon = this.playerManager.activePlayer.inventory.weapons[0];
@@ -367,6 +256,18 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
 
 
     //subscribe
+
+    this.playerManagerSubscription = this.playerManager.getGlobalMessages().subscribe(res => {
+      if(res.wandAvailable){
+        this.wandAvailable = true;
+      }
+      if(res.weaponAvailable){
+        this.weaponCount++
+      }
+      if(res === 'monster-struck'){
+        this.monsterHit()
+      }
+    })
 
     this.sub1 = this.getDelayed2000().subscribe( res => {
       this.functionRouter(res);
@@ -391,7 +292,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
 
     this.collisionManagerSubscription = this.collisionManagerService.detectCollision().subscribe(res => {
       !this.playerLocked && this.playerHit();
-      // console.log(res.y_value)
       this.playerTilePositionY = 9
       this.avatar.destinationY = 900
     })
@@ -401,9 +301,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   }
   placePlayer(){
     const playerCanvas = <HTMLCanvasElement>document.getElementById('player-canvas');
-    // const context = playerCanvas.getContext("2d");
-    // const board = document.getElementById('combat-board'); 
-    // playerCanvas.style.border   = "1px solid red";
     let imgTag = new Image();
     imgTag.src = '../../assets/icons/avatar_white.png'
 
@@ -417,56 +314,9 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.avatar.destinationX = 500;
     this.avatar.destinationY = 900;
 
-    this.avatar.init()
-    // let x = 500
-    // let y = 1000-100
-      
-    // context.drawImage(imgTag, this.playerX, this.playerY, 250, 250);  
-    // board.appendChild(playerCanvas)
-
-    // animate.bind(this)()
-    // function animate() {
-    //   if(this.playerX === this.playerX_destination){
-    //     context.clearRect(0, 0, playerCanvas.width, playerCanvas.height);  
-    //     context.drawImage(imgTag, this.playerX, this.playerY); 
-    //   } else if(this.playerX_destination > this.playerX){
-    //     this.playerX += 25
-    //     context.clearRect(0, 0, playerCanvas.width, playerCanvas.height); 
-    //     context.drawImage(imgTag, this.playerX, this.playerY); 
-    //   } else if(this.playerX_destination < this.playerX){
-    //     this.playerX -= 25
-    //     context.clearRect(0, 0, playerCanvas.width, playerCanvas.height); 
-    //     context.drawImage(imgTag, this.playerX, this.playerY); 
-    //   }
-    //   this.collisionManagerService.updatePlayerPosition(this.playerX, this.playerY)
-    //   requestAnimationFrame(animate.bind(this))
-    // }
+    this.avatar.init();
   }
   canvasClicked(event){
-    // console.log('coords: ', event.offsetX, event.offsetY, this)
-    // const canvas = <HTMLCanvasElement>this.combatCanvas.nativeElement
-    // const head = <HTMLCanvasElement>document.getElementById('head')
-
-    // console.log('viggo ', head.width, head.height);
-    
-
-    
-    // const context = this.context;
-
-    // let x = event.offsetX - head.width
-    // let y = event.offsetY - head.height
-
-
-    // animate.bind(this)()
-    // function animate() {
-    //   context.clearRect(0, 0, canvas.width, canvas.height);  // clear canvas
-    //   context.drawImage(head, x, y);                       // draw image at current position
-    //   x -= 6;
-    //   if (x > -11) requestAnimationFrame(animate)
-    // }
-
-
-
     loadCanvas.bind(this)(this.tick)
     function loadCanvas(id) {
       let newCanvas = document.createElement('canvas');
@@ -588,7 +438,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     }
   }
   openWindow(){
-    // this.playerManager.globalSubject.next('hi')
     if(this.monsterDefeated) return
     this.playerLocked = false;
     this.monsterInfoLine1 = this.monsterInfoLine2 = this.playerInfo = '';
@@ -629,11 +478,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.clearPlayerRows();
     this.clearGridRows();
     
-    
-    // this.weaponCount = this.weapon.attack;
-    // this.wandAvailable = true;
-    //this is where you need to listen to weapon recharge
-
     this.openGate()
     this.gateOpen = true;
 
@@ -678,7 +522,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
         } else {
           width--; 
           elem.style.width = width + '%'; 
-          // that.collisionManagerService.midGateX = width*10
         }
       }
     
@@ -687,19 +530,9 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   closeWindow(){
     this.round++
     this.showBar = false;
-    for(let g in this.gridTiles){
-      // if(this.gridTiles[g][this.weapon.type]){
-      //   this.fireWeapon(this.gridTiles[g])
-      // }
-      // if(this.gridTiles[g][this.wand.type]){
-      //   this.castSpells(this.gridTiles[g])
-      // }
-    }
     this.delayed500.next('revealBar')
     this.delayed750.next('showMovementZone')
-    // this.delayed750.next('closeGate')
     this.delayed2000.next('openWindow')
-
     return 'closeWindow'
   }
   
@@ -749,11 +582,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     const max = this.topTiles.length
     this.monsterMovementZoneStartpoint = (this.monsterEndpoint - this.monster.agility) >= 0 ? (this.monsterEndpoint - this.monster.agility) : 0
     this.monsterMovementZoneEndpoint = (this.monsterEndpoint + this.monster.agility) <= max ? (this.monsterEndpoint + this.monster.agility) : max
-    if(this.monsterMovementZoneEndpoint === 10){
-      console.log('ERROR!! monster movement zone end point is 10');
-      
-    }
-
 
     for(let i = this.monsterMovementZoneStartpoint; i <= this.monsterMovementZoneEndpoint; i++){
       if(!this.topTiles[i]){
@@ -797,32 +625,27 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
       // let numX = 4
       let cunning_offset = cunning * 100 < 500 ? cunning * 100 : 500
 
-      let numY = Math.floor(Math.random() * cunning_offset)
-      let delay = Math.floor(Math.random()*(cunning+1))
+      let numY = Math.floor(Math.random() * 500)
+      // let delay = Math.floor(Math.random()*(cunning+1))
+      let delay = 0
       if(this.monsterAttackOrigins.indexOf(numX) < 0){
         attacks--
         this.monsterAttackOrigins.push(numX)
         // console.log('go after ', delay);
-        console.log('Y: ', numY);
-        
         let projectile = new Projectile(canvas, 'downWhite', numX*100, numY, this.collisionManagerService, this.projectileManagerService)
         const that = this;
-        // console.log('fire ', numX*100, numY, projectile);
-        setTimeout(function(){
+        // setTimeout(function(){
           
           that.projectileManagerService.projectiles.push(projectile)
-        }, delay)
+        // }, delay)
         
       }
     }
     this.projectileManagerService.beginSequence();
   }
   addAttack(){
-    console.log('outside', this.weaponCount);
-    
     if(!this.weaponCount || this.playerLocked) return
     const wand = this.wand
-    // console.log('inside');
     
     this.avatar.attack(this.weapon.type)
     this.playerManager.attackPing.next({weapon:this.weapon})
@@ -895,13 +718,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
       this.delayed2000.next('endCombat-monsterDead')
     }
   }
-  // monsterMiss(tile){
-  //   tile.visible = tile[this.weapon.type] = false;
-  //   tile.monsterZone = true;
-  //   const monsterRowTile = this.topTiles[tile.id];
-  //   if(monsterRowTile) monsterRowTile[this.weapon.type] = monsterRowTile.visible = monsterRowTile.slowFade = true;
-  //   this.delayed750.next(monsterRowTile)
-  // }
   playerHit(){
     this.playerLocked = true;
     const that = this;
@@ -928,9 +744,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     }
   }
   handlePlayerHit(){
-    //check hit points
-
-
     //survived?
     for(let t in this.botTiles){
       this.botTiles[t].flash = false;
@@ -1017,10 +830,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
       break
     }
   }
-  checkPlayerCoords(){
-    console.log(this.avatar.positionX, this.avatar.positionY)
-  }
-
 
   //OBSERVABLES
 
@@ -1061,8 +870,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('in destroy');
-    
     this.sub1.unsubscribe();
     this.sub2.unsubscribe();
     this.sub3.unsubscribe();

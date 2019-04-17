@@ -13,6 +13,8 @@ export class ProjectileManagerService {
   public lastStep = 0;
   private animator : any;
   constructor(private collisionManager: CollisionManagerService) {
+    const that = this;
+    window.cancelAnimationFrame(that.animator);
   }
 
   receiveCanvas(canvas){
@@ -23,6 +25,12 @@ export class ProjectileManagerService {
     // this.start = true;
     // this.drawProjectiles()
     const that = this;
+    if(that.animator){ window.cancelAnimationFrame(that.animator) }
+
+    // const that = this;
+    window.cancelAnimationFrame(that.animator);
+
+
     this.animator = window.requestAnimationFrame((milliseconds) => that.animationFrame(milliseconds));
 
     // function animationFrame(milliseconds) {
@@ -37,6 +45,7 @@ export class ProjectileManagerService {
   }
   endSequence(){
     // console.log('in end sequence');
+    this.lastStep = 0;
     const that = this;
     window.cancelAnimationFrame(that.animator);
     // window.cancelAnimationFrame(that.animator);
@@ -59,12 +68,16 @@ export class ProjectileManagerService {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); 
   }
   moveProjectiles(milliseconds) {
+    console.log(milliseconds);
+    
     const that = this;
     this.projectiles.forEach(function(p) {
-      var data = that.distanceAndAngleBetweenTwoPoints(p.projectile_positionX, p.projectile_positionY, p.projectile_positionX, 1000);
-      var velocity = data.distance /0.9 
-      var toEndVector = new Vector(velocity, data.angle);
       var elapsedSeconds = milliseconds / 1000;
+      var data = that.distanceAndAngleBetweenTwoPoints(p.projectile_positionX, p.projectile_positionY, p.projectile_positionX, 1000);
+      // console.log('k ', data, p, elapsedSeconds)
+      var velocity = data.distance /0.9 
+      var toEndVector = new Vector(velocity, 90);
+      
   
       p.projectile_positionX += (toEndVector.magnitudeX * elapsedSeconds);
       p.projectile_positionY += (toEndVector.magnitudeY * elapsedSeconds);
@@ -74,6 +87,8 @@ export class ProjectileManagerService {
   renderProjectiles(){
     // console.log('slug', this)
     const that = this;
+    // console.log('projectiles are ', this.projectiles);
+    
     this.projectiles.forEach(function(p) {
       // console.log('beans', that.context)
       that.context.drawImage(p.imgTag, p.projectile_positionX, p.projectile_positionY+10, p.size, p.size)
@@ -83,12 +98,12 @@ export class ProjectileManagerService {
     });
   }
   distanceAndAngleBetweenTwoPoints(x1, y1, x2, y2) {
-    var x = x2 - x1,
-      y = y2 - y1;
+    var x = Math.abs(x2 - x1),
+      y = Math.abs(y2 - y1);
     return {
-      distance: Math.sqrt(x * x + y * y),
+      distance: Math.sqrt(x * x + y * y) < 900 ? Math.sqrt(x * x + y * y) : 900,
       // convert from radians to degrees
-      angle: Math.atan2(y, x) * 180 / Math.PI
+      angle: Math.abs(Math.atan2(y, x) * 180 / Math.PI)
     }
   }
   clearProjectiles(){

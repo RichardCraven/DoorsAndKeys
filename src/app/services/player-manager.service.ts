@@ -55,59 +55,6 @@ export class PlayerManagerService{
     const amulet = amuletsArr[Math.floor(Math.random()* amuletsArr.length)];
     const shieldsArr = ['seeing_shield','basic_shield'];
     const shield = shieldsArr[Math.floor(Math.random()* shieldsArr.length)];
-
-    // const newPlayer = {
-    //   name: 'player1',
-    //   inventory: {
-    //     weapons: [
-    //       this.itemsService.library.weapons[weapon]
-    //     ],
-    //     amulets: [],
-    //     headgear: [],
-    //     wands: [
-    //       this.itemsService.library.wands[wand]
-    //     ],
-    //     shields: [],
-    //     misc: []
-    //   },
-    //   location: null,
-    //   visibility: 2,
-    //   moves: 2,
-    //   coordinates: [0,0]
-    // }
-
-    // if(Math.random()) newPlayer.inventory.headgear.push(this.itemsService.library.headgear[headgear])
-    // if(Math.random()) newPlayer.inventory.amulets.push(this.itemsService.library.amulets[amulet])
-    // if(Math.random()) newPlayer.inventory.shields.push(this.itemsService.library.shields[shield])
-    // this.activePlayer = newPlayer;
-
-  }
-  addListeners(){
-    console.log('adding listeners');
-    
-    // window.addEventListener('keydown', (event) => {
-    //   switch(event.key){
-    //     case 'ArrowUp':
-    //     this.movePlayer('up')
-    //     break
-    //     case 'ArrowDown':
-    //     this.movePlayer('down')
-    //     break
-    //     case 'ArrowLeft':
-    //     this.movePlayer('left')
-    //     break
-    //     case 'ArrowRight':
-    //     this.movePlayer('right')
-    //     break
-    //     case 'Enter':
-    //       this.startTurn();
-    //       break
-    //     }
-    //   }, true);
-  }
-  removeListeners(){
-    console.log('removing listeners');
-    // window.removeEventListener('keydown', this.handleKeydown, true);
   }
   handleKeydown(event){
     switch(event.key){

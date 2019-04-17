@@ -70,7 +70,6 @@ export class InventoryPanelComponent implements OnInit {
       }
       let tile = res.tile
       if(tile.weapon){
-        console.log('pre-sub2 sending')
         tile.duration3 = true;
         this.delayed3000.next({tile})
       }
@@ -83,8 +82,6 @@ export class InventoryPanelComponent implements OnInit {
       let tile = res.tile
       tile.available = true;
       if(tile.weapon){
-        console.log('player manager, sub 2 sending weapon available');
-        
         this.playerManager.globalSubject.next({weaponAvailable: true})
       }
       if(tile.wand){
@@ -99,8 +96,6 @@ export class InventoryPanelComponent implements OnInit {
         return
       }
       if(tile.weapon){
-        console.log('player manager, sub 3 sending weapon available');
-
         this.playerManager.globalSubject.next({weaponAvailable: true})
       }
       if(tile.wand){
@@ -111,8 +106,6 @@ export class InventoryPanelComponent implements OnInit {
       let tile = res.tile
       tile.available = true;
       if(tile.weapon){
-        console.log('player manager, sub 4 sending weapon available');
-
         this.playerManager.globalSubject.next({weaponAvailable: true})
       }
       if(tile.wand){
@@ -128,8 +121,6 @@ export class InventoryPanelComponent implements OnInit {
       let tile = res.tile
       tile.available = true;
       if(tile.weapon){
-        console.log('player manager, sub 5 sending weapon available');
-
         this.playerManager.globalSubject.next({weaponAvailable: true})
       }
       if(tile.wand){

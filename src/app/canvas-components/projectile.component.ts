@@ -23,8 +23,12 @@ export class Projectile {
         public projectileManager : ProjectileManagerService
         ) {
         this.context = this.canvas.getContext('2d');
+        if(this.originY > 100){
+            this.projectile_positionY = this.originY;
+        } else {
+            this.projectile_positionY = 100
+        }
         this.projectile_positionX = this.originX;
-        this.projectile_positionY = this.originY;
         // console.log('in constructor.. origin Y is ', this.originY, 'position Y is ', this.projectile_positionY)
         this.imgArr = {
             downWhite : {
@@ -41,20 +45,5 @@ export class Projectile {
 
         this.imgTag = new Image();
         this.imgTag.src = this.imgArr[image].imgSrc;
-    }
-    update(){
-        if(this.collisionManager.updateProjectilePosition(this.projectile_positionX, this.projectile_positionY, this.trueHeight)){
-            // this.collisionManager.pushBackAvatar(this.projectile_positionY)
-            // console.log('Y is ...',this.projectile_positionY)
-            return
-            if(this.projectile_positionY > 810){
-                console.log('wtf');
-                
-                return
-            }
-            // this.projectile_positionY += this.speed;
-        } else {
-            this.projectile_positionY += this.speed;
-        }
     }
 }
