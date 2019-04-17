@@ -620,24 +620,42 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.projectileManagerService.clearProjectiles();
     // console.log('projectiles ar length is ', this.projectileManagerService.projectiles.length);
     
+    // while(attacks > 0){
+    //   let numX = Math.floor(Math.random()* 10)
+    //   let numY = Math.floor(Math.random()* 300)
+    //   let delay = Math.floor(Math.random()*400)
+    //   if(this.monsterAttackOrigins.indexOf(numX) < 0){
+    //     attacks--
+    //     this.monsterAttackOrigins.push(numX)
+    //     let projectile = new Projectile(canvas, 'downWhite', numX*100, numY, this.collisionManagerService, this.projectileManagerService)
+    //     const that = this;
+    //     setTimeout(function(){
+    //       that.projectileManagerService.projectiles.push(projectile)
+    //     }, delay)
+        
+    //   }
+    // }
+
     while(attacks > 0){
       let numX = Math.floor(Math.random()* 10)
-      // let numX = 4
       let cunning_offset = cunning * 100 < 500 ? cunning * 100 : 500
 
-      let numY = Math.floor(Math.random() * 500)
-      // let delay = Math.floor(Math.random()*(cunning+1))
-      let delay = 0
+      let numY = Math.floor(Math.random() * 300)
+      let delay = Math.floor(Math.random()*400)
+
+      //THE BUG YOU WERE SEEING WITH NON-FIRES WAS FROM A DELAY VALUE THAT WAS TOO LOW. (not sure why exactly)
+      // delay needs to be at least 100
+
+
       if(this.monsterAttackOrigins.indexOf(numX) < 0){
         attacks--
         this.monsterAttackOrigins.push(numX)
-        // console.log('go after ', delay);
         let projectile = new Projectile(canvas, 'downWhite', numX*100, numY, this.collisionManagerService, this.projectileManagerService)
         const that = this;
-        // setTimeout(function(){
+        setTimeout(function(){
           
           that.projectileManagerService.projectiles.push(projectile)
-        // }, delay)
+        },delay)
         
       }
     }

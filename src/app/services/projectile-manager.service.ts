@@ -68,8 +68,6 @@ export class ProjectileManagerService {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); 
   }
   moveProjectiles(milliseconds) {
-    console.log(milliseconds);
-    
     const that = this;
     this.projectiles.forEach(function(p) {
       var elapsedSeconds = milliseconds / 1000;
