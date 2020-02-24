@@ -48,6 +48,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   middleTiles = [];
   topTiles = [];
   bottomTiles = [];
+  currentTiles = [];
   items = [
     'skull',
     'key',
@@ -94,47 +95,61 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     })
 
 
-
-    for (let i = 0; i<this.totalTiles; i++){
-      let tile = {
-        id : this.idCount,
-        occupied : false,
-        buildable : false,
-        contains: '',
-        door: false,
-        stairs: false,
-        cloud: false,
-        palm_tree: false,
-        crown: false,
-        skull: false,
-        key: false,
-        lantern: false,
-        disguise: false,
-        buddha: false,
-        visible: false,
-        monster: false,
-        edge: false,
-        green: false,
-        red: false,
-        darkness: false,
-        void: false,
-        coordinates: [],
-        title: false,
-        title1: false,
-        title2: false,
-        title3: false,
-        spawn_point: false
+    for(let v = 0; v<3; v++){
+      
+      this.idCount = 0;
+      for (let i = 0; i<this.totalTiles; i++){
+        let tile = {
+          id : this.idCount,
+          occupied : false,
+          buildable : false,
+          contains: '',
+          door: false,
+          stairs: false,
+          cloud: false,
+          palm_tree: false,
+          crown: false,
+          skull: false,
+          key: false,
+          lantern: false,
+          disguise: false,
+          buddha: false,
+          visible: false,
+          monster: false,
+          edge: false,
+          green: false,
+          red: false,
+          darkness: false,
+          void: false,
+          coordinates: [],
+          title: false,
+          title1: false,
+          title2: false,
+          title3: false,
+          spawn_point: false,
+          level: ''
+        }
+        if(v === 0){
+          tile.level = 'top'
+          this.topTiles.push(tile)
+        } else if(v === 1){
+          tile.level = 'middle'; 
+          // console.log('midtile: ', tile)
+          this.middleTiles.push(tile)
+        } else {
+          tile.level = 'bottom'; 
+          // console.log('bottile: ', tile)
+          this.bottomTiles.push(tile)
+        }
+        this.idCount++
       }
-      this.topTiles.push(tile)
-      this.middleTiles.push(tile)
-      this.bottomTiles.push(tile)
-      this.idCount++
     }
     this.assignEdges();
 
     //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
     
-    this.playerManagerSubscription = this.playerManager.getPlayerActivity(this.middleTiles).subscribe(res => {
+    this.playerManagerSubscription = this.playerManager.getPlayerActivity().subscribe(res => {
+      console.log('activity res is ', res)
       this.handlePlayerServiceSubscription(res)
     })
 
@@ -242,14 +257,16 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         console.log('in here?');
         
         this.populateBoard('mid');
-        // this.populateBoard('bottom');
+        this.populateBoard('bottom');
       });
     } else {
       // INTRO SKIPPED
       this.clearBoard();
       // this.populateBoard('top');
-      // this.populateBoard('mid');
+      this.populateBoard('mid');
       this.populateBoard('bottom');
+      console.log('PY level: ', this.pyramidLevel)
+      this.renderBoard()
     }
     
   }
@@ -349,6 +366,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         let point = this.coordinatePoint([voids[a][0],voids[a][1]])
         const tile = tileset[point];
         tile.void = true;
+        tile.contains = 'void'
       }
       
       //populate keys
@@ -390,13 +408,14 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         let point = this.coordinatePoint([spawn_points[s][0],spawn_points[s][1]])
         const tile = tileset[point];
         tile.spawn_point = true;
-        // tileset[point].contains = 'spawn_point';
+        tileset[point].contains = 'spawn_point';
       }
       //populate doors
       for(let d = 0; d < doors.length; d++){
         let point = this.coordinatePoint([doors[d][0],doors[d][1]])
         const tile = tileset[point];
         tile.door = true;
+        tile.contains = 'door'
       }
       //populate weapons
       for(let e = 0; e < weapons.length; e++){
@@ -469,21 +488,78 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         this.playerManager.activePlayer = null;
         // const spawn_point = spawn_points[Math.floor(Math.random()*spawn_points.length)]
         const spawn_point = spawn_points[1]
-        this.playerManager.newPlayer(this.coordinatePoint(spawn_point))
-
-        console.log('at the end of populate board, tileset is now ', this.bottomTiles)
+        this.playerManager.setCurrentMap(this.middleTiles)
+        this.playerManager.newPlayer(this.coordinatePoint(spawn_point));
   }
   renderBoard(){
+    console.log('pyramiod level: ', this.pyramidLevel)
     switch(this.pyramidLevel){
       case 'mid':
-        this.middleTiles.forEach((tile)=>{
+        // console.log('mid tiles: ', this.middleTiles)
+        this.middleTiles.forEach((tile, index)=>{
+
+          this.currentTiles[index] = this.middleTiles[index]
+          return
           console.log(tile.contains)
+          if(tile.contains === null){
+            
+          }
+          tile.void = true;
+          tile.occupied = false;
+          tile.buildable = false;
+          tile.door = false;
+          tile.stairs = false;
+          tile.cloud = false;
+          tile.crown = false;
+          tile.skull = false;
+          tile.lantern = false;
+          tile.key = false;
+          tile.buddha  = false;
+          tile.monster = false;
+          tile.spawn_point = false;
+          tile.disguise = false;
+          tile.visible = false;
+          tile.occupied = false;
+          // tile = {
+          //   id : this.idCount,
+          //   occupied : false,
+          //   buildable : false,
+          //   contains: '',
+          //   door: false,
+          //   stairs: false,
+          //   cloud: false,
+          //   palm_tree: false,
+          //   crown: false,
+          //   skull: false,
+          //   key: false,
+          //   lantern: false,
+          //   disguise: false,
+          //   buddha: false,
+          //   visible: false,
+          //   monster: false,
+          //   edge: false,
+          //   green: false,
+          //   red: false,
+          //   darkness: false,
+          //   void: false,
+          //   coordinates: [],
+          //   title: false,
+          //   title1: false,
+          //   title2: false,
+          //   title3: false,
+          //   spawn_point: false
+          // }
         })
+        this.playerManager.setCurrentMap(this.currentTiles)
       break;
       case 'bottom':
-        this.bottomTiles.forEach((tile)=>{
-          console.log(tile.contains)
+        console.log('bot tiles: ', this.bottomTiles)
+        this.bottomTiles.forEach((tile, index)=>{
+          this.currentTiles[index] = this.bottomTiles[index]
+          return
+          // console.log(tile.contains)
         })
+        this.playerManager.setCurrentMap(this.currentTiles)
       break;
     }
   }
@@ -512,7 +588,10 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   }
   handlePlayerServiceSubscription(res){
     const player = this.playerManager.activePlayer;
-    const tile = this.middleTiles[res.location]
+    console.log('res: ' , res, this.currentTiles)
+    const tile = this.currentTiles[res.location]
+    console.log('and tile: ', tile)
+    if(!tile) return
     if(res.endCombat){
       if(res.playerDied){
         this.delayed500.next('removePlayer')
@@ -569,15 +648,16 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       return
     }
     if(!res.startTurn){
-      for(var t in this.middleTiles){
-        // this.middleTiles[t].visible = false
+      for(var t in this.currentTiles){
+        // this.currentTiles[t].visible = false
       }
     }
     tile.contains = player;
     tile.visible = true;
     tile.occupied = true;
     if(res.old_location || res.old_location === 0){
-      const old_tile = this.middleTiles[res.old_location]
+      // console.log('spammm, curr tiles: ', res.old_location,  this.currentTiles)
+      const old_tile = this.currentTiles[res.old_location]
       old_tile.contains = null;
       old_tile.occupied = false;
     }
@@ -590,7 +670,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     this.shroudMap();
     if(res.visibility){
       for(let v = 0; v < res.visibility.length; v++){
-        if(this.middleTiles[res.visibility[v]] && !this.middleTiles[res.visibility[v]].void) this.middleTiles[res.visibility[v]].visible = true;
+        if(this.currentTiles[res.visibility[v]] && !this.currentTiles[res.visibility[v]].void) this.currentTiles[res.visibility[v]].visible = true;
         // if(this.middleTiles[res.visibility])
       }
       player.coordinates = this.pointToCoordinates(player.location)
@@ -637,7 +717,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     this.playerManager.activePlayer.coordinates = this.pointToCoordinates(this.playerManager.activePlayer.location)
     for(var t in this.middleTiles){
       var tile = this.middleTiles[t]
-      tile.visible = true;
+      tile.visible = false;
     }
   }
   onEnterKey($event){
@@ -662,6 +742,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     }
   }
   clickTile(target){
+    console.log(target)
     if(target.selected){
       this.playerManager.requestItem('clear')
       this.showCombatBoard = true;

@@ -106,8 +106,8 @@ export class PlayerManagerService{
   ping(){
   }
   // Observable<any>
-  getPlayerActivity(tileMap): Observable<any>{
-    this.currentMap = tileMap;
+  getPlayerActivity(): Observable<any>{
+    // this.currentMap = this.;
     return this.subject.asObservable()
   }
   getPlayerMessages(): Observable<any>{
@@ -121,6 +121,9 @@ export class PlayerManagerService{
   }
   getAttackNotification(): Observable<any>{
     return this.attackPing.asObservable()
+  }
+  setCurrentMap(map){
+    this.currentMap = map
   }
   newPlayer(location){
     console.log('in new player, location is ', location)
@@ -184,18 +187,20 @@ export class PlayerManagerService{
 
   movePlayer(direction){
     const handleDoor = function(destination){
-      this.subject.next({door: destination})
+      console.log('destination: ', destination)
+      this.subject.next({door: destination, location:destination.id})
     }.bind(this);  
     if(!this.activePlayer || !this.activePlayer.location || this.inCombat || this.movementLocked) return
     this.messageSubject.next({msg : 'moving '+direction});
     const old_location = this.currentMap[this.activePlayer.location];
+    console.log('old location: ', old_location)
     let destination;
     switch (direction){
       case 'left':
       if(old_location.id === 210 || old_location.id === 0) return
       destination = this.currentMap[this.activePlayer.location-1]
       if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right' || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-1;
+      if(!destination.contains || destination.contains === 'door') this.activePlayer.location = this.activePlayer.location-1;
       if(destination.door){
         handleDoor(destination)
       }
@@ -205,7 +210,7 @@ export class PlayerManagerService{
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
       if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+1;
+      if(!destination.contains || destination.contains === 'door') this.activePlayer.location = this.activePlayer.location+1;
       if(destination.door) handleDoor(destination)
       if(destination.monster) this.subject.next({monster: destination})
       if(destination.item) this.subject.next({item: destination})
@@ -214,7 +219,7 @@ export class PlayerManagerService{
       if(old_location.id === 0 || old_location.id === 14) return
       destination = this.currentMap[this.activePlayer.location-15]
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-15;
+      if(!destination.contains || destination.contains === 'door') this.activePlayer.location = this.activePlayer.location-15;
       if(destination.door){
         handleDoor(destination)
       }
@@ -225,7 +230,7 @@ export class PlayerManagerService{
       destination = this.currentMap[this.activePlayer.location+15]
       if(old_location.id === 210 || old_location.id === 224) return
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+15;
+      if(!destination.contains || destination.contains === 'door') this.activePlayer.location = this.activePlayer.location+15;
       if(destination.door){
         handleDoor(destination)
       }
@@ -233,13 +238,14 @@ export class PlayerManagerService{
       if(destination.item) this.subject.next({item: destination})
       break
     }
-    console.log(this.activePlayer.location)
+    // console.log(this.activePlayer.location)
     if(!this.currentMap[this.activePlayer.location].contains || this.currentMap[this.activePlayer.location].door){
       const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
       this.subject.next({location: this.activePlayer.location, old_location : old_location.id, visibility: visible});
     }  
   }
   checkVisibility(location, visibility){
+    // console.log('***current map is ', this.currentMap)
     const visible = [];
     const hidden = [];
     visible.push(location)

@@ -7,8 +7,10 @@
   </div>
 
   <!-- TOP BOARD -->
-  <div *ngIf="!showCombatBoard && pyramidLevel === 'top'" class="board upper-board">
-    <tile *ngFor='let tile of topTiles; index as i' 
+
+  <!-- BOARD -->
+  <div *ngIf="!showCombatBoard" class="board upper-board">
+    <tile *ngFor='let tile of currentTiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
     (click)='clickTile(tile)'
     [ngClass]='{
@@ -108,7 +110,7 @@
   </div>
 
   <!-- MID BOARD -->
-  <div *ngIf="!showCombatBoard && pyramidLevel === 'mid'" class="board middle-board" >
+  <!-- <div *ngIf="!showCombatBoard && pyramidLevel === 'mid'" class="board middle-board" >
     <tile *ngFor='let tile of middleTiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
     (click)='clickTile(tile)'
@@ -206,10 +208,10 @@
       selected: tile.selected
     }' >
     </tile>
-  </div>
+  </div> -->
   
   <!-- BOTTOM BOARD -->
-  <div class="board bottom-board" *ngIf="!showCombatBoard && pyramidLevel === 'bottom'">
+  <!-- <div class="board bottom-board" *ngIf="!showCombatBoard && pyramidLevel === 'bottom'">
     <tile *ngFor='let tile of bottomTiles; index as i' 
     [name]='tile.id' [contains]='tile.contains' 
     (click)='clickTile(tile)'
@@ -307,7 +309,7 @@
       selected: tile.selected
     }' >
     </tile>
-  </div>
+  </div> -->
   <combat-board *ngIf="showCombatBoard" [monster]="engagedMonster" ></combat-board>
   <!-- <death-screen *ngIf="showDeathScreen"></death-screen> -->
 </div>

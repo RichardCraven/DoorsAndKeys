@@ -223,7 +223,7 @@ export class MapsService {
   }  
   constructor() { }
   generateMap(board){
-    // console.log('board is ', board);
+    console.log('generating ', board);
     
     let map;
     switch(board){
