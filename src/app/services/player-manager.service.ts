@@ -204,16 +204,16 @@ export class PlayerManagerService{
       if(destination.door){
         handleDoor(destination)
       }
-      if(destination.monster) this.subject.next({monster: destination})
-      if(destination.item) this.subject.next({item: destination})
+      if(destination.monster) this.subject.next({monster: destination, location:destination.id})
+      if(destination.item) this.subject.next({item: destination, location:destination.id})
       break
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
       if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
       if(!destination.contains || destination.contains === 'door') this.activePlayer.location = this.activePlayer.location+1;
       if(destination.door) handleDoor(destination)
-      if(destination.monster) this.subject.next({monster: destination})
-      if(destination.item) this.subject.next({item: destination})
+      if(destination.monster) this.subject.next({monster: destination, location:destination.id})
+      if(destination.item) this.subject.next({item: destination, location:destination.id})
       break
       case 'up':
       if(old_location.id === 0 || old_location.id === 14) return
@@ -223,8 +223,8 @@ export class PlayerManagerService{
       if(destination.door){
         handleDoor(destination)
       }
-      if(destination.monster) this.subject.next({monster: destination})
-      if(destination.item) this.subject.next({item: destination})
+      if(destination.monster) this.subject.next({monster: destination, location:destination.id})
+      if(destination.item) this.subject.next({item: destination, location:destination.id})
       break
       case 'down':
       destination = this.currentMap[this.activePlayer.location+15]
@@ -234,12 +234,13 @@ export class PlayerManagerService{
       if(destination.door){
         handleDoor(destination)
       }
-      if(destination.monster) this.subject.next({monster: destination})
-      if(destination.item) this.subject.next({item: destination})
+      if(destination.monster) this.subject.next({monster: destination, location:destination.id})
+      if(destination.item) this.subject.next({item: destination, location:destination.id})
       break
     }
     // console.log(this.activePlayer.location)
     if(!this.currentMap[this.activePlayer.location].contains || this.currentMap[this.activePlayer.location].door){
+      console.log('**inside')
       const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
       this.subject.next({location: this.activePlayer.location, old_location : old_location.id, visibility: visible});
     }  

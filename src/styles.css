@@ -128,10 +128,10 @@ tile.crown:hover{
     background-color: aquamarine;
 }
 .darkness{
-    /* background-color: black; */
+    background-color: black;
 }
 tile.darkness:hover{
-    /* background-color: black; */
+    background-color: black;
 }
 .void{
     background-color: black;

@@ -49,6 +49,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   topTiles = [];
   bottomTiles = [];
   currentTiles = [];
+  spawnPoints: any;
   items = [
     'skull',
     'key',
@@ -149,7 +150,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
     
     this.playerManagerSubscription = this.playerManager.getPlayerActivity().subscribe(res => {
-      console.log('activity res is ', res)
+      // console.log('activity res is ', res)
       this.handlePlayerServiceSubscription(res)
     })
 
@@ -258,6 +259,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         
         this.populateBoard('mid');
         this.populateBoard('bottom');
+        this.renderBoard()
       });
     } else {
       // INTRO SKIPPED
@@ -265,8 +267,9 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       // this.populateBoard('top');
       this.populateBoard('mid');
       this.populateBoard('bottom');
-      console.log('PY level: ', this.pyramidLevel)
       this.renderBoard()
+      this.spawnPlayer();
+      console.log('PY level: ', this.pyramidLevel)      
     }
     
   }
@@ -349,6 +352,9 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       const weapons = newMap['weapons']
       const charms = newMap['charms']
       const spawn_points = newMap['spawns']
+      if(board === 'mid'){
+        this.spawnPoints = newMap['spawns']
+      }
       
       const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
       const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];
@@ -477,8 +483,11 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         }
         //WHILE LOOPS IS FUCKING WITH BOT TILES
       }
-      console.log('spawning player')
-      
+    }
+    spawnPlayer(){
+      console.log('spawning player')      
+      let tileset = this.middleTiles;
+      const spawn_points = this.spawnPoints;
         //Spawn Player
         for(var p in tileset){
           if(tileset[p].occupied){
@@ -591,11 +600,11 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     console.log('res: ' , res, this.currentTiles)
     const tile = this.currentTiles[res.location]
     console.log('and tile: ', tile)
-    if(!tile) return
+    // if(!tile) return
     if(res.endCombat){
       if(res.playerDied){
         this.delayed500.next('removePlayer')
-        // this.showDeathPane()
+        this.showDeathPane()
       } else {
         this.delayed500.next('removeMonster')
       }
@@ -648,8 +657,9 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       return
     }
     if(!res.startTurn){
+      console.log('setting everything to invisible')
       for(var t in this.currentTiles){
-        // this.currentTiles[t].visible = false
+        this.currentTiles[t].visible = false
       }
     }
     tile.contains = player;
