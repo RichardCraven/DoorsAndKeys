@@ -22,6 +22,25 @@
     position: absolute;
     z-index: -1;
 }
+.pyramid-level{
+    border: 1px solid grey;
+    background-color: whitesmoke;
+    height: 250px;
+    width: 80px;
+    position: fixed;
+    left: 144px;
+    display: flex;
+    flex-direction: column;
+}
+.pyramid-top,.pyramid-mid,.pyramid-bot{
+    height: 150px;
+    width: 100%;
+    border-top: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
+}
+.pyramid-top.active,.pyramid-mid.active,.pyramid-bot.active{
+    background-color: slategray;
+}
 /* inventory-panel{
     align-items: center;
     position: relative;

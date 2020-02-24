@@ -123,7 +123,7 @@ export class PlayerManagerService{
     return this.attackPing.asObservable()
   }
   newPlayer(location){
-    
+    console.log('in new player, location is ', location)
     const map = this.currentMap;
     const weaponsArr = ['sword', 'axe', 'flail', 'spear'];
     const weapon = weaponsArr[Math.floor(Math.random()* weaponsArr.length)];
@@ -183,23 +183,30 @@ export class PlayerManagerService{
   }
 
   movePlayer(direction){
+    const handleDoor = function(destination){
+      this.subject.next({door: destination})
+    }.bind(this);  
     if(!this.activePlayer || !this.activePlayer.location || this.inCombat || this.movementLocked) return
     this.messageSubject.next({msg : 'moving '+direction});
-    const old_location = this.currentMap[this.activePlayer.location]
+    const old_location = this.currentMap[this.activePlayer.location];
     let destination;
     switch (direction){
       case 'left':
       if(old_location.id === 210 || old_location.id === 0) return
       destination = this.currentMap[this.activePlayer.location-1]
       if(!destination || old_location.id === 0 || old_location.id === 210 || destination.edge === 'right' || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-1
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-1;
+      if(destination.door){
+        handleDoor(destination)
+      }
       if(destination.monster) this.subject.next({monster: destination})
       if(destination.item) this.subject.next({item: destination})
       break
       case 'right':
       destination = this.currentMap[this.activePlayer.location+1]
       if(!destination || old_location.id === 14 || old_location.id === 224 || destination.edge === 'left' || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+1
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+1;
+      if(destination.door) handleDoor(destination)
       if(destination.monster) this.subject.next({monster: destination})
       if(destination.item) this.subject.next({item: destination})
       break
@@ -207,7 +214,10 @@ export class PlayerManagerService{
       if(old_location.id === 0 || old_location.id === 14) return
       destination = this.currentMap[this.activePlayer.location-15]
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-15
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location-15;
+      if(destination.door){
+        handleDoor(destination)
+      }
       if(destination.monster) this.subject.next({monster: destination})
       if(destination.item) this.subject.next({item: destination})
       break
@@ -215,15 +225,19 @@ export class PlayerManagerService{
       destination = this.currentMap[this.activePlayer.location+15]
       if(old_location.id === 210 || old_location.id === 224) return
       if(!destination || destination.edge && old_location.edge && destination.edge !== old_location.edge || destination.void) return
-      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+15
+      if(!destination.contains) this.activePlayer.location = this.activePlayer.location+15;
+      if(destination.door){
+        handleDoor(destination)
+      }
       if(destination.monster) this.subject.next({monster: destination})
       if(destination.item) this.subject.next({item: destination})
       break
     }
-    if(!this.currentMap[this.activePlayer.location].contains){
+    console.log(this.activePlayer.location)
+    if(!this.currentMap[this.activePlayer.location].contains || this.currentMap[this.activePlayer.location].door){
       const visible = this.checkVisibility(this.activePlayer.location, this.activePlayer.visibility)
       this.subject.next({location: this.activePlayer.location, old_location : old_location.id, visibility: visible});
-    }     
+    }  
   }
   checkVisibility(location, visibility){
     const visible = [];

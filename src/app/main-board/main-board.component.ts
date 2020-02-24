@@ -1,10 +1,8 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import {TileComponent} from '../tile/tile.component'
 import {PlayerManagerService} from '../services/player-manager.service'
 import {MapsService} from '../services/maps.service'
 import {MonstersService} from '../services/monsters.service';
 import { ViewChild, ElementRef } from '@angular/core';
-import {InfoPanelComponent} from '../info-panel/info-panel.component';
 import { Subscription, Observable, Subject, interval, timer } from 'rxjs';
 import {
   delay,
@@ -40,13 +38,16 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   showCombatBoard = false;
   showDeathScreen = false;
   engagedMonster = {};
+  pyramidLevel = 'mid';
   itemPickup;
   canvas;
   monstersArr = ['imp','imp_overlord','beholder','dragon','goblin','horror','ogre',
         'sphinx','troll','slime_mold','black_vampire','black_gorgon',
         'mummy','naiad','wyvern','skeleton','giant_scorpion','black_djinn','black_kronos',
         'black_banshee','black_wraith', 'manticore','black_minotaur'];
-  tiles = [];
+  middleTiles = [];
+  topTiles = [];
+  bottomTiles = [];
   items = [
     'skull',
     'key',
@@ -124,20 +125,21 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         title3: false,
         spawn_point: false
       }
-      this.tiles.push(tile)
+      this.topTiles.push(tile)
+      this.middleTiles.push(tile)
+      this.bottomTiles.push(tile)
       this.idCount++
     }
-    // this.populateBoard();
     this.assignEdges();
 
     //DEFINING EDGES, NEED TO CHANGE THIS IF YOU CHANGE BOARD SIZE
     
-    this.playerManagerSubscription = this.playerManager.getPlayerActivity(this.tiles).subscribe(res => {
+    this.playerManagerSubscription = this.playerManager.getPlayerActivity(this.middleTiles).subscribe(res => {
       this.handlePlayerServiceSubscription(res)
     })
 
     if(this.introVideo){
-      this.tiles[112].occupied = this.tiles[112].contains = true;
+      this.middleTiles[112].occupied = this.middleTiles[112].contains = true;
 
       // const step1 = timer(1000);
       const step1 = timer(500);
@@ -151,8 +153,8 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       const step8 = timer(9850);
 
       const step1Sub = step1.subscribe(val => {
-        for(var t in this.tiles){
-          var tile = this.tiles[t]
+        for(var t in this.middleTiles){
+          var tile = this.middleTiles[t]
           tile.visible = true;
         }
         this.buildVoid()
@@ -160,12 +162,12 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       const step2Sub = step2.subscribe( res => {
         const greenZone = [110,111,113,114,96,97,98,82,126,127,128,142]
         for(let r = 0; r < greenZone.length; r++){
-          this.clearTile(this.tiles[greenZone[r]])
+          this.clearTile(this.middleTiles[greenZone[r]])
         }
         const visibility = this.playerManager.checkVisibility(112, 2)
-        for(var t in this.tiles){
+        for(var t in this.middleTiles){
           if(t !== '112'){
-            var tile = this.tiles[t]
+            var tile = this.middleTiles[t]
             this.clearTile(tile, true)
 
           }
@@ -178,16 +180,16 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       })
       const step3Sub = step3.subscribe( res => {
         // console.log('step 3: DOORS');
-         const tiles = this.tiles
+         const tiles = this.middleTiles
          for(let i = 19; i <= 23; i++){
            this.clearTile(tiles[i], false)
            tiles[i].visible = false;
            tiles[i].void = false;
            tiles[i].title = true;
          }
-         this.tiles[37].visible = false; 
-         this.tiles[37].title = true;
-         this.tiles[52].void = false; 
+         this.middleTiles[37].visible = false; 
+         this.middleTiles[37].title = true;
+         this.middleTiles[52].void = false; 
         const door1 = timer(200);
         const door2 = timer(500);
         const door3 = timer(700);
@@ -219,35 +221,41 @@ export class MainBoardComponent implements OnInit, OnDestroy {
         const keys3 = timer(600);
         const keys4 = timer(800);
         keys1.subscribe(res => {
-          this.tiles[51].title = this.tiles[51].title7 = true;
+          this.middleTiles[51].title = this.middleTiles[51].title7 = true;
         })
         keys2.subscribe(res => {
-          this.tiles[52].title = this.tiles[52].title8 = true;
+          this.middleTiles[52].title = this.middleTiles[52].title8 = true;
         })
         keys3.subscribe(res => {
           
-          this.tiles[53].title = this.tiles[53].title9 = true;
+          this.middleTiles[53].title = this.middleTiles[53].title9 = true;
         })
         keys4.subscribe(res => {
-          this.tiles[54].title = this.tiles[54].title10 = true;
+          this.middleTiles[54].title = this.middleTiles[54].title10 = true;
         })
       })
       const step6Sub = step6.subscribe( res => {
         this.clearBoard();       
       })
       const populateBoard = step7.subscribe( res => {
-        this.populateBoard();
+        // this.populateBoard('top');
+        console.log('in here?');
+        
+        this.populateBoard('mid');
+        // this.populateBoard('bottom');
       });
     } else {
       // INTRO SKIPPED
       this.clearBoard();
-      this.populateBoard();
+      // this.populateBoard('top');
+      // this.populateBoard('mid');
+      this.populateBoard('bottom');
     }
     
   }
   functionRouter(string){
-    let monsterTile = this.tiles[this.engagedMonster['location']]
-    let playerTile = this.tiles[this.playerManager.activePlayer.location]
+    let monsterTile = this.middleTiles[this.engagedMonster['location']]
+    let playerTile = this.middleTiles[this.playerManager.activePlayer.location]
     switch (string){
       case 'removeMonster':
         monsterTile.monster = monsterTile[monsterTile.contains] = monsterTile.selected = monsterTile.highlight = false;
@@ -275,14 +283,14 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   }
 
   clearBoard(){
-    for(var t in this.tiles){
-      let tile = this.tiles[t]
+    for(var t in this.middleTiles){
+      let tile = this.middleTiles[t]
       this.clearTile(tile)
     }
   }
 
   buildVoid(){
-    const tiles = this.tiles;
+    const tiles = this.middleTiles;
     for(let t in tiles){
       if(!tiles[t].contains){
         let num = Math.random()
@@ -293,147 +301,194 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       }
     }
   }
-  populateBoard(){
-        const newMap = this.mapsService.generateMap()
-        const voids = newMap['voids']
-        const keys = newMap['keys']
-        const lanterns = newMap['lanterns']
-        const shields = newMap['shields']
-        const stairs = newMap['stairs']
-        const cloud = newMap['cloud']
-        const headgear = newMap['headgear']
-        const doors = newMap['doors']
-        const weapons = newMap['weapons']
-        const charms = newMap['charms']
-        const spawn_points = newMap['spawns']
+  populateBoard(board){
+    console.log('board is ', board)
+    let tileset;
+    switch(board){
+      case 'top':
+        tileset = this.topTiles;
+      break;
+      case 'mid':
+        tileset = this.middleTiles;
+      break;
+      case 'bottom':
+        tileset = this.bottomTiles;
+      break;
+    }
+      // const newMap = this.mapsService.generateMap('bottom')
+      const newMap = this.mapsService.generateMap(board)
 
-        const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
-        const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];
-        const headgearArr = ['bundu_mask', 'court_mask', 'lundi_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet'];
-        const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
-        const amuletsArr = ['sayan_amulet','lundi_amulet','evilai_amulet','nukta_amulet',]
-        const shieldsArr = ['seeing_shield','basic_shield'];
+      // console.log('escaped!')
 
-        const monstersArr = this.monstersArr;
-        const demonsArr = ['black_demon','golden_demon','kabuki_demon','dulu_demon']
-        const devils = ['zul','ishtar','mordu','goloth','vukular']
+      const voids = newMap['voids']
+      const keys = newMap['keys']
+      const lanterns = newMap['lanterns']
+      const shields = newMap['shields']
+      const stairs = newMap['stairs']
+      const pits = newMap['pits'];
+      const cloud = newMap['cloud']
+      const headgear = newMap['headgear']
+      const doors = newMap['doors']
+      const weapons = newMap['weapons']
+      const charms = newMap['charms']
+      const spawn_points = newMap['spawns']
+      
+      const weaponsArr = ['sword', 'axe', 'flail', 'spear', 'scepter'];
+      const wandsArr = ['maerlyns_rod', 'glindas_wand', 'vardas_wand'];
+      const headgearArr = ['bundu_mask', 'court_mask', 'lundi_mask', 'mardi_mask', 'solomon_mask', 'zul_mask', 'helmet'];
+      const charmsArr = ['beetle_charm', 'demonskull_charm','evilai_charm','hamsa_charm','lundi_charm','nukta_charm','scarab_charm'];
+      const amuletsArr = ['sayan_amulet','lundi_amulet','evilai_amulet','nukta_amulet',]
+      const shieldsArr = ['seeing_shield','basic_shield'];
+      
+      const monstersArr = this.monstersArr;
+      const demonsArr = ['black_demon','golden_demon','kabuki_demon','dulu_demon']
+      const devils = ['zul','ishtar','mordu','goloth','vukular']
+      
+      //populate voids
+      for(let a = 0; a < voids.length; a++){
+        let point = this.coordinatePoint([voids[a][0],voids[a][1]])
+        const tile = tileset[point];
+        tile.void = true;
+      }
+      
+      //populate keys
+      for(let b = 0; b < keys.length; b++){
+        let point = this.coordinatePoint([keys[b][0],keys[b][1]])
+        const tile = tileset[point];
+        tile.key = tile.item = true;
+        tile.contains = 'key';
+      }
+      //populate lanterns
+      for(let c = 0; c < lanterns.length; c++){
+        let point = this.coordinatePoint([lanterns[c][0],lanterns[c][1]])
+        const tile = tileset[point];
+        tile.lantern = tile.item =  true;
+        tile.contains = 'lantern'
+      }
+      
+      //populate shields
+      for(let s = 0; s < shields.length; s++){
+        let point = this.coordinatePoint([shields[s][0],shields[s][1]])
+        const tile = tileset[point];
+        const shield = shieldsArr[Math.floor(Math.random() * shieldsArr.length)]
+        tile[shield] = tile.item =  true;
+        tile.contains = shield;
+      }
+      // tileset[this.coordinatePoint(shield)].shield = true;
+      tileset[this.coordinatePoint(stairs)].stairs = true;
+      tileset[this.coordinatePoint(stairs)].contains = 'stairs';
+      
+      tileset[this.coordinatePoint(pits[0])].pit = true;
+      
+      // tileset[this.coordinatePoint(headgear)].h = true;
+      tileset[this.coordinatePoint(cloud)].cloud = true;
+      tileset[this.coordinatePoint(cloud)].contains = 'cloud'
+      // tileset[].shield = true
+      
+      //populate spawns
+      for(let s = 0; s < spawn_points.length; s++){
+        let point = this.coordinatePoint([spawn_points[s][0],spawn_points[s][1]])
+        const tile = tileset[point];
+        tile.spawn_point = true;
+        // tileset[point].contains = 'spawn_point';
+      }
+      //populate doors
+      for(let d = 0; d < doors.length; d++){
+        let point = this.coordinatePoint([doors[d][0],doors[d][1]])
+        const tile = tileset[point];
+        tile.door = true;
+      }
+      //populate weapons
+      for(let e = 0; e < weapons.length; e++){
+        let point = this.coordinatePoint([weapons[e][0],weapons[e][1]])
+        const tile = tileset[point];
+        const weapon = weaponsArr[Math.floor(Math.random() * weaponsArr.length)]
+        tile[weapon] = tile.item = true;
+        tile.contains = weapon;
+      }
+      //populate headgear
+      for(let f = 0; f < headgear.length; f++){
+        let point = this.coordinatePoint([headgear[f][0],headgear[f][1]])
+        const tile = tileset[point];
+        let headgearInstance = headgearArr[Math.floor(Math.random() * headgearArr.length)]
+        tile[headgearInstance] = tile.item = true;
+        tile.contains = headgearInstance;
+      }
+      //populate charms
+      for(let g = 0; g < charms.length; g++){
+        let point = this.coordinatePoint([charms[g][0],charms[g][1]])
+        const tile = tileset[point];
+        let charm = charmsArr[Math.floor(Math.random() * charmsArr.length)]
+        tile[charm] = tile.item = true;
+        tile.contains = charm;
+      }
+      console.log('populating monsters')
+      //populate monsters
+      let numOfMonsters = Math.floor(Math.random() * 14 + 5)
 
-        //populate voids
-        for(let a = 0; a < voids.length; a++){
-          let point = this.coordinatePoint([voids[a][0],voids[a][1]])
-          const tile = this.tiles[point];
-          tile.void = true;
-          // this.tiles[point].contains = 'void';
-        }
-
-        //populate keys
-        for(let b = 0; b < keys.length; b++){
-          let point = this.coordinatePoint([keys[b][0],keys[b][1]])
-          const tile = this.tiles[point];
-          tile.key = tile.item = true;
-          tile.contains = 'key';
-        }
-        //populate lanterns
-        for(let c = 0; c < lanterns.length; c++){
-          let point = this.coordinatePoint([lanterns[c][0],lanterns[c][1]])
-          const tile = this.tiles[point];
-          tile.lantern = tile.item =  true;
-          tile.contains = 'lantern'
-        }
-
-        //populate shields
-        for(let s = 0; s < shields.length; s++){
-          let point = this.coordinatePoint([shields[s][0],shields[s][1]])
-          const tile = this.tiles[point];
-          const shield = shieldsArr[Math.floor(Math.random() * shieldsArr.length)]
-          tile[shield] = tile.item =  true;
-          tile.contains = shield;
-        }
-        // this.tiles[this.coordinatePoint(shield)].shield = true;
-        this.tiles[this.coordinatePoint(stairs)].stairs = true;
-        this.tiles[this.coordinatePoint(stairs)].contains = 'stairs';
-        // this.tiles[this.coordinatePoint(headgear)].h = true;
-        this.tiles[this.coordinatePoint(cloud)].cloud = true;
-        this.tiles[this.coordinatePoint(cloud)].contains = 'cloud'
-        // this.tiles[].shield = true
-
-        //populate spawns
-        for(let s = 0; s < spawn_points.length; s++){
-          let point = this.coordinatePoint([spawn_points[s][0],spawn_points[s][1]])
-          const tile = this.tiles[point];
-          tile.spawn_point = true;
-          // this.tiles[point].contains = 'spawn_point';
-        }
-        //populate doors
-        for(let d = 0; d < doors.length; d++){
-          let point = this.coordinatePoint([doors[d][0],doors[d][1]])
-          const tile = this.tiles[point];
-          tile.door = true;
-          tile.contains = 'door';
-        }
-        //populate weapons
-        for(let e = 0; e < weapons.length; e++){
-          let point = this.coordinatePoint([weapons[e][0],weapons[e][1]])
-          const tile = this.tiles[point];
-          const weapon = weaponsArr[Math.floor(Math.random() * weaponsArr.length)]
-          tile[weapon] = tile.item = true;
-          tile.contains = weapon;
-        }
-        //populate headgear
-        for(let f = 0; f < headgear.length; f++){
-          let point = this.coordinatePoint([headgear[f][0],headgear[f][1]])
-          const tile = this.tiles[point];
-          let headgearInstance = headgearArr[Math.floor(Math.random() * headgearArr.length)]
-          tile[headgearInstance] = tile.item = true;
-          tile.contains = headgearInstance;
-        }
-        //populate charms
-        for(let g = 0; g < charms.length; g++){
-          let point = this.coordinatePoint([charms[g][0],charms[g][1]])
-          const tile = this.tiles[point];
-          let charm = charmsArr[Math.floor(Math.random() * charmsArr.length)]
-          tile[charm] = tile.item = true;
-          tile.contains = charm;
-        }
-        //populate monsters
-        let numOfMonsters = Math.floor(Math.random() * 14 + 5)
-        while(numOfMonsters > 0){
-          // const monster = monstersArr[Math.floor(Math.random()*monstersArr.length)]
-          let okToContinue = true;
-          let num = Math.floor(Math.random() * this.tiles.length)
-          let arr = this.whatsAdjacent(this.pointToCoordinates(num))
-          for(let i = 0; i < arr.length; i++){
-            if(monstersArr.indexOf(arr[i].contains) > -1 || arr[i].spawn_point){
-              okToContinue = false;
-              break
-            }
+      let count = 0;
+      while(numOfMonsters > 0){
+        // const monster = monstersArr[Math.floor(Math.random()*monstersArr.length)]
+        let okToContinue = true;
+        // console.log('okContoniue ', okToContinue, tileset.length)
+        let num = Math.floor(Math.random() * tileset.length)
+        let arr = this.whatsAdjacent(this.pointToCoordinates(num))
+        for(let i = 0; i < arr.length; i++){
+          if(monstersArr.indexOf(arr[i].contains) > -1 || arr[i].spawn_point){
+            okToContinue = false;
+            break
           }
-          if(okToContinue){
-            let tile = this.tiles[num]
-            if(!tile.void && !tile.contains || tile.contains === '' && !tile.spawn_point){
-              const monster = monstersArr[Math.floor(Math.random()*monstersArr.length)]
-              tile.contains = monster;
-              tile.monster = true;
-              //^assigns general monster property
-              tile[monster] = true;
-              //^assigns what type of monster
-              numOfMonsters--
-            } 
-          }
         }
-
+        if(okToContinue){
+          let tile = tileset[num]
+          if(!tile.void && !tile.contains || tile.contains === '' && !tile.spawn_point){
+            const monster = monstersArr[Math.floor(Math.random()*monstersArr.length)]
+            tile.contains = monster;
+            tile.monster = true;
+            //^assigns general monster property
+            tile[monster] = true;
+            //^assigns what type of monster
+            numOfMonsters--
+          } 
+        }
+        count++
+        // console.log('count: ', count)
+        if(count > 300){
+          return
+        }
+        //WHILE LOOPS IS FUCKING WITH BOT TILES
+      }
+      console.log('spawning player')
+      
         //Spawn Player
-        for(var p in this.tiles){
-          if(this.tiles[p].occupied){
-            this.tiles[p].occupied = false;
+        for(var p in tileset){
+          if(tileset[p].occupied){
+            tileset[p].occupied = false;
           }
         }
         this.playerManager.activePlayer = null;
-        const spawn_point = spawn_points[Math.floor(Math.random()*spawn_points.length)]
+        // const spawn_point = spawn_points[Math.floor(Math.random()*spawn_points.length)]
+        const spawn_point = spawn_points[1]
         this.playerManager.newPlayer(this.coordinatePoint(spawn_point))
+
+        console.log('at the end of populate board, tileset is now ', this.bottomTiles)
+  }
+  renderBoard(){
+    switch(this.pyramidLevel){
+      case 'mid':
+        this.middleTiles.forEach((tile)=>{
+          console.log(tile.contains)
+        })
+      break;
+      case 'bottom':
+        this.bottomTiles.forEach((tile)=>{
+          console.log(tile.contains)
+        })
+      break;
+    }
   }
   assignEdges(){
-    const tiles = this.tiles;
+    const tiles = this.middleTiles;
     const totalTiles = this.totalTiles;
     const rowLength = this.rowLength;
     for(var t in tiles){
@@ -457,7 +512,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   }
   handlePlayerServiceSubscription(res){
     const player = this.playerManager.activePlayer;
-    const tile = this.tiles[res.location]
+    const tile = this.middleTiles[res.location]
     if(res.endCombat){
       if(res.playerDied){
         this.delayed500.next('removePlayer')
@@ -499,16 +554,30 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       }
       return
     }
+    if(res.door){
+      console.log('received door message');
+      console.log('destination is ', res.door);
+      if(this.pyramidLevel === 'mid'){
+        document.body.style.backgroundColor = 'darkgrey'
+        this.pyramidLevel = 'bottom'
+        this.renderBoard()
+      } else {
+        document.body.style.backgroundColor = 'white'
+        this.pyramidLevel = 'mid'
+        this.renderBoard()
+      }
+      return
+    }
     if(!res.startTurn){
-      for(var t in this.tiles){
-        // this.tiles[t].visible = false
+      for(var t in this.middleTiles){
+        // this.middleTiles[t].visible = false
       }
     }
     tile.contains = player;
     tile.visible = true;
     tile.occupied = true;
     if(res.old_location || res.old_location === 0){
-      const old_tile = this.tiles[res.old_location]
+      const old_tile = this.middleTiles[res.old_location]
       old_tile.contains = null;
       old_tile.occupied = false;
     }
@@ -521,8 +590,8 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     this.shroudMap();
     if(res.visibility){
       for(let v = 0; v < res.visibility.length; v++){
-        if(this.tiles[res.visibility[v]] && !this.tiles[res.visibility[v]].void) this.tiles[res.visibility[v]].visible = true;
-        // if(this.tiles[res.visibility])
+        if(this.middleTiles[res.visibility[v]] && !this.middleTiles[res.visibility[v]].void) this.middleTiles[res.visibility[v]].visible = true;
+        // if(this.middleTiles[res.visibility])
       }
       player.coordinates = this.pointToCoordinates(player.location)
 
@@ -566,8 +635,8 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   startTurn(){
     this.turnStarted = true;
     this.playerManager.activePlayer.coordinates = this.pointToCoordinates(this.playerManager.activePlayer.location)
-    for(var t in this.tiles){
-      var tile = this.tiles[t]
+    for(var t in this.middleTiles){
+      var tile = this.middleTiles[t]
       tile.visible = true;
     }
   }
@@ -583,8 +652,8 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     }
   }
   resetTiles(){
-    for(let t in this.tiles){
-      let tile = this.tiles[t]
+    for(let t in this.middleTiles){
+      let tile = this.middleTiles[t]
       tile.highlight = tile.monster = tile.green = tile.red = tile.crown = tile.door =
       tile.key = tile.disguise = tile.lantern = tile.stairs = tile.void = tile.title1 =
       tile.title2 = tile.title3 = tile.title4 = tile.title5 = tile.title6 = tile.title7 =
@@ -605,8 +674,8 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     }
   }
   shroudMap(){
-    for(let i = 0; i < this.tiles.length; i++){
-      let tile = this.tiles[i]
+    for(let i = 0; i < this.middleTiles.length; i++){
+      let tile = this.middleTiles[i]
       tile.visible = false;
       tile.highlight = false;
       tile.selected = false;
@@ -649,14 +718,14 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       let upperRightPoint = this.coordinatePoint([coords[0]+i, coords[1]+i])
       let lowerRightPoint = this.coordinatePoint([coords[0]+i, coords[1]-i])
       let lowerLeftPoint = this.coordinatePoint([coords[0]-i, coords[1]+i])
-      if(this.tiles[leftPoint]) this.tiles[leftPoint].green = true;
-      if(this.tiles[rightPoint]) this.tiles[rightPoint].green = true;
-      if(this.tiles[upperPoint]) this.tiles[upperPoint].green = true;
-      if(this.tiles[lowerPoint]) this.tiles[lowerPoint].green = true;
-      if(this.tiles[upperLeftPoint]) this.tiles[upperLeftPoint].green = true;
-      if(this.tiles[upperRightPoint]) this.tiles[upperRightPoint].green = true;
-      if(this.tiles[lowerLeftPoint]) this.tiles[lowerLeftPoint].green = true;
-      if(this.tiles[lowerRightPoint]) this.tiles[lowerRightPoint].green = true;
+      if(this.middleTiles[leftPoint]) this.middleTiles[leftPoint].green = true;
+      if(this.middleTiles[rightPoint]) this.middleTiles[rightPoint].green = true;
+      if(this.middleTiles[upperPoint]) this.middleTiles[upperPoint].green = true;
+      if(this.middleTiles[lowerPoint]) this.middleTiles[lowerPoint].green = true;
+      if(this.middleTiles[upperLeftPoint]) this.middleTiles[upperLeftPoint].green = true;
+      if(this.middleTiles[upperRightPoint]) this.middleTiles[upperRightPoint].green = true;
+      if(this.middleTiles[lowerLeftPoint]) this.middleTiles[lowerLeftPoint].green = true;
+      if(this.middleTiles[lowerRightPoint]) this.middleTiles[lowerRightPoint].green = true;
       
     }
   }
@@ -670,12 +739,12 @@ export class MainBoardComponent implements OnInit, OnDestroy {
 
     let adjacentItems = [];
     let checkCoords = function(coords, diagonal = ''){
-      let tile = this.tiles[this.coordinatePoint(coords)]
+      let tile = this.middleTiles[this.coordinatePoint(coords)]
       if(!tile) return
-      if(diagonal === 'ul' && this.tiles[tile.id+1] && this.tiles[tile.id+1].void && this.tiles[tile.id+15].void) return
-      if (diagonal === 'ur' && this.tiles[tile.id-1] && this.tiles[tile.id-1].void && this.tiles[tile.id+15] && this.tiles[tile.id+15].void) return
-      if (diagonal === 'll' && this.tiles[tile.id+1] && this.tiles[tile.id+1].void && this.tiles[tile.id-15] && this.tiles[tile.id-15].void) return
-      if (diagonal === 'lr' && this.tiles[tile.id-1] && this.tiles[tile.id-1].void && this.tiles[tile.id-15].void) return
+      if(diagonal === 'ul' && this.middleTiles[tile.id+1] && this.middleTiles[tile.id+1].void && this.middleTiles[tile.id+15].void) return
+      if (diagonal === 'ur' && this.middleTiles[tile.id-1] && this.middleTiles[tile.id-1].void && this.middleTiles[tile.id+15] && this.middleTiles[tile.id+15].void) return
+      if (diagonal === 'll' && this.middleTiles[tile.id+1] && this.middleTiles[tile.id+1].void && this.middleTiles[tile.id-15] && this.middleTiles[tile.id-15].void) return
+      if (diagonal === 'lr' && this.middleTiles[tile.id-1] && this.middleTiles[tile.id-1].void && this.middleTiles[tile.id-15].void) return
 
       if(tile.contains || tile.spawn_point){
         adjacentItems.push(tile)

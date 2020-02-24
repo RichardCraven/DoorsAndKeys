@@ -111,6 +111,10 @@ tile.crown:hover{
 .stairs.highlight{
     background-color: aliceblue;
 }
+.pit{
+    background-image: url('assets/icons/portals/pit.png');
+    background-color: white;
+}
 .occupied{
     background-image: url('assets/icons/avatar.png');
     background-position: center;
@@ -124,10 +128,10 @@ tile.crown:hover{
     background-color: aquamarine;
 }
 .darkness{
-    background-color: black;
+    /* background-color: black; */
 }
 tile.darkness:hover{
-    background-color: black;
+    /* background-color: black; */
 }
 .void{
     background-color: black;

@@ -499,7 +499,6 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
           } else {
             width++; 
             elem.style.width = width + '%'; 
-            // console.log('width: ', width * 10)
             that.collisionManagerService.midGateX = width*10
           }
         }, 25);

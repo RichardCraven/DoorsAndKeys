@@ -148,6 +148,7 @@ export class InventoryPanelComponent implements OnInit {
   }
   updateInventory(){
     this.counter = 0;
+    console.log(this.playerManager, this.playerManager.activePlayer)
     const inventory = this.playerManager.activePlayer.inventory;
 
     this.tiles = [];
