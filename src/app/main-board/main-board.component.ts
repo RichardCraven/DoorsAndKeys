@@ -267,7 +267,7 @@ export class MainBoardComponent implements OnInit, OnDestroy {
       // this.populateBoard('top');
       this.populateBoard('mid');
       this.populateBoard('bottom');
-      this.renderBoard()
+      this.renderBoard();
       this.spawnPlayer();
       console.log('PY level: ', this.pyramidLevel)      
     }

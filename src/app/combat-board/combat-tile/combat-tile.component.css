@@ -1,0 +1,29 @@
+@import '../../../styles/items.css';
+@import '../../../styles/monsters.css';
+@import '../../../styles/numbers.css';
+@import '../../../styles/figures&portraits.css';
+.tile{
+    /* border: 1px solid grey; */
+    height: 100px;
+    width: 100px;
+    background-size: 100% 100%;
+    /* position: relative; */
+}
+.engaging{
+    transform: translateY(-20px);
+}
+.shadow-tile{
+    /* position: absolute; */
+    z-index: 200;
+    height: 100px;
+    width: 100px;
+    border: none;
+}
+.selectedLines{
+    /* border: 3px solid darkcyan; */
+    /* background-color: darkcyan !important; */
+    z-index: 201;
+}
+/* .ogre{
+    background-color: red;
+} */

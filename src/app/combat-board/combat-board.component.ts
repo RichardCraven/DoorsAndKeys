@@ -3,6 +3,7 @@ import {PlayerManagerService} from '../services/player-manager.service'
 import {ItemsService} from '../services/items.service'
 import {Projectile} from '../canvas-components/projectile.component'
 import {Avatar} from '../canvas-components/avatar.component'
+import {CombatTile} from './combat-tile/combat-tile.component'
 import {CollisionManagerService} from '../services/collision-manager.service'
 import {ProjectileManagerService} from '../services/projectile-manager.service'
 import { Subscription, Observable, Subject, interval, timer, of, from } from 'rxjs';
@@ -18,6 +19,7 @@ import {
   share,
   windowTime
 } from 'rxjs/operators';
+import { MonstersService } from '../services/monsters.service';
 
 @Component({
   selector: 'combat-board',
@@ -110,6 +112,12 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   canvasTop;
   spellCasting = false;
 
+  /// new props
+  playerTeam = [];
+  monsterTeam = [];
+  activeUnit: any;
+  turnTracker = 0;
+  turnOrder = [];
   @Input()monster
 
   // @ViewChild('combatCanvas') combatCanvas: ElementRef;
@@ -120,16 +128,20 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     // console.log('yo ', event.key);
     switch(event.key){
       case 'ArrowLeft':
-        this.movePlayer('left')
+        console.log('l')
+        // this.movePlayer('left')
       break
       case 'ArrowRight':
-        this.movePlayer('right')
+        console.log('r')
+        // this.movePlayer('right')
       break
       case 'ArrowUp':
-        this.movePlayer('up')
+        console.log('u')
+        // this.movePlayer('up')
       break
       case 'ArrowDown':
-        this.movePlayer('down')
+        console.log('d')
+        // this.movePlayer('down')
       break
       // case 'z':
       // this.addCastSpell();
@@ -156,7 +168,8 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     public playerManager: PlayerManagerService, 
     public itemsService: ItemsService, 
     public collisionManagerService : CollisionManagerService,
-    public projectileManagerService : ProjectileManagerService
+    public projectileManagerService : ProjectileManagerService,
+    public monstersService: MonstersService
     ) { 
     
   }
@@ -166,108 +179,95 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     const inventory = this.playerManager.activePlayer.inventory;
     
     //CREATE PROJECTILE CANVAS
-    let projectileCanvas = <HTMLCanvasElement>document.createElement('canvas');
-    projectileCanvas.id = 'projectile-canvas';
-    projectileCanvas.width  = 1000;
-    projectileCanvas.height = 1000;
-    projectileCanvas.style.position = "absolute";
-    projectileCanvas.style.zIndex = '10'
-    board.appendChild(projectileCanvas)
-    this.projectileManagerService.receiveCanvas(projectileCanvas)
+    // let projectileCanvas = <HTMLCanvasElement>document.createElement('canvas');
+    // projectileCanvas.id = 'projectile-canvas';
+    // projectileCanvas.width  = 1000;
+    // projectileCanvas.height = 1000;
+    // projectileCanvas.style.position = "absolute";
+    // projectileCanvas.style.zIndex = '10'
+    // board.appendChild(projectileCanvas)
+    // this.projectileManagerService.receiveCanvas(projectileCanvas)
 
     //CREATE PLAYER CANVAS
-    let playerCanvas = <HTMLCanvasElement>document.createElement('canvas');
-    playerCanvas.id = 'player-canvas';
-    playerCanvas.width  = 1000;
-    playerCanvas.height = 1000;
-    playerCanvas.style.position = "absolute";
-    playerCanvas.style.zIndex = '11'
-    // playerCanvas.style.border = '1px solid yellow'
-    board.appendChild(playerCanvas)
-
+    // let playerCanvas = <HTMLCanvasElement>document.createElement('canvas');
+    // playerCanvas.id = 'player-canvas';
+    // playerCanvas.width  = 1000;
+    // playerCanvas.height = 1000;
+    // playerCanvas.style.position = "absolute";
+    // playerCanvas.style.zIndex = '11'
+    // board.appendChild(playerCanvas)
+    this.monsterIcon[this.monster.type] = true
     this.monsterHealthInitial = this.monster.health;
     this.monsterHealth = this.monster.health;
 
-    this.monsterBar = document.getElementById("monster-health-bar");
-    this.monsterBar.style.height = 0+'%'
+    // this.monsterBar = document.getElementById("monster-health-bar");
+    // this.monsterBar.style.height = 0+'%'
 
     this.monsterInfoLine1 = this.monster.combatMessages.greeting
+    
     for(let t = 0; t < this.topTilesCount; t++){
-      let tile = {
-        id : t,
-        contains: null,
-        visible : false
-      }
+      let tile = new CombatTile()
+      tile.showType = 'darkness'
+      tile.id = t;
+      tile['farf'] = false;
       this.topTiles.push(tile)
     }
     for(let b = 0; b < this.botTilesCount; b++){
-      let tile = {
-        id : b,
-        contains: null,
-        visible : false
-      }
+      let tile = new CombatTile()
+      tile.showType = 'darkness'
+      tile.id = b;
       this.botTiles.push(tile)
     }
+    console.log('gridtile count: ', this.gridTilesCount)
     for(let g = 0; g < this.gridTilesCount; g++){
-      let tile = {
-        id : g,
-        contains: null,
-        visible : false
-      }
+      let tile = new CombatTile()
+      tile.showType = 'darkness'
+      tile.id = g;
+      tile.engaging = false;
+      tile.farf = false;
       this.gridTiles.push(tile)
     }
-    for(let y = 50; y <= 79; y++){
-      const tile = this.gridTiles[y]
-      tile.placementZone = true;
-      tile.visible = false;
+
+    let monk = {
+      name: 'Arnolf',
+      class:'monk',
+      health: 40,
+      attack: 5,
+      armor: 0,
+      agility: 4
     }
-    for(let q = 0; q <= 29; q++){
-      const tile = this.gridTiles[q]
-      tile.monsterZone = true;
+    let rogue = {
+      name: 'Heinrich',
+      class:'rogue',
+      health: 45,
+      attack: 8,
+      armor: 0,
+      agility: 6
     }
-
-    for(let q = 0; q < 2; q++){
-      let tile = {}
-      this.roundNumTiles.push(tile)
+    let brawler = {
+      name: 'Pietra',
+      class:'brawler',
+      health: 60,
+      attack: 10,
+      armor: 2,
+      agility: 5
     }
-    
-    this.topTiles[4][this.monster.type] = true;
-    this.topTiles[4].visible = true;
-    this.monsterEndpoint = 4;
-    // this.botTiles[5].visible = true;
-    // this.botTiles[5].occupied = true;
-    this.playerTilePositionX = 5;
-    this.playerTilePositionY = 9;
+    this.playerTeam.push(monk, rogue, brawler)
+    // this.placePlayer()
+    this.placeTeam();
+    this.placeMonsters();
 
-    this.monsterIcon[this.monster.type] = true
-    
-    this.weapon = this.playerManager.activePlayer.inventory.weapons[0];
-    this.wand = this.playerManager.activePlayer.inventory.wands[0]
-
-    this.weaponCount = this.weapon.attack;
-    this.weaponDamage = this.weapon.damage;
-    this.monsterWeapon = 'down';
-
-    const max = this.topTiles.length
-    this.monsterMovementZoneStartpoint = this.monsterEndpoint - this.monster.agility >= 0 ? this.monsterEndpoint - this.monster.agility : 0
-    this.monsterMovementZoneEndpoint = this.monsterEndpoint + this.monster.agility <= max ? this.monsterEndpoint + this.monster.agility : max
-
-    this.placePlayer()
-
-
-    //subscribe
-
-    this.playerManagerSubscription = this.playerManager.getGlobalMessages().subscribe(res => {
-      if(res.wandAvailable){
-        this.wandAvailable = true;
-      }
-      if(res.weaponAvailable){
-        this.weaponCount++
-      }
-      if(res === 'monster-struck'){
-        this.monsterHit()
-      }
-    })
+    // this.playerManagerSubscription = this.playerManager.getGlobalMessages().subscribe(res => {
+    //   if(res.wandAvailable){
+    //     this.wandAvailable = true;
+    //   }
+    //   if(res.weaponAvailable){
+    //     this.weaponCount++
+    //   }
+    //   if(res === 'monster-struck'){
+    //     this.monsterHit()
+    //   }
+    // })
 
     this.sub1 = this.getDelayed2000().subscribe( res => {
       this.functionRouter(res);
@@ -290,31 +290,157 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.delayed1000.next('openWindow')
 
 
-    this.collisionManagerSubscription = this.collisionManagerService.detectCollision().subscribe(res => {
-      !this.playerLocked && this.playerHit();
-      this.playerTilePositionY = 9
-      this.avatar.destinationY = 900
+    // this.collisionManagerSubscription = this.collisionManagerService.detectCollision().subscribe(res => {
+    //   !this.playerLocked && this.playerHit();
+    //   this.playerTilePositionY = 9
+    //   this.avatar.destinationY = 900
+    // })
+  }
+  placeTeam(){
+    console.log('placing Team', this.monster)
+    let slots = [73, 75, 77, 64, 66]
+    this.playerTeam.forEach((char, idx)=>{
+      char['location'] = slots[idx];
+      this.gridTiles[slots[idx]].showType = char.class
     })
   }
+  placeMonsters(){
+    let boss = Object.assign({}, this.monster)
+    boss['location'] = 5;
+    boss['boss'] = true;
+    this.monsterTeam.push(boss);
+    let slots = [];
+    this.topTiles[5].showType = this.monster.type
+    switch(this.monster.guards.length){
+      case 5:
+        slots = [11, 13, 15, 17, 19]
+      break;
+      case 4:
+        slots = [12, 14, 16, 18]
+      break;
+      case 3:
+        slots = [13, 15, 17]
+      break;
+      case 2:
+        slots = [14, 16]
+      break;
+      case 1:
+        slots = [15]
+      break;
+    }
+    this.monster.guards.forEach((guard, idx) => {
+      console.log('monster idx is ', idx, slots[idx])
+      let monster = Object.assign({}, this.monstersService.library[guard]) 
+      this.gridTiles[slots[idx]].showType = guard;
+      monster['location'] = slots[idx];
+      console.log(monster.location, ' = ', slots[idx])
+      this.monsterTeam.push(monster);
+    });
+    console.log('now monster team is ', this.monsterTeam);
+  }
+  beginCombat(){
+    console.log('beginning combat')
+    this.monsterTeam.forEach((m)=>{
+      this.turnOrder.push(m)
+    })
+    this.playerTeam.forEach((p)=>{
+      this.turnOrder.push(p)
+    })
+    this.turnOrder.sort(function(a, b){
+      // return b.agility - a.agility
+      return a.agility - b.agility
+    })
+    console.log('turn order array is ', this.turnOrder)
+
+    this.delayed500.next('engage')
+  }
+  engage(){
+    let tile;
+    this.activeUnit = this.turnOrder[this.turnTracker];
+    // ^ for reference only
+    
+    console.log('engaging')
+    
+    if(this.activeUnit.class){
+      tile = this.gridTiles[this.activeUnit.location]
+      tile.player_engaging = true;
+      tile.farf = true
+    } else {
+      if(this.activeUnit.boss){
+        tile = this.topTiles[this.activeUnit.location]
+        tile.monster_engaging = true;
+        tile.farf = true
+      } else {
+        tile = this.gridTiles[this.activeUnit.location]
+        tile.monster_engaging = true;
+        tile.farf = true
+      }
+    }
+    this.delayed500.next('disengage')
+  }
+  disengage(){
+    if(this.activeUnit.class){
+      this.gridTiles[this.activeUnit.location].player_engaging = false;
+      this.gridTiles[this.activeUnit.location].farf = false;
+    } else {
+      if(this.activeUnit.boss){
+        this.topTiles[this.activeUnit.location].monster_engaging = false;
+        this.topTiles[this.activeUnit.location].farf = false;
+      } else {
+        this.gridTiles[this.activeUnit.location].monster_engaging = false;
+        this.gridTiles[this.activeUnit.location].farf = false;
+      }
+    }
+    console.log('disengaging')
+    this.turnTracker++
+    if(this.turnTracker > this.turnOrder.length - 1){
+      this.turnTracker = 0;
+    }
+    this.delayed500.next('engage')
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   degreesToRadians(degrees){
     return degrees * Math.PI /180
   }
   placePlayer(){
-    const playerCanvas = <HTMLCanvasElement>document.getElementById('player-canvas');
-    let imgTag = new Image();
-    imgTag.src = '../../assets/icons/avatar_white.png'
+    // const playerCanvas = <HTMLCanvasElement>document.getElementById('player-canvas');
+    // let imgTag = new Image();
+    // imgTag.src = '../../assets/icons/avatar_white.png'
 
-    this.playerX_destination = 500;
-    this.playerX = 500;
-    this.playerY_destination = 900;
-    this.playerY = 900;
+    // this.playerX_destination = 500;
+    // this.playerX = 500;
+    // this.playerY_destination = 900;
+    // this.playerY = 900;
 
-    this.avatar = new Avatar(playerCanvas, this.playerX, this.playerY, this.weapon.type , this.collisionManagerService, this.projectileManagerService, this.playerManager)
+    // this.avatar = new Avatar(playerCanvas, this.playerX, this.playerY, this.weapon.type , this.collisionManagerService, this.projectileManagerService, this.playerManager)
 
-    this.avatar.destinationX = 500;
-    this.avatar.destinationY = 900;
+    // this.avatar.destinationX = 500;
+    // this.avatar.destinationY = 900;
 
-    this.avatar.init();
+    // this.avatar.init();
   }
   canvasClicked(event){
     loadCanvas.bind(this)(this.tick)
@@ -371,8 +497,15 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   }
   functionRouter(string){
     switch (string){
+      case 'engage':
+        this.engage();
+      break
+      case 'disengage':
+        this.disengage();
+      break
       case 'openWindow':
-          this.openWindow()
+          // this.openWindow()
+          this.openGate()
         break
 
         case 'closeWindow':
@@ -492,10 +625,11 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
         var id = setInterval(function(){
           if (width >= 100) {
             clearInterval(id);
-            that.revealMonster();
+            that.beginCombat();
+            // that.revealMonster();
             // that.playerLocked = true;
-            that.delayed500.next('closeWindow')
-            that.delayed500.next('monsterAttack')
+            // that.delayed500.next('closeWindow')
+            // that.delayed500.next('monsterAttack')
           } else {
             width++; 
             elem.style.width = width + '%'; 
@@ -503,11 +637,11 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
           }
         }, 25);
     } else {
-      setTimeout(function(){
-        that.revealMonster()
-        that.delayed500.next('closeWindow')
-        that.delayed500.next('monsterAttack')
-      }, 2000)
+      // setTimeout(function(){
+      //   that.revealMonster()
+      //   that.delayed500.next('closeWindow')
+      //   that.delayed500.next('monsterAttack')
+      // }, 2000)
     }
   }
   closeGate(){
@@ -550,28 +684,29 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     this.avatar.reset();
     this.projectileManagerService.endSequence();
     let options = [];
-    if(this.monsterEndpoint < 5){
-      for(let i = this.monsterEndpoint; i<=(this.monsterEndpoint+this.monster.agility); i++){
-        options.push(i)
-      }
-    } else {
-      for(let i = this.monsterEndpoint; i>=(this.monsterEndpoint-this.monster.agility); i--){
-        options.push(i)
-      }
-    }
+    // if(this.monsterEndpoint < 5){
+    //   for(let i = this.monsterEndpoint; i<=(this.monsterEndpoint+this.monster.agility); i++){
+    //     options.push(i)
+    //   }
+    // } else {
+    //   for(let i = this.monsterEndpoint; i>=(this.monsterEndpoint-this.monster.agility); i--){
+    //     options.push(i)
+    //   }
+    // }
     
-    let num = Math.floor(Math.random() * options.length)
-    let index = options[num]
+    // let num = Math.floor(Math.random() * options.length)
+    // let index = options[num]
 
-    if (index === this.monsterEndpoint){
-      num = Math.floor(Math.random() * options.length)
-      index = options[num]
-    }
-    if (index > 9) index = 9;
-    if (index < 0 ) index = 0
+    // if (index === this.monsterEndpoint){
+    //   num = Math.floor(Math.random() * options.length)
+    //   index = options[num]
+    // }
+    // if (index > 9) index = 9;
+    // if (index < 0 ) index = 0
 
-    this.collisionManagerService.updateMonsterPosition(index*100, 50)
+    // this.collisionManagerService.updateMonsterPosition(index*100, 50)
 
+    let index = 6
     let tile = this.topTiles[index];
     tile[this.monster.type] = tile.visible = true;
     this.monsterEndpoint = index;

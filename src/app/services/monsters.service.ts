@@ -17,7 +17,8 @@ export class MonstersService {
         attack: [
           '*Fires death rays from its eyes*'
         ]
-      }
+      },
+      guards: ['black_wraith', 'black_wraith', 'black_wraith']
     },
     black_banshee : {
       agility: 2,
@@ -31,7 +32,8 @@ export class MonstersService {
         attack: [
           '*Flies at you shrieking*'
         ]
-      }
+      },
+      guards: ['horror', 'horror']
     },
     black_djinn : {
       agility: 3,
@@ -45,7 +47,8 @@ export class MonstersService {
         attack: [
           '*Sends a blast of darkness at you*'
         ]
-      }
+      },
+      guards: ['imp', 'imp_overlord', 'imp']
     },
     black_gorgon : {
       agility: 2,
@@ -59,7 +62,8 @@ export class MonstersService {
         attack: [
           '*Gazes at you*'
         ]
-      }
+      },
+      guards: ['horror', 'imp_overlord']
     },
     black_kronos : {
       agility: 3,
@@ -75,7 +79,8 @@ export class MonstersService {
           '*Swings his giant arms*',
           '*Smashes down with his fists*',
         ]
-      }
+      },
+      guards: ['black_minotaur', 'black_gorgon']
     },
     black_minotaur : {
       agility: 2,
@@ -91,7 +96,8 @@ export class MonstersService {
           '*Lunges and chops*',
           '*Chops and lunges'
         ]
-      }
+      },
+      guards: ['black_minotaur']
     },
     black_vampire : {
       agility: 3,
@@ -106,7 +112,8 @@ export class MonstersService {
           '*Claws at you*',
           '*Lunges and bites*'
         ]
-      }
+      },
+      guards: ['skeleton', 'skeleton']
     },
     black_wraith : {
       agility: 2,
@@ -121,7 +128,8 @@ export class MonstersService {
           '*Attempts possess you*',
           '*Contracts the space between you*'
         ]
-      }
+      },
+      guards: ['horror', 'horror']
     },
     dragon : {
       agility: 1,
@@ -139,7 +147,8 @@ export class MonstersService {
           '*Spits fire*',
           "Die, insect!"
         ]
-      }
+      },
+      guards: ['giant_scorpion', 'horror', 'black_minotaur', 'imp']
       
     },
     giant_scorpion : {
@@ -155,7 +164,8 @@ export class MonstersService {
           '*Tail sting*',
           '*Claw attack*'
         ]
-      }
+      },
+      guards: ['goblin', 'goblin']
     },
     goblin : {
       agility: 3,
@@ -171,7 +181,8 @@ export class MonstersService {
           '*Claw attack*',
           '"gyah!"'
         ]
-      }
+      },
+      guards: ['goblin', 'goblin']
     },
     horror : {
       agility: 1,
@@ -185,7 +196,8 @@ export class MonstersService {
         attack: [
           '*Tears at your soul*'
         ]
-      }
+      },
+      guards: ['horror', 'horror']
     },
     imp : {
       agility: 3,
@@ -199,7 +211,8 @@ export class MonstersService {
         attack: [
           '*Poke*'
         ]
-      }
+      },
+      guards: ['imp', 'imp']
     },
     imp_overlord : {
       agility: 2,
@@ -213,7 +226,8 @@ export class MonstersService {
         attack: [
           '*Whip attack*'
         ]
-      }
+      },
+      guards: ['imp', 'imp', 'imp', 'imp', 'imp']
     },
     manticore : {
       agility: 2,
@@ -229,7 +243,8 @@ export class MonstersService {
           '*Bite attack*',
           '*Tail sting*'
         ]
-      }
+      },
+      guards: ['black_minotaur']
     },
     mummy : {
       agility: 1,
@@ -244,7 +259,8 @@ export class MonstersService {
           '*Shambling curse*',
           '*Wailing force*'
         ]
-      }
+      },
+      guards: ['skeleton', 'skeleton']
     },
     naiad : {
       agility: 3,
@@ -260,7 +276,8 @@ export class MonstersService {
           '*Seductive glare*',
           '*Bite attack*'
         ]
-      }
+      },
+      guards: ['horror', 'horror']
     },
     ogre : {
       agility: 1,
@@ -276,7 +293,8 @@ export class MonstersService {
           '*Smash attack*',
           '*Bite attack*'
         ]
-      }
+      },
+      guards: ['troll', 'skeleton']
     },
     skeleton : {
       agility: 2,
@@ -291,7 +309,8 @@ export class MonstersService {
           '*Swings its sword*',
           '*Bite attack*'
         ]
-      }
+      },
+      guards: ['skeleton', 'skeleton']
     },
     slime_mold : {
       agility: 2,
@@ -307,7 +326,8 @@ export class MonstersService {
           '*blub lub*',
           '*glep*'
         ]
-      }
+      },
+      guards: ['slime_mold', 'slime_mold']
     },
     sphinx : {
       agility: 2,
@@ -323,7 +343,8 @@ export class MonstersService {
           '*mind blast*',
           '*soul scratch*'
         ]
-      }
+      },
+      guards: ['horror', 'horror']
     },
     troll : {
       agility: 1,
@@ -338,7 +359,8 @@ export class MonstersService {
           '*smash attack*',
           '*bite attackt*'
         ]
-      }
+      },
+      guards: ['goblin', 'giant_scorpion', 'goblin']
     },
     wyvern : {
       agility: 2,
@@ -353,7 +375,8 @@ export class MonstersService {
           '*claw attack*',
           '*bite attackt*'
         ]
-      }
+      },
+      guards: ['giant_scorpion', 'giant_scorpion']
     }
   }
   constructor() { }

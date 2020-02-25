@@ -1,3 +1,9 @@
+*{
+    overflow-x: visible;
+}
+/* combat-tile{
+    position: relative;
+} */
 .combat-board{
     width: 1500px;
     height: 1500px;
@@ -7,6 +13,22 @@
     align-items: center;
     justify-content: center;
     align-content: center;
+}
+.selectedLines{
+    /* border: 3px solid darkcyan; */
+    background-color: darkcyan !important;
+    z-index: 201;
+}
+.player_engaging{
+    background-color: white;
+    transform: translateY(-20px);
+    border-bottom: 20px solid black;
+}
+.monster_engaging{
+    background-color: white;
+    transform: translateY(20px);
+    border-top: 20px solid black;
+    margin-top: -20px;
 }
 .combat-grid{
     display: flex;
@@ -53,26 +75,27 @@
 }
 .monster-main-tile{
     height: 246px;
-    width: 404px;
+    width: 250px;
     position: absolute;
-    border: 1px solid red;
+    border: 1px solid black;
     top: 0;
+    left: 0;
 }
 .monster-icon{
     position: absolute;
-    height: 244px;
-    width: 244px;
+    height: 250px;
+    width: 250px;
     top: 0;
-    left: 55px;
+    /* left: 55px; */
     background-position: center;
     background-size: cover;
 }
 .monster-stats-container{
     position: absolute;
-    height: 244px;
-    width: 244px;
-    top: 244px;
-    left: 55px;
+    height: 250px;
+    width: 250px;
+    top: 250px;
+    left: 0px;
     border: 1px solid black;
 }
 .monster-health{
@@ -105,7 +128,7 @@
     top: 0;
     right: 1px;
     /* left: 352px; */
-    width: 1149px;
+    width: 1251px;
     padding: 20px;
     box-sizing: border-box;
     font-size: 2em;
@@ -191,7 +214,7 @@
     border: 1px solid black;
     bottom: 3px;
     left: 0;
-    width: 1153px;;
+    width: 1251px;;
     padding: 20px;
     box-sizing: border-box;
     font-size: 2em;

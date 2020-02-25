@@ -11,6 +11,7 @@ import { CombatBoardComponent } from './combat-board/combat-board.component';
 import { InventoryPanelComponent } from './inventory-panel/inventory-panel.component';
 import { GameOverPanelComponent } from './game-over-panel/game-over-panel.component';
 import { DeathScreenComponent } from './death-screen/death-screen.component';
+import { CombatTile } from './combat-board/combat-tile/combat-tile.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { DeathScreenComponent } from './death-screen/death-screen.component';
     CombatBoardComponent,
     InventoryPanelComponent,
     GameOverPanelComponent,
-    DeathScreenComponent
+    DeathScreenComponent,
+    CombatTile
   ],
   imports: [
     BrowserModule
