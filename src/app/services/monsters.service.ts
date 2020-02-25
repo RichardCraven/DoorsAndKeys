@@ -7,6 +7,7 @@ export class MonstersService {
   library = {
     beholder : {
       agility: 3,
+      armor: 4,
       attack: 7,
       damage: 30,
       health: 180,
@@ -22,6 +23,7 @@ export class MonstersService {
     },
     black_banshee : {
       agility: 2,
+      armor: 1,
       attack: 4,
       damage: 15,
       health: 100,
@@ -37,6 +39,7 @@ export class MonstersService {
     },
     black_djinn : {
       agility: 3,
+      armor: 5,
       attack: 6,
       damage: 21,
       health: 110,
@@ -52,6 +55,7 @@ export class MonstersService {
     },
     black_gorgon : {
       agility: 2,
+      armor: 5,
       attack: 4,
       damage: 25,
       health: 150,
@@ -67,6 +71,7 @@ export class MonstersService {
     },
     black_kronos : {
       agility: 3,
+      armor: 6,
       attack: 7,
       damage: 40,
       health: 220,
@@ -84,6 +89,7 @@ export class MonstersService {
     },
     black_minotaur : {
       agility: 2,
+      armor: 3,
       attack: 4,
       health: 80,
       damage: 18,
@@ -101,6 +107,7 @@ export class MonstersService {
     },
     black_vampire : {
       agility: 3,
+      armor: 2,
       attack: 5,
       damage: 20,
       health: 140,
@@ -117,6 +124,7 @@ export class MonstersService {
     },
     black_wraith : {
       agility: 2,
+      armor: 1,
       attack: 4,
       damage: 17,
       health: 90,
@@ -133,6 +141,7 @@ export class MonstersService {
     },
     dragon : {
       agility: 1,
+      armor: 9,
       attack: 8,
       damage: 50,
       health: 240,
@@ -153,6 +162,7 @@ export class MonstersService {
     },
     giant_scorpion : {
       agility: 1,
+      armor: 2,
       attack: 3,
       damage: 15,
       health: 80,
@@ -169,6 +179,7 @@ export class MonstersService {
     },
     goblin : {
       agility: 3,
+      armor: 0,
       attack: 2,
       damage: 10,
       health: 40,
@@ -186,6 +197,7 @@ export class MonstersService {
     },
     horror : {
       agility: 1,
+      armor: 2,
       attack: 4,
       damage: 15,
       health: 60,
@@ -201,6 +213,7 @@ export class MonstersService {
     },
     imp : {
       agility: 3,
+      armor: 0,
       attack: 2,
       damage: 15,
       health: 40,
@@ -216,6 +229,7 @@ export class MonstersService {
     },
     imp_overlord : {
       agility: 2,
+      armor: 2,
       attack: 3,
       damage: 15,
       health: 90,
@@ -231,6 +245,7 @@ export class MonstersService {
     },
     manticore : {
       agility: 2,
+      armor: 4,
       attack: 3,
       damage: 20,
       health: 100,
@@ -248,6 +263,7 @@ export class MonstersService {
     },
     mummy : {
       agility: 1,
+      armor: 3,
       attack: 3,
       damage: 20,
       health: 90,
@@ -264,6 +280,7 @@ export class MonstersService {
     },
     naiad : {
       agility: 3,
+      armor: 2,
       attack: 4,
       damage: 20,
       health: 60,
@@ -281,6 +298,7 @@ export class MonstersService {
     },
     ogre : {
       agility: 1,
+      armor: 5,
       attack: 3,
       damage: 28,
       health: 100,
@@ -298,6 +316,7 @@ export class MonstersService {
     },
     skeleton : {
       agility: 2,
+      armor: 1,
       attack: 2,
       damage: 13,
       health: 40,
@@ -314,6 +333,7 @@ export class MonstersService {
     },
     slime_mold : {
       agility: 2,
+      armor: 0,
       attack: 3,
       damage: 15,
       health: 50,
@@ -331,6 +351,7 @@ export class MonstersService {
     },
     sphinx : {
       agility: 2,
+      armor: 4,
       attack: 5,
       damage: 20,
       health: 140,
@@ -348,6 +369,7 @@ export class MonstersService {
     },
     troll : {
       agility: 1,
+      armor: 4,
       attack: 5,
       damage: 22,
       health: 140,
@@ -364,6 +386,7 @@ export class MonstersService {
     },
     wyvern : {
       agility: 2,
+      armor: 3,
       attack: 5,
       damage: 23,
       health: 160,

@@ -232,25 +232,34 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
       name: 'Arnolf',
       class:'monk',
       health: 40,
-      attack: 5,
+      attack: 4,
+      damage: 8,
       armor: 0,
-      agility: 4
+      agility: 4,
+      cunning: 4,
+      exp: 0
     }
     let rogue = {
       name: 'Heinrich',
       class:'rogue',
       health: 45,
-      attack: 8,
-      armor: 0,
-      agility: 6
+      attack: 6,
+      damage: 11,
+      armor: 1,
+      agility: 6,
+      cunning: 3,
+      exp: 0
     }
     let brawler = {
       name: 'Pietra',
       class:'brawler',
       health: 60,
-      attack: 10,
+      attack: 8,
+      damage: 16,
       armor: 2,
-      agility: 5
+      agility: 5,
+      cunning: 0,
+      exp: 0
     }
     this.playerTeam.push(monk, rogue, brawler)
     // this.placePlayer()
@@ -352,36 +361,68 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     })
     console.log('turn order array is ', this.turnOrder)
 
-    this.delayed500.next('engage')
+    this.delayed750.next('engage')
   }
   engage(){
-    let tile;
+    let tile, target;
     this.activeUnit = this.turnOrder[this.turnTracker];
+    const attack = this.activeUnit.attack;
+    const damage = this.activeUnit.damage;
     // ^ for reference only
     
-    console.log('engaging')
     
     if(this.activeUnit.class){
       tile = this.gridTiles[this.activeUnit.location]
       tile.player_engaging = true;
       tile.farf = true
+      target = this.chooseRandomly(this.monsterTeam)
+      let randAtk = Math.floor(Math.random() * this.activeUnit.attack + this.activeUnit.cunning)
+      let num = randAtk / (Math.floor(Math.random() * target.armor + target.agility))
+      console.log(num)
+      if(Math.random() <= num){
+        if(Math.random() <= num){
+          this.dealDamage(this.activeUnit, target);
+        }
+      }
     } else {
       if(this.activeUnit.boss){
         tile = this.topTiles[this.activeUnit.location]
         tile.monster_engaging = true;
         tile.farf = true
+        target = this.chooseRandomly(this.playerTeam)
+      // console.log('target is ', target)
+      let randAtk = Math.floor(Math.random() * this.activeUnit.attack + this.activeUnit.cunning)
+
+      // console.log(randAtk, 'atk VS ', target.agility + target.armor, ' dfs')
+      // console.log(this.activeUnit.attack / (target.agility + target.armor))
+        let num = randAtk / (Math.floor(Math.random() * target.armor + target.agility))
+        console.log(num)
+        if(Math.random() <= num){
+          this.dealDamage(this.activeUnit, target);
+        }
       } else {
         tile = this.gridTiles[this.activeUnit.location]
         tile.monster_engaging = true;
         tile.farf = true
+        target = this.chooseRandomly(this.playerTeam)
+      let randAtk = Math.floor(Math.random() * this.activeUnit.attack + this.activeUnit.cunning)
+
+      let num = randAtk / (Math.floor(Math.random() * target.armor + target.agility))
+        console.log(num)
+        if(Math.random() <= num){
+          if(Math.random() <= num){
+            this.dealDamage(this.activeUnit, target);
+          }
+        }
       }
     }
-    this.delayed500.next('disengage')
+    this.delayed750.next('disengage')
   }
   disengage(){
     if(this.activeUnit.class){
       this.gridTiles[this.activeUnit.location].player_engaging = false;
       this.gridTiles[this.activeUnit.location].farf = false;
+      this.activeUnit.damage
     } else {
       if(this.activeUnit.boss){
         this.topTiles[this.activeUnit.location].monster_engaging = false;
@@ -391,12 +432,47 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
         this.gridTiles[this.activeUnit.location].farf = false;
       }
     }
-    console.log('disengaging')
     this.turnTracker++
     if(this.turnTracker > this.turnOrder.length - 1){
       this.turnTracker = 0;
     }
-    this.delayed500.next('engage')
+    this.delayed750.next('engage')
+  }
+  chooseRandomly(array: Array<any>){
+    return array[Math.floor(Math.random() * array.length)]
+  }
+  dealDamage(attacker, defender){
+    let damage = 0;
+
+    if(attacker.class){
+      console.log(attacker.name, ' hit ', defender.type, 'for ', attacker.damage, ' damage!')
+      defender.health -= attacker.damage;
+      if(defender.health <= 0){
+        console.log(defender.type, ' is dead!')
+        this.unitDead(defender);
+      }
+    } else {
+      console.log(attacker.type, ' hit ', defender.name, ', the ', defender.class, 'for ', attacker.damage, ' damage!')
+      defender.health -= attacker.damage;
+      if(defender.health <= 0){
+        console.log(defender.name, ', the ', defender.class, ' is dead!')
+        this.unitDead(defender);
+      }
+    }
+  }
+  unitDead(unit){
+    if(unit.class){
+      this.gridTiles[unit.location].showType = 'darkness'
+      this.playerTeam.splice(this.playerTeam.indexOf(unit), 1)
+    } else {
+      if(unit.type && unit.boss){
+        this.topTiles[unit.location].showType = 'darkness'
+        this.monsterTeam.splice(this.monsterTeam.indexOf(unit), 1)
+      } else {
+        this.gridTiles[unit.location].showType = 'darkness'
+        this.monsterTeam.splice(this.monsterTeam.indexOf(unit), 1)
+      }
+    }
   }
 
 
