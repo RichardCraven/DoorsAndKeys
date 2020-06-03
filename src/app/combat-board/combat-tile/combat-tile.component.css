@@ -2,6 +2,9 @@
 @import '../../../styles/monsters.css';
 @import '../../../styles/numbers.css';
 @import '../../../styles/figures&portraits.css';
+*{
+    box-sizing: border-box;
+}
 .tile{
     /* border: 1px solid grey; */
     /* height: 100px;
@@ -21,6 +24,7 @@
 
 
     border: none;
+    border: 1px solid yellow;
 }
 .selectedLines{
     /* border: 3px solid darkcyan; */

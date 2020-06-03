@@ -11,7 +11,7 @@ body,html{
     overflow: hidden;
 }
 *{
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }
 body{
     height: 100vh;

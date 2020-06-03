@@ -1,5 +1,6 @@
 *{
-    overflow-x: visible;
+    overflow-x: visible !important;
+    box-sizing: border-box;
 }
 /* combat-tile{
     position: relative;
@@ -14,6 +15,34 @@
     justify-content: center;
     align-content: center;
 }
+.top,.bottom,.middle{
+    display: flex;
+}
+.top,.bottom{
+    width: 100vw;
+    border: 1px solid red;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.top{
+    top: 0px;
+    align-items: flex-end;
+}
+.bottom{
+    bottom: 0px;
+    align-items: flex-start;
+}
+.middle{
+    /* border: 2px solid blue; */
+    width: 100vw;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
 .selectedLines{
     /* border: 3px solid darkcyan; */
     background-color: darkcyan !important;
@@ -38,20 +67,16 @@
     width: 1000px; */
 }
 .corner{
-    width: 200px;
-    /* border: 1px solid black; */
-    height: 100px;
+    border: 1px dashed green;
 }
 .corner.right-corner{
      display: flex;
 }
 
 .left-panel{
-    height: 200px;
-    width: 200px;
     /* border-left: 1px solid black;
     border-top: 1px solid black;
-    border-bottom: 1px solid black; */
+    border-bottom: 1px solid black;  */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -113,18 +138,17 @@
 }
 .monster-row{
     display: flex;
-    width: 1000px;
-    height: 102px;
-    border: bottom  1px solid black;
+    align-items: flex-end;
+    /* border: bottom  1px solid black; */
 }
 .top-tile{
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+    /* border-top: 1px solid black;
+    border-bottom: 1px solid black; */
 }
 .monster-info{
     position: absolute;
     height: 247px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     top: 0;
     right: 1px;
     /* left: 352px; */

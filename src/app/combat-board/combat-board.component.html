@@ -1,241 +1,121 @@
 <div id='combat-board' class='combat-board' [ngStyle]="{'width': boardSize+'px', 'height': boardSize+ 'px'}">
-  <!-- <canvas #combatCanvas  id="combat-canvas" width="1000" height="1000"></canvas>
-    <img style='display:none'  id='head' src="../../assets/scavenger.png" alt="" height='100' width='100'> -->
-  
-  <!-- <div class="corner"></div> -->
-  <div class="monster-row">
-      <combat-tile *ngFor='let tile of topTiles; index as i' showType = '{{tile.showType}}' id='{{tile.id}}' [ngClass]="{
+  <div class="top" [ngStyle]="{'height': tileSize*2 + 'px'}">
+    <div class="corner" [ngStyle]="{'width': tileSize*3 + 'px', 'height': tileSize*2 + 'px'}"></div>
+    <div class="monster-row" [ngStyle]="{'width': boardSize+'px'}">
+        <combat-tile 
+        *ngFor='let tile of topTiles; index as i' 
+        showType = '{{tile.showType}}' 
+        id='{{tile.id}}' 
+        [ngClass]="{
+          'selectedLines': tile.farf,
+          'player_engaging': tile.player_engaging,
+          'monster_engaging': tile.monster_engaging
+        }"
+        [tileSize]="tileSize"
+        (click)='clickTile(tile)' [ngStyle]="{'width': tileSize+'px', 'height': tileSize+ 'px'}">
+        </combat-tile>
+    </div>
+    <div class="corner right-corner" [ngStyle]="{'width': tileSize*3 + 'px', 'height': tileSize*2 + 'px'}">
+      <tile 
+        *ngFor='let tile of roundNumTiles' 
+        (click)='clickTile(tile)'
+        [ngClass]='{
+          darkness: false,
+          zero: tile.zero,
+          one: tile.one,
+          two: tile.two,
+          three: tile.three,
+          four: tile.four,
+          five: tile.five,
+          six: tile.six,
+          seven: tile.seven,
+          eight: tile.eight,
+          nine: tile.nine
+        }'>
+      </tile>
+    </div>
+  </div>
+  <!-- end top -->
+
+  <div class="middle" [ngStyle]="{'height': tileSize*13 +'px', 'top': tileSize*2 + 'px'}">
+    <div class="left-panel" [ngStyle]="{'width': tileSize*3+'px', 'height': tileSize*13+'px'}">
+        <!-- <div [ngClass]='{hidden: !showBar}' id="gateContainer">
+            <div id="midGate"></div>
+        </div>
+        <div class="monster-main-tile">
+          <div class="monster-icon" 
+          [ngClass]='{
+            beholder: monsterIcon.beholder,
+            black_gorgon: monsterIcon.black_gorgon,
+            white_gorgon: monsterIcon.white_gorgon,
+            black_vampire: monsterIcon.black_vampire,
+            white_vampire: monsterIcon.white_vampire,
+            dragon: monsterIcon.dragon,
+            horror: monsterIcon.horror,
+            goblin: monsterIcon.goblin,
+            imp: monsterIcon.imp,
+            imp_overlord: monsterIcon.imp_overlord,
+            ogre: monsterIcon.ogre,
+            troll: monsterIcon.troll,
+            sphinx: monsterIcon.sphinx,
+            slime_mold: monsterIcon.slime_mold,
+            black_minotaur: monsterIcon.black_minotaur,
+            white_minotaur: monsterIcon.white_minotaur,
+            black_banshee: monsterIcon.black_banshee,
+            white_banshee: monsterIcon.white_banshee,
+            black_wraith: monsterIcon.black_wraith,
+            white_wraith: monsterIcon.white_wraith,
+            black_kronos: monsterIcon.black_kronos,
+            white_kronos: monsterIcon.white_kronos,
+            naiad: monsterIcon.naiad,
+            mummy: monsterIcon.mummy,
+            skeleton: monsterIcon.skeleton,
+            wyvern: monsterIcon.wyvern,
+            black_djinn: monsterIcon.black_djinn,
+            white_djinn: monsterIcon.white_djinn,
+            manticore: monsterIcon.manticore,
+            giant_scorpion: monsterIcon.giant_scorpion
+          }
+          '
+          ></div>
+          <div class="monster-stats-container" >
+            HP: {{monsterHealth}}/{{monsterHealthInitial}}
+            <br>
+            Damage: {{monster.damage}}
+            <br>
+            Agility: {{monster.agility}}
+          </div>
+        </div>
+        <div class="monster-info">
+            {{monsterInfoLine1}} <br> {{monsterInfoLine2}}
+        </div> -->
+    </div>
+    <div class="combat-grid" [ngStyle]="{'width': boardSize+'px', 'height': tileSize*13+'px'}">
+      <combat-tile *ngFor='let tile of gridTiles; index as i' showType = '{{tile.showType}}' farf='{{tile.farf}}' [ngClass]="{
         'selectedLines': tile.farf,
         'player_engaging': tile.player_engaging,
         'monster_engaging': tile.monster_engaging
-      }"
-      [tileSize]="tileSize"
-      
-      (click)='clickTile(tile)'>
+      }" id='{{tile.id}}'
+      (click)='clickTile(tile)' [tileSize]="tileSize" [ngStyle]="{'width': tileSize+'px', 'height': tileSize+ 'px'}">
       </combat-tile>
-      <!-- <tile *ngFor='let tile of topTiles; index as m' 
-      (click)='clickTile(tile)'  
-      [ngClass]='{
-        topTile: true,
-        darkness: !tile.visible,
-        flash: tile.flash,
-        slowFade: tile.slowFade,
-        monsterMovementLeftEnd: tile.monsterMovementLeftEnd,
-        monsterMovementRightEnd: tile.monsterMovementRightEnd,
-        monsterMovementMiddle: tile.monsterMovementMiddle,
-
-        beholder: tile.beholder,
-        black_gorgon: tile.black_gorgon,
-        white_gorgon: tile.white_gorgon,
-        black_vampire: tile.black_vampire,
-        white_vampire: tile.white_vampire,
-        dragon: tile.dragon,
-        horror: tile.horror,
-        goblin: tile.goblin,
-        imp: tile.imp,
-        imp_overlord: tile.imp_overlord,
-        ogre: tile.ogre,
-        troll: tile.troll,
-        sphinx: tile.sphinx,
-        slime_mold: tile.slime_mold,
-        black_minotaur: tile.black_minotaur,
-        white_minotaur: tile.white_minotaur,
-        black_banshee: tile.black_banshee,
-        white_banshee: tile.white_banshee,
-        black_wraith: tile.black_wraith,
-        white_wraith: tile.white_wraith,
-        black_kronos: tile.black_kronos,
-        white_kronos: tile.white_kronos,
-        naiad: tile.naiad,
-        mummy: tile.mummy,
-        skeleton: tile.skeleton,
-        wyvern: tile.wyvern,
-        black_djinn: tile.black_djinn,
-        white_djinn: tile.white_djinn,
-        manticore: tile.manticore,
-        giant_scorpion: tile.giant_scorpion,
-
-        scimitar: tile.scimitar,
-        flail: tile.flail,
-        spear: tile.spear,
-        sword: tile.sword,
-        axe: tile.axe,
-        scepter: tile.scepter,
-
-        glindas_wand: tile.glindas_wand,
-        vardas_wand: tile.vardas_wand,
-        maerlyns_rod: tile.maerlyns_rod
-      }
-      ' >
-      </tile> -->
-  </div>
-  <div class="corner right-corner">
-    <tile *ngFor='let tile of roundNumTiles' (click)='clickTile(tile)'
-    [ngClass]='{
-      darkness: false,
-
-      zero: tile.zero,
-      one: tile.one,
-      two: tile.two,
-      three: tile.three,
-      four: tile.four,
-      five: tile.five,
-      six: tile.six,
-      seven: tile.seven,
-      eight: tile.eight,
-      nine: tile.nine
-    }'
-    >
-    </tile>
-  </div>
-  <div class="left-panel">
-      <div [ngClass]='{hidden: !showBar}' id="gateContainer">
-          <div id="midGate"></div>
-      </div>
-      <div class="monster-main-tile">
-        <div class="monster-icon" 
-        [ngClass]='{
-          beholder: monsterIcon.beholder,
-          black_gorgon: monsterIcon.black_gorgon,
-          white_gorgon: monsterIcon.white_gorgon,
-          black_vampire: monsterIcon.black_vampire,
-          white_vampire: monsterIcon.white_vampire,
-          dragon: monsterIcon.dragon,
-          horror: monsterIcon.horror,
-          goblin: monsterIcon.goblin,
-          imp: monsterIcon.imp,
-          imp_overlord: monsterIcon.imp_overlord,
-          ogre: monsterIcon.ogre,
-          troll: monsterIcon.troll,
-          sphinx: monsterIcon.sphinx,
-          slime_mold: monsterIcon.slime_mold,
-          black_minotaur: monsterIcon.black_minotaur,
-          white_minotaur: monsterIcon.white_minotaur,
-          black_banshee: monsterIcon.black_banshee,
-          white_banshee: monsterIcon.white_banshee,
-          black_wraith: monsterIcon.black_wraith,
-          white_wraith: monsterIcon.white_wraith,
-          black_kronos: monsterIcon.black_kronos,
-          white_kronos: monsterIcon.white_kronos,
-          naiad: monsterIcon.naiad,
-          mummy: monsterIcon.mummy,
-          skeleton: monsterIcon.skeleton,
-          wyvern: monsterIcon.wyvern,
-          black_djinn: monsterIcon.black_djinn,
-          white_djinn: monsterIcon.white_djinn,
-          manticore: monsterIcon.manticore,
-          giant_scorpion: monsterIcon.giant_scorpion
-        }
-        '
-        ></div>
-        <!-- <div class="monster-health" id='monster-health-container'>
-          <div id="monster-health-bar"></div>
-        </div> -->
-        <div class="monster-stats-container" >
-          HP: {{monsterHealth}}/{{monsterHealthInitial}}
-          <br>
-          Damage: {{monster.damage}}
-          <br>
-          Agility: {{monster.agility}}
-        </div>
-      </div>
-      <div class="monster-info">
-          {{monsterInfoLine1}} <br> {{monsterInfoLine2}}
-      </div>
-  </div>
-  <div class="combat-grid">
-    <combat-tile *ngFor='let tile of gridTiles; index as i' showType = '{{tile.showType}}' farf='{{tile.farf}}' [ngClass]="{
-      'selectedLines': tile.farf,
-      'player_engaging': tile.player_engaging,
-      'monster_engaging': tile.monster_engaging
-    }" id='{{tile.id}}'
-    (click)='clickTile(tile)' [tileSize]="tileSize">
-    </combat-tile>
-      <!-- <tile *ngFor='let tile of gridTiles; index as i' 
-      (click)='clickTile(tile)' 
-      [ngClass]='{
-        darkness: !tile.visible,
-        placementZone: tile.placementZone,
-        monsterZone: tile.monsterZone,
-        down: tile.down,
-
-        scimitar: tile.scimitar,
-        flail: tile.flail,
-        spear: tile.spear,
-        sword: tile.sword,
-        axe: tile.axe,
-        scepter: tile.scepter,
-        
-        glindas_wand: tile.glindas_wand,
-        vardas_wand: tile.vardas_wand,
-        maerlyns_rod: tile.maerlyns_rod
-      }' >
-      </tile> -->
-  </div>
-  <div class="right-panel">
-    <div class="player-main-tile">
-      <!-- <div class="player-health" id='player-health-container'>
-        <div id="player-health-bar"></div>
+    </div>
+    <div class="right-panel" [ngStyle]="{'width': tileSize*3+'px', 'height': tileSize*13 + 'px'}">
+      <!-- <div class="player-info">
+        {{playerInfo}}
       </div> -->
-      <div class="player-icon" [ngClass]='{occupied: true}'></div>
-    </div>
-    <!-- <div class="player-stats-container" > -->
-    <!-- <div class="player-inventory">
-      <tile *ngFor='let tile of playerInventoryTiles'
-      [ngClass]='{
-
-        glindas_wand: tile.glindas_wand,
-        vardas_wand: tile.vardas_wand,
-        maerlyns_rod: tile.maerlyns_rod,
-
-        basic_shield: tile.basic_shield,
-        seeing_shield: tile.seeing_shield,
-
-        beetle_charm: tile.beetle_charm,
-        demonskull_charm: tile.demonskull_charm,
-        evilai_charm: tile.evilai_charm,
-        hamsa_charm: tile.hamsa_charm,
-        nukta_charm: tile.nukta_charm,
-        scarab_charm: tile.scarab_charm,
-        lundi_charm: tile.lundi_charm,
-
-        bundu_mask: tile.bundu_mask,
-        mardi_mask: tile.mardi_mask,
-        solomon_mask: tile.solomon_mask,
-        lundi_mask: tile.lundi_mask,
-        court_mask: tile.court_mask,
-        zul_mask: tile.zul_mask,
-        helmet: tile.helmet,
-
-
-        scimitar: tile.scimitar,
-        flail: tile.flail,
-        spear: tile.spear,
-        sword: tile.sword,
-        axe: tile.axe,
-        scepter: tile.scepter
-      }'>
-      </tile>  
-    </div> -->
-    <div class="player-info">
-      {{playerInfo}}
     </div>
   </div>
-  <div class="corner"></div>
-  <div class="player-row">
-    <combat-tile *ngFor='let spo of botTiles; index as p' showType = '{{spo.showType}}' farf='{{spo.farf}}' 
-    (click)='clickTile(tile)' [tileSize]="tileSize">
-    </combat-tile>
-      <!-- <tile *ngFor='let tile of botTiles; index as p' 
-      (click)='clickTile(tile)' 
-      [ngClass]='{
-        darkness: !tile.visible,
-        slowFade: tile.slowFade,
-        occupied: tile.occupied,
-        flash: tile.flash,
-        down: tile.down
-      }' >
-      </tile> -->
+  <!-- end middle -->
+
+  <div class="bottom" [ngStyle]="{'height': tileSize*2 + 'px'}">
+    <div class="corner" [ngStyle]="{'width': tileSize*3 + 'px', 'height': tileSize*2 + 'px'}"></div>
+    <div class="player-row" [ngStyle]="{'width': boardSize+'px'}">
+      <combat-tile *ngFor='let spo of botTiles; index as p' showType = '{{spo.showType}}' farf='{{spo.farf}}' 
+      (click)='clickTile(tile)' [tileSize]="tileSize" [ngStyle]="{'width': tileSize+'px', 'height': tileSize+ 'px'}">
+      </combat-tile>
+    </div>
+    <div class="corner" [ngStyle]="{'width': tileSize*3 + 'px', 'height': tileSize*2 + 'px'}"></div>
   </div>
-  <div class="corner"></div>
+  <!-- end bottom -->
+
 </div>

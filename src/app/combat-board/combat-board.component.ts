@@ -36,9 +36,9 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   avatar;
   gateOpen = false;
 
-  topTilesCount = 10;
-  botTilesCount = 10;
-  gridTilesCount = 80;
+  topTilesCount = 15;
+  botTilesCount = 15;
+  gridTilesCount = 195;
   round = 0;
   tick = 0;
   differential = 0;

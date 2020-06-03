@@ -90,8 +90,11 @@ export class MainBoardComponent implements OnInit, OnDestroy {
     this.setTileSize();
   }
   setTileSize(){
-    const h = Math.floor((window.innerHeight/10)*0.60);
-    const w = Math.floor((window.innerWidth/10)*0.60);
+    // const h = Math.floor((window.innerHeight/10)*0.60);
+    // const w = Math.floor((window.innerWidth/10)*0.60);
+    console.log('poopoo', window.innerHeight/17)
+    const h = Math.floor((window.innerHeight/17));
+    const w = Math.floor((window.innerWidth/17));
     console.log('heigfht is: ', h, w)
     if(h < w){
       this.tileSize = h;

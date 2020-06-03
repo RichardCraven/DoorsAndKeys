@@ -10,7 +10,7 @@ export class CombatTile implements OnInit {
   @Input()id
   @Input()engaging;
   @Input()farf;
-  @Input()tileSize: string;
+  @Input()tileSize: number;
   constructor() {
     
   }
@@ -22,5 +22,8 @@ export class CombatTile implements OnInit {
   clickTile(){
     console.log('tile showtype is ', this.showType, this.id)
   }
-
+  get innerTileSize() {
+    // return this.tileSize - 0;
+    return this.tileSize - 0;
+  }
 }
