@@ -10,12 +10,13 @@ export class CombatTile implements OnInit {
   @Input()id
   @Input()engaging;
   @Input()farf;
+  @Input()tileSize: string;
   constructor() {
     
   }
 
   ngOnInit() {
-    console.log('selected: ', this.farf)
+    console.log('combat tile size: ', this.tileSize)
     // console.log('this tiles showType is ', this.showType)
   }
   clickTile(){

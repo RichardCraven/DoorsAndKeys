@@ -1,16 +1,17 @@
 <div class="container">
-  <canvas #myCanvas id="myCanvas" width="752" height="752"></canvas>
-  <div class="pyramid-level">
+  <canvas #myCanvas id="myCanvas" [ngStyle]="{'width': boardSize+'px', 'height': boardSize+ 'px'}"></canvas>
+  <!-- <div class="pyramid-level">
     <div class="pyramid-top" [ngClass]="pyramidLevel === 'top' ? 'active' : ''"></div>
     <div class="pyramid-mid" [ngClass]="pyramidLevel === 'mid' ? 'active' : ''"></div>
     <div class="pyramid-bot" [ngClass]="pyramidLevel === 'bottom' ? 'active' : ''"></div>
-  </div>
+  </div> -->
 
   <!-- TOP BOARD -->
 
   <!-- BOARD -->
-  <div *ngIf="!showCombatBoard" class="board upper-board">
+  <div *ngIf="!showCombatBoard" class="board" [ngStyle]="{'width': boardSize+'px', 'height': boardSize+ 'px'}">
     <tile *ngFor='let tile of currentTiles; index as i' 
+    [ngStyle]="{'width': tileSize+'px', 'height': tileSize+ 'px'}"
     [name]='tile.id' [contains]='tile.contains' 
     (click)='clickTile(tile)'
     [ngClass]='{
@@ -310,6 +311,6 @@
     }' >
     </tile>
   </div> -->
-  <combat-board *ngIf="showCombatBoard" [monster]="engagedMonster" ></combat-board>
+  <combat-board *ngIf="showCombatBoard" [monster]="engagedMonster" [tileSize]="tileSize" [boardSize]="boardSize"></combat-board>
   <!-- <death-screen *ngIf="showDeathScreen"></death-screen> -->
 </div>

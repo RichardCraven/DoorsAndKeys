@@ -1,13 +1,16 @@
-<div id='combat-board' class='combat-board'>
+<div id='combat-board' class='combat-board' [ngStyle]="{'width': boardSize+'px', 'height': boardSize+ 'px'}">
   <!-- <canvas #combatCanvas  id="combat-canvas" width="1000" height="1000"></canvas>
     <img style='display:none'  id='head' src="../../assets/scavenger.png" alt="" height='100' width='100'> -->
-  <div class="corner"></div>
+  
+  <!-- <div class="corner"></div> -->
   <div class="monster-row">
       <combat-tile *ngFor='let tile of topTiles; index as i' showType = '{{tile.showType}}' id='{{tile.id}}' [ngClass]="{
         'selectedLines': tile.farf,
         'player_engaging': tile.player_engaging,
         'monster_engaging': tile.monster_engaging
       }"
+      [tileSize]="tileSize"
+      
       (click)='clickTile(tile)'>
       </combat-tile>
       <!-- <tile *ngFor='let tile of topTiles; index as m' 
@@ -146,7 +149,7 @@
       'player_engaging': tile.player_engaging,
       'monster_engaging': tile.monster_engaging
     }" id='{{tile.id}}'
-    (click)='clickTile(tile)'>
+    (click)='clickTile(tile)' [tileSize]="tileSize">
     </combat-tile>
       <!-- <tile *ngFor='let tile of gridTiles; index as i' 
       (click)='clickTile(tile)' 
@@ -221,7 +224,7 @@
   <div class="corner"></div>
   <div class="player-row">
     <combat-tile *ngFor='let spo of botTiles; index as p' showType = '{{spo.showType}}' farf='{{spo.farf}}' 
-    (click)='clickTile(tile)'>
+    (click)='clickTile(tile)' [tileSize]="tileSize">
     </combat-tile>
       <!-- <tile *ngFor='let tile of botTiles; index as p' 
       (click)='clickTile(tile)' 

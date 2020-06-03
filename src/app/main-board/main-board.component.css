@@ -2,15 +2,13 @@
     align-items: center;
     position: relative;
     justify-content: center;
-    width: 1504px;
-    height: 1504px;
-    margin: 0 auto;
-    /* margin- */
+    display: flex;
+    height: 100%;
 }
 .board{
     /* margin-top: 300px; */
-    width: 1500px;
-    height: 1500px;
+    /* width: 1500px;
+    height: 1500px; */
     border: 1px solid black;
     display: flex;
     flex-flow: row wrap;

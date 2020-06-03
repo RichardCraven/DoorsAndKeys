@@ -120,6 +120,7 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   turnOrder = [];
   @Input()monster
 
+ 
   // @ViewChild('combatCanvas') combatCanvas: ElementRef;
   public context: CanvasRenderingContext2D;
 
@@ -171,10 +172,13 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
     public projectileManagerService : ProjectileManagerService,
     public monstersService: MonstersService
     ) { 
-    
   }
+
+  @Input()tileSize: string;
+  @Input()boardSize: string;
   
   ngOnInit() {
+    console.log('combat board init: ', this.boardSize, this.tileSize)
     const board = document.getElementById('combat-board'); 
     const inventory = this.playerManager.activePlayer.inventory;
     
@@ -349,6 +353,7 @@ export class CombatBoardComponent implements OnInit, OnDestroy {
   }
   beginCombat(){
     console.log('beginning combat')
+    return
     this.monsterTeam.forEach((m)=>{
       this.turnOrder.push(m)
     })

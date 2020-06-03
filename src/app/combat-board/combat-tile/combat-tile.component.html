@@ -1,3 +1,3 @@
-<div class='tile'  [ngClass]="showType" [class.selectedLines]="farf === true" (click)='clickTile()'>
-    <div [ngClass]="{'selectedLines' : farf === true}" class="shadow-tile"></div>  
+<div class='tile' [ngStyle]="{'width': tileSize+'px', 'height': tileSize+ 'px'}" [ngClass]="showType" [class.selectedLines]="farf === true" (click)='clickTile()'>
+    <div [ngClass]="{'selectedLines' : farf === true}" class="shadow-tile" [ngStyle]="{'width': tileSize+'px', 'height': tileSize+ 'px'}"></div>  
 </div>

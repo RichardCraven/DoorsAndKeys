@@ -3,12 +3,14 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'tile',
   template: `
-    <div *ngIf='_overlay' class="tile-overlay" [ngClass]='{
+    <div *ngIf='_overlay' class="tile-overlay" 
+    [ngClass]='{
       duration3: _duration3,
       duration5: _duration5,
       duration6: _duration6,
       duration8: _duration8
-    }' ></div>
+    }'>
+     ></div>
   `,
   styleUrls: ['./tile.component.css']
 })
@@ -22,6 +24,8 @@ export class TileComponent implements OnInit {
   private _duration5;
   private _duration6;
   private _duration8;
+
+  public tileSize = 100;
   @Input()
   set name(name: string) {
     this._name = (name)
@@ -84,6 +88,7 @@ export class TileComponent implements OnInit {
   get duration8(): boolean { return this._duration8; }
 
   ngOnInit() {
+    console.log(this.tileSize)
   }
 
 }

@@ -4,8 +4,8 @@
 @import '../../../styles/figures&portraits.css';
 .tile{
     /* border: 1px solid grey; */
-    height: 100px;
-    width: 100px;
+    /* height: 100px;
+    width: 100px; */
     background-size: 100% 100%;
     /* position: relative; */
 }
@@ -15,8 +15,11 @@
 .shadow-tile{
     /* position: absolute; */
     z-index: 200;
-    height: 100px;
-    width: 100px;
+
+    /* height: 100px;
+    width: 100px; */
+
+
     border: none;
 }
 .selectedLines{

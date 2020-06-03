@@ -23,6 +23,9 @@ import {
   styleUrls: ['./main-board.component.css']
 })
 export class MainBoardComponent implements OnInit, OnDestroy {
+  tileSize = 100;
+  boardSize = 1500;
+
   newPlayerSubscription: Subscription;
   playerManagerSubscription: any;
 
@@ -79,16 +82,28 @@ export class MainBoardComponent implements OnInit, OnDestroy {
   // public context: CanvasRenderingContext2D;
 
 
-  constructor(public playerManager: PlayerManagerService, public mapsService: MapsService, public monstersService: MonstersService) { }
-
+  constructor(public playerManager: PlayerManagerService, public mapsService: MapsService, public monstersService: MonstersService) { 
+    this.setTileSize();
+  }
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.setTileSize();
+  }
+  setTileSize(){
+    const h = Math.floor((window.innerHeight/10)*0.60);
+    const w = Math.floor((window.innerWidth/10)*0.60);
+    console.log('heigfht is: ', h, w)
+    if(h < w){
+      this.tileSize = h;
+      this.boardSize = h*15
+    } else {
+      this.tileSize = w;
+      this.boardSize = w*15
+    }
+    this.renderBoard();
+  }
   ngOnInit() {
-    // this.canvas = document.getElementById('myCanvas');
-    
     window.focus();
-
-    // this.context = (<HTMLCanvasElement>this.myCanvas.nativeElement).getContext('2d');
-    // this.context.scale(16,16);
-    // this.context = this.canvas.getContext('2d');
 
     //Subdscribe to timers
     this.sub1 = this.getDelayed500().subscribe( res => {

@@ -23,8 +23,8 @@ body{
 }
 tile{
     cursor: crosshair;
-    height: 100px;
-    width: 100px;
+    /* height: 100px; */
+    /* width: 100px; */
     /* width: calc(10%-2px); */
     background-size: cover;
     background-repeat: no-repeat;
